@@ -1,0 +1,20 @@
+{
+  "name": "omnidrive",
+  "private": true,
+  "workspaces": [
+    "packages/worker",
+    "packages/web"
+  ],
+  "scripts": {
+    "dev:worker": "npm run dev -w packages/worker",
+    "dev:web": "npm run dev -w packages/web",
+    "dev": "concurrently \"npm run dev:worker\" \"npm run dev:web\"",
+    "build:worker": "npm run build -w packages/worker",
+    "build:web": "npm run build -w packages/web",
+    "test": "npm run test -w packages/worker"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0",
+    "typescript": "^5.7.0"
+  }
+}
