@@ -1,0 +1,19 @@
+name = "omnidrive-api"
+main = "src/index.ts"
+compatibility_date = "2025-06-01"
+
+[triggers]
+crons = ["*/30 * * * *"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "omnidrive-db"
+database_id = "local"
+
+[[kv_namespaces]]
+binding = "KV"
+id = "local"
+
+[vars]
+FRONTEND_URL = "http://localhost:5173"
+WORKER_URL = "http://localhost:8787"
