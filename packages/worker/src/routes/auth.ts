@@ -89,7 +89,7 @@ authRouter.get('/callback', async (c) => {
     path: '/',
     secure: true,
     httpOnly: true,
-    sameSite: 'Lax',
+    sameSite: 'None',
     maxAge: 60 * 60 * 24 * 7,
   });
 
@@ -110,6 +110,6 @@ authRouter.post('/logout', async (c) => {
     await c.env.KV.delete(`session:${sid}`);
   }
   
-  deleteCookie(c, 'omnidrive_sid', { path: '/' });
+  deleteCookie(c, 'omnidrive_sid', { path: '/', secure: true, sameSite: 'None' });
   return c.json({ success: true });
 });
