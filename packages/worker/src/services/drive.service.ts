@@ -38,6 +38,7 @@ export class DriveService {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'Origin': this.env.FRONTEND_URL,
       },
       body: JSON.stringify(metadata),
     });
