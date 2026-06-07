@@ -132,7 +132,7 @@ export class AutomationEngine {
       const stmts: D1PreparedStatement[] = [];
       
       for (const action of actions) {
-        const targetFolderId = action.targetFolderId ?? (action as Record<string, unknown>).target_folder_id;
+        const targetFolderId = action.targetFolderId ?? (action as any).target_folder_id;
         
         if (action.type === ACTION_MOVE && targetFolderId) {
           stmts.push(
