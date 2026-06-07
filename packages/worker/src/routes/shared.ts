@@ -1,4 +1,5 @@
 import { Hono } from 'hono';
+import { getCookie, setCookie } from 'hono/cookie';
 
 import type { AppContext } from '../types/env';
 import { authGuard } from '../middleware/auth-guard';
@@ -105,4 +106,122 @@ sharedRouter.delete('/:id', authGuard, async (c) => {
   
   await c.env.DB.prepare('DELETE FROM shared_links WHERE id = ? AND user_id = ?').bind(id, userId).run();
   return c.json({ success: true });
+});
+
+// ─── Public Endpoints (No Auth) ───
+
+sharedRouter.get('/:id/meta', async (c) => {
+  const id = c.req.param('id');
+  const db = c.env.DB;
+  
+  const row = await db.prepare('SELECT * FROM shared_links WHERE id = ?').bind(id).first();
+  if (!row) return c.json({ error: 'Link not found' }, 404);
+  
+  const link = mapSharedLinkRow(row as Record<string, unknown>);
+  
+  if (link.expiresAt && new Date(link.expiresAt) < new Date()) {
+    return c.json({ error: 'Link expired' }, 410);
+  }
+  
+  const requiresPassword = !!link.passwordHash;
+  const sessionCookie = getCookie(c, `shared_session_${id}`);
+  
+  let isAuthenticated = !requiresPassword;
+  if (requiresPassword && sessionCookie && link.passwordHash) {
+    const [, storedHashHex] = link.passwordHash.split(':');
+    isAuthenticated = sessionCookie === storedHashHex;
+  }
+  
+  if (!isAuthenticated) {
+    return c.json({ error: 'Password required', requiresPassword: true }, 401);
+  }
+  
+  if (link.targetType === 'file') {
+    const file = await db.prepare('SELECT * FROM files WHERE id = ?').bind(link.targetId).first();
+    if (!file) return c.json({ error: 'File not found' }, 404);
+    return c.json({ target: file, type: 'file' });
+  } else {
+    return c.json({ targetId: link.targetId, type: 'folder' });
+  }
+});
+
+sharedRouter.post('/:id/verify', async (c) => {
+  const id = c.req.param('id');
+  
+  let body;
+  try {
+    body = await c.req.json();
+  } catch (e) {
+    return c.json({ error: 'Invalid JSON body' }, 400);
+  }
+  
+  const { password } = body;
+  if (!password) return c.json({ error: 'Password is required' }, 400);
+  
+  const db = c.env.DB;
+  
+  const row = await db.prepare('SELECT * FROM shared_links WHERE id = ?').bind(id).first();
+  if (!row) return c.json({ error: 'Link not found' }, 404);
+  const link = mapSharedLinkRow(row as Record<string, unknown>);
+  
+  if (!link.passwordHash) return c.json({ error: 'Link does not require password' }, 400);
+  
+  const [saltHex, storedHashHex] = link.passwordHash.split(':');
+  
+  const salt = new Uint8Array(saltHex.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
+  
+  const encoder = new TextEncoder();
+  const passwordData = encoder.encode(password);
+  
+  const keyMaterial = await crypto.subtle.importKey(
+    'raw',
+    passwordData,
+    { name: 'PBKDF2' },
+    false,
+    ['deriveBits']
+  );
+
+  const hashBuffer = await crypto.subtle.deriveBits(
+    {
+      name: 'PBKDF2',
+      salt: salt,
+      iterations: 100000,
+      hash: 'SHA-256'
+    },
+    keyMaterial,
+    256
+  );
+
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  
+  if (storedHashHex !== hashHex) {
+    return c.json({ error: 'Invalid password' }, 401);
+  }
+  
+  setCookie(c, `shared_session_${id}`, hashHex, { path: '/', httpOnly: true, secure: true, maxAge: 60 * 60 * 24 });
+  return c.json({ success: true });
+});
+
+sharedRouter.get('/:id/download', async (c) => {
+  const id = c.req.param('id');
+  const db = c.env.DB;
+  
+  const row = await db.prepare('SELECT * FROM shared_links WHERE id = ?').bind(id).first();
+  if (!row) return c.text('Not found', 404);
+  const link = mapSharedLinkRow(row as Record<string, unknown>);
+  
+  const requiresPassword = !!link.passwordHash;
+  const sessionCookie = getCookie(c, `shared_session_${id}`);
+  
+  let isAuthenticated = !requiresPassword;
+  if (requiresPassword && sessionCookie && link.passwordHash) {
+    const [, storedHashHex] = link.passwordHash.split(':');
+    isAuthenticated = sessionCookie === storedHashHex;
+  }
+  
+  if (!isAuthenticated) return c.text('Unauthorized', 401);
+  
+  // Note: Streaming logic via GoogleDriveService will be added here
+  return c.text('Download ready (stream to be connected to Google API)', 200);
 });
