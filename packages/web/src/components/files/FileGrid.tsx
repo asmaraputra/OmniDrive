@@ -25,6 +25,7 @@ export interface FileGridProps {
   onDeleteFile?: (id: string) => void;
   isTargetShared?: (id: string, type: 'file' | 'folder') => boolean;
   errorDrives?: Set<string>;
+  onMoveDrive?: (file: FileEntry) => void;
 }
 
 export const FileGrid: React.FC<FileGridProps> = ({
@@ -38,6 +39,7 @@ export const FileGrid: React.FC<FileGridProps> = ({
   onDeleteFile,
   isTargetShared,
   errorDrives,
+  onMoveDrive,
 }) => {
   if (files.length === 0 && subfolders.length === 0) {
     return (
@@ -145,6 +147,11 @@ export const FileGrid: React.FC<FileGridProps> = ({
                   if (newName && newName !== file.name) onRenameFile(file.id, newName);
                 }}>
                   <Pencil className="mr-2 h-4 w-4" /> Rename
+                </ContextMenuItem>
+              )}
+              {onMoveDrive && (
+                <ContextMenuItem onClick={() => onMoveDrive(file)}>
+                  <ExternalLink className="mr-2 h-4 w-4" /> Move to another drive
                 </ContextMenuItem>
               )}
               {onDeleteFile && (
