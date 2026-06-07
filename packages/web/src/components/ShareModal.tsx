@@ -31,7 +31,11 @@ export function ShareModal({ targetType, targetId, onClose }: ShareModalProps) {
     setLoading(true);
     setError('');
     try {
-      const resp = await createSharedLink(targetType, targetId, password || undefined, expiresAt || undefined);
+      let isoExpiresAt = undefined;
+      if (expiresAt) {
+        isoExpiresAt = new Date(expiresAt).toISOString();
+      }
+      const resp = await createSharedLink(targetType, targetId, password || undefined, isoExpiresAt);
       setSharedUrl(resp.url);
       useSharedStore.getState().fetchSharedLinks();
     } catch (err: any) {
