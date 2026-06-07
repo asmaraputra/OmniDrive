@@ -37,7 +37,7 @@ export function DriveFolderBrowser({ driveId, driveEmail, driveIndex }: DriveFol
     try {
       const data = await api.getDriveFolderContents(driveId, googleFolderId);
       setSubfolders(data.subfolders);
-      setFiles(data.files as unknown as FileEntry[]);
+      setFiles(data.files as FileEntry[]);
     } catch {
       addToast('error', 'Gagal memuat folder');
     } finally {
@@ -59,7 +59,7 @@ export function DriveFolderBrowser({ driveId, driveEmail, driveIndex }: DriveFol
         const data = await api.syncDriveFolder(driveId, folder.googleFolderId);
         setBreadcrumb(prev => [...prev, { googleFolderId: folder.googleFolderId, name: folder.name }]);
         setSubfolders(data.subfolders);
-        setFiles(data.files as unknown as FileEntry[]);
+        setFiles(data.files as FileEntry[]);
       } catch {
         addToast('error', `Gagal memuat folder "${folder.name}", coba lagi`);
         setErrorFolders(prev => new Set(prev).add(folder.googleFolderId));

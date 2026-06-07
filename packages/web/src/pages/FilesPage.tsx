@@ -25,6 +25,7 @@ export function FilesPage() {
   const { addToast } = useToastStore();
   const [previewFile, setPreviewFile] = useState<FileEntry | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [syncingFolderId, setSyncingFolderId] = useState<string | null>(null);
 
   const { subfolders, files, isLoading, errorDrives, refresh } = useMergedDrive(folderId, driveIdParam);
 
@@ -137,10 +138,25 @@ export function FilesPage() {
                 driveColor={getDriveColor(index)}
                 driveEmail={drive?.email || ''}
                 hasError={drive ? errorDrives.has(drive.id) : false}
-                onClick={() => {
-                  if (!folder.isSynced) return;
+                isSyncing={syncingFolderId === folder.googleFolderId}
+                onClick={async () => {
                   const targetDriveId = folder.driveAccountId;
-                  navigate(`/files/${folder.googleFolderId}${targetDriveId ? `?driveId=${targetDriveId}` : ''}`);
+                  if (!targetDriveId) return;
+
+                  if (!folder.isSynced) {
+                    setSyncingFolderId(folder.googleFolderId);
+                    try {
+                      await api.syncDriveFolder(targetDriveId, folder.googleFolderId);
+                      refresh();
+                      navigate(`/files/${folder.googleFolderId}?driveId=${targetDriveId}`);
+                    } catch {
+                      addToast('error', `Failed to sync folder "${folder.name}"`);
+                    } finally {
+                      setSyncingFolderId(null);
+                    }
+                  } else {
+                    navigate(`/files/${folder.googleFolderId}?driveId=${targetDriveId}`);
+                  }
                 }}
               />
             );

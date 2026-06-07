@@ -26,7 +26,7 @@ filesRouter.get('/search', async (c) => {
     `SELECT f.*, d.email as driveEmail FROM files f
      JOIN drive_accounts d ON f.drive_account_id = d.id
      WHERE f.user_id = ? AND f.name LIKE ? AND f.is_trashed = 0
-     ORDER BY f.updated_at DESC LIMIT 50`
+     ORDER BY f.created_at DESC LIMIT 50`
   ).bind(userId, `%${query.trim()}%`).all();
 
   return c.json({

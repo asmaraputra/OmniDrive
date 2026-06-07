@@ -1,4 +1,4 @@
-import { Folder, AlertTriangle } from 'lucide-react';
+import { Folder, AlertTriangle, Loader2 } from 'lucide-react';
 import type { DriveFolder } from '../types';
 
 interface DriveFolderCardProps {
@@ -6,16 +6,18 @@ interface DriveFolderCardProps {
   driveColor: string;
   driveEmail: string;
   hasError?: boolean;
+  isSyncing?: boolean;
   onClick: () => void;
 }
 
-export function DriveFolderCard({ folder, driveColor, driveEmail, hasError, onClick }: DriveFolderCardProps) {
+export function DriveFolderCard({ folder, driveColor, driveEmail, hasError, isSyncing, onClick }: DriveFolderCardProps) {
   const initial = driveEmail ? driveEmail.charAt(0).toUpperCase() : '?';
 
   return (
     <button
       className={`folder-card ${!folder.isSynced ? 'unsynced' : ''} ${hasError ? 'error' : ''}`}
       onClick={onClick}
+      disabled={isSyncing}
       title={!folder.isSynced ? 'Click to load folder contents' : folder.name}
     >
       <div className="account-badge" style={{ backgroundColor: `color-mix(in srgb, ${driveColor} 20%, transparent)`, color: driveColor, borderColor: `color-mix(in srgb, ${driveColor} 40%, transparent)` }} title={driveEmail}>
@@ -23,11 +25,17 @@ export function DriveFolderCard({ folder, driveColor, driveEmail, hasError, onCl
       </div>
       
       <span className="folder-icon">
-        {hasError ? <AlertTriangle size={20} color="var(--accent-warning)" /> : <Folder size={20} />}
+        {isSyncing ? (
+          <Loader2 size={20} className="dfb-spinner" />
+        ) : hasError ? (
+          <AlertTriangle size={20} color="var(--accent-warning)" />
+        ) : (
+          <Folder size={20} />
+        )}
       </span>
       <span className="folder-name truncate">{folder.name}</span>
       
-      {!folder.isSynced && !hasError && (
+      {!folder.isSynced && !hasError && !isSyncing && (
         <span className="unsynced-dot" title="Not yet loaded" />
       )}
     </button>

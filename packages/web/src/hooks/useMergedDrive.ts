@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { api } from '../lib/api';
 import { useDriveStore } from '../stores/driveStore';
 import { useToastStore } from '../stores/toastStore';
-import type { DriveFolder, FileEntry } from '../types';
+import type { DriveFolder, FileEntry, BreadcrumbItem } from '../types';
 
 export function useMergedDrive(folderId: string, driveIdParam: string | null) {
   const drives = useDriveStore(state => state.drives);
@@ -10,7 +10,7 @@ export function useMergedDrive(folderId: string, driveIdParam: string | null) {
   
   const [subfolders, setSubfolders] = useState<DriveFolder[]>([]);
   const [files, setFiles] = useState<FileEntry[]>([]);
-  const [breadcrumb, setBreadcrumb] = useState<import('../types').BreadcrumbItem[]>([]);
+  const [breadcrumb, setBreadcrumb] = useState<BreadcrumbItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorDrives, setErrorDrives] = useState<Set<string>>(new Set());
 
@@ -35,7 +35,7 @@ export function useMergedDrive(folderId: string, driveIdParam: string | null) {
             .catch(() => {
               addToast('error', `Failed to load drive: ${drive.email}`);
               setErrorDrives(prev => new Set(prev).add(drive.id));
-              return { subfolders: [], files: [] };
+              return { folder: null, subfolders: [], files: [], breadcrumb: [] };
             })
         );
         

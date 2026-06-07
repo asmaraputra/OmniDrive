@@ -2,9 +2,9 @@ import { Hono } from 'hono';
 import { setCookie } from 'hono/cookie';
 import type { AppContext } from '../types/env';
 import { authGuard } from '../middleware/auth-guard';
-import { DriveService } from '../services/drive.service';
 import { GoogleDriveService } from '../services/google-drive';
-import { mapDriveRow, mapDriveFolderRow } from '../types';
+import { syncDriveAccount } from '../services/sync';
+import { mapDriveRow, mapDriveFolderRow, mapFileRow } from '../types';
 import { generateId } from '../lib/id';
 
 export const drivesRouter = new Hono<AppContext>({ strict: false });
@@ -47,9 +47,13 @@ drivesRouter.get('/', async (c) => {
     if (!tokenJson) return { ...drive, freeSpace: 0, usagePercent: 0 };
 
     try {
-      const tokens = JSON.parse(tokenJson);
-      const driveService = new DriveService(c.env, drive.id, tokens);
-      const quota = await driveService.getQuota();
+      // Use the robust GoogleDriveService which handles token caching & refreshing
+      const driveService = new GoogleDriveService(c.env.KV, c.env.GOOGLE_CLIENT_ID, c.env.GOOGLE_CLIENT_SECRET);
+      
+      // Ensure the old token format is available in the new oauth: prefix if needed
+      await c.env.KV.put(`oauth:${drive.id}`, tokenJson);
+      
+      const quota = await driveService.getQuota(drive.id);
 
       const freeSpace = quota.total - quota.used;
       const usagePercent = quota.total > 0 ? (quota.used / quota.total) * 100 : 0;
@@ -60,6 +64,7 @@ drivesRouter.get('/', async (c) => {
       );
 
       return { ...drive, totalQuota: quota.total, usedQuota: quota.used, freeSpace, usagePercent };
+
     } catch (e) {
       console.error(`Failed to fetch quota for drive ${drive.id}`, e);
       const freeSpace = Math.max(0, drive.totalQuota - drive.usedQuota);
@@ -118,12 +123,34 @@ drivesRouter.get('/:driveId/folders/:googleFolderId', async (c) => {
       ? mapDriveFolderRow(folder as Record<string, unknown>)
       : { googleFolderId: 'root', name: 'My Drive', isSynced: true },
     subfolders: subfolderResult.results.map(r => mapDriveFolderRow(r as Record<string, unknown>)),
-    files: filesResult.results,
+    files: filesResult.results.map(r => mapFileRow(r as Record<string, unknown>)),
   });
 });
 
-// ─── Lazy folder sync endpoint ───
+// ─── Manual drive sync endpoint ───
 
+drivesRouter.post('/:id/sync', async (c) => {
+  const userId = c.get('userId');
+  const driveId = c.req.param('id');
+
+  const row = await c.env.DB
+    .prepare('SELECT * FROM drive_accounts WHERE id = ? AND user_id = ?')
+    .bind(driveId, userId)
+    .first();
+
+  if (!row) return c.json({ error: 'Drive not found' }, 404);
+
+  const drive = mapDriveRow(row as Record<string, unknown>);
+  const driveService = new GoogleDriveService(c.env.KV, c.env.GOOGLE_CLIENT_ID, c.env.GOOGLE_CLIENT_SECRET);
+  
+  // Run the sync process in the background via c.executionCtx.waitUntil
+  // so the user doesn't have to wait for the entire sync to complete
+  c.executionCtx.waitUntil(syncDriveAccount(drive, c.env.DB, c.env.KV, driveService));
+  
+  return c.json({ success: true });
+});
+
+// ─── Lazy folder sync endpoint ───
 drivesRouter.post('/:driveId/folders/:googleFolderId/sync', async (c) => {
   const userId = c.get('userId');
   const { driveId, googleFolderId } = c.req.param();
@@ -153,7 +180,7 @@ drivesRouter.post('/:driveId/folders/:googleFolderId/sync', async (c) => {
     return c.json({
       folder: mapDriveFolderRow(folder as Record<string, unknown>),
       subfolders: subfolders.results.map(r => mapDriveFolderRow(r as Record<string, unknown>)),
-      files: files.results,
+      files: files.results.map(r => mapFileRow(r as Record<string, unknown>)),
     });
   }
 
@@ -246,7 +273,7 @@ drivesRouter.post('/:driveId/folders/:googleFolderId/sync', async (c) => {
   return c.json({
     folder: folder ? mapDriveFolderRow(folder as Record<string, unknown>) : null,
     subfolders: newSubfolders.results.map(r => mapDriveFolderRow(r as Record<string, unknown>)),
-    files: newFiles.results,
+    files: newFiles.results.map(r => mapFileRow(r as Record<string, unknown>)),
   });
 });
 
