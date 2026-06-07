@@ -6,18 +6,26 @@ export interface RuleCondition {
 
 export interface RuleAction {
   type: 'move' | 'delete';
-  target_folder_id?: string;
+  targetFolderId?: string;
 }
 
 export interface AutomationRule {
   id: string;
-  user_id: string;
+  userId: string;
   name: string;
-  trigger_type: 'event' | 'cron';
-  trigger_config: any;
+  triggerType: 'event' | 'cron';
+  triggerConfig: Record<string, unknown>;
   conditions: RuleCondition[];
   actions: RuleAction[];
-  is_active: boolean;
-  created_at: string;
-  updated_at: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AutomationLog {
+  id: string;
+  ruleId: string;
+  status: string;
+  details: string | null;
+  executedAt: string;
 }

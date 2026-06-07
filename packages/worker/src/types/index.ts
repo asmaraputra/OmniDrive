@@ -1,3 +1,6 @@
+import type { AutomationRule, AutomationLog, RuleCondition, RuleAction } from './automation';
+import { DEFAULT_FOLDER_ICON, DEFAULT_FOLDER_COLOR } from '../constants';
+
 // ─── Domain Types ───
 
 export interface User {
@@ -168,8 +171,8 @@ export function mapFolderRow(row: Record<string, unknown>): VirtualFolder {
     userId: row.user_id as string,
     name: row.name as string,
     parentId: (row.parent_id as string) ?? null,
-    icon: (row.icon as string) ?? '📁',
-    color: (row.color as string) ?? '#4A90D9',
+    icon: (row.icon as string) ?? DEFAULT_FOLDER_ICON,
+    color: (row.color as string) ?? DEFAULT_FOLDER_COLOR,
     createdAt: row.created_at as string,
     updatedAt: row.updated_at as string,
   };
@@ -224,5 +227,30 @@ export function mapSharedLinkRow(row: Record<string, unknown>): SharedLink {
     passwordHash: (row.password_hash as string | null | undefined) ?? null,
     expiresAt: (row.expires_at as string | null | undefined) ?? null,
     createdAt: row.created_at as string,
+  };
+}
+
+export function mapAutomationRuleRow(row: Record<string, unknown>): AutomationRule {
+  return {
+    id: row.id as string,
+    userId: row.user_id as string,
+    name: row.name as string,
+    triggerType: row.trigger_type as 'event' | 'cron',
+    triggerConfig: typeof row.trigger_config === 'string' ? JSON.parse(row.trigger_config) : (row.trigger_config as Record<string, unknown> || {}),
+    conditions: typeof row.conditions === 'string' ? JSON.parse(row.conditions) : (row.conditions as RuleCondition[] || []),
+    actions: typeof row.actions === 'string' ? JSON.parse(row.actions) : (row.actions as RuleAction[] || []),
+    isActive: row.is_active === 1,
+    createdAt: row.created_at as string,
+    updatedAt: row.updated_at as string,
+  };
+}
+
+export function mapAutomationLogRow(row: Record<string, unknown>): AutomationLog {
+  return {
+    id: row.id as string,
+    ruleId: row.rule_id as string,
+    status: row.status as string,
+    details: (row.details as string) ?? null,
+    executedAt: row.executed_at as string,
   };
 }

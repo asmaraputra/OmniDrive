@@ -45,8 +45,8 @@ CREATE TABLE IF NOT EXISTS virtual_folders (
     user_id         TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     name            TEXT NOT NULL,
     parent_id       TEXT REFERENCES virtual_folders(id) ON DELETE CASCADE,
-    icon            TEXT DEFAULT '📁',
-    color           TEXT DEFAULT '#4A90D9',
+    icon            TEXT,
+    color           TEXT,
     created_at      TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at      TEXT NOT NULL DEFAULT (datetime('now')),
     UNIQUE(user_id, parent_id, name)
