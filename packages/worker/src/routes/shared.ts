@@ -147,9 +147,21 @@ sharedRouter.put('/:id', authGuard, async (c) => {
     return c.json({ error: 'Invalid JSON body' }, 400);
   }
 
-  const { expiresAt, allowDownloads, allowUploads, maxDownloads, requireEmail, webhookUrl } = body;
-  
   const db = c.env.DB;
+  
+  const existing = await db.prepare('SELECT * FROM shared_links WHERE id = ? AND user_id = ?').bind(id, userId).first();
+  if (!existing) {
+    return c.json({ error: 'Link not found' }, 404);
+  }
+
+  const {
+    expiresAt = existing.expires_at,
+    allowDownloads = existing.allow_downloads === 1,
+    allowUploads = existing.allow_uploads === 1,
+    maxDownloads = existing.max_downloads,
+    requireEmail = existing.require_email === 1,
+    webhookUrl = existing.webhook_url
+  } = body;
   
   const result = await db.prepare(
     'UPDATE shared_links SET expires_at = ?, allow_downloads = ?, allow_uploads = ?, max_downloads = ?, require_email = ?, webhook_url = ? WHERE id = ? AND user_id = ?'
@@ -197,6 +209,14 @@ sharedRouter.get('/:id/meta', async (c) => {
     return c.json({ error: validation.error, requiresPassword: validation.requiresPassword }, validation.status as any);
   }
   
+  c.executionCtx.waitUntil(
+    db.prepare('UPDATE shared_links SET view_count = view_count + 1 WHERE id = ?').bind(id).run()
+  );
+  
+  c.executionCtx.waitUntil(
+    db.prepare('INSERT INTO shared_link_logs (shared_link_id, action) VALUES (?, ?)').bind(id, 'view').run()
+  );
+
   if (link.targetType === 'file') {
     const file = await db.prepare('SELECT * FROM files WHERE id = ?').bind(link.targetId).first();
     if (!file) return c.json({ error: 'File not found' }, 404);
@@ -291,6 +311,10 @@ sharedRouter.get('/:id/download', async (c) => {
   // Increment download count
   c.executionCtx.waitUntil(
     db.prepare('UPDATE shared_links SET download_count = download_count + 1 WHERE id = ?').bind(id).run()
+  );
+
+  c.executionCtx.waitUntil(
+    db.prepare('INSERT INTO shared_link_logs (shared_link_id, action) VALUES (?, ?)').bind(id, 'download').run()
   );
 
   // Trigger webhook async if exists
