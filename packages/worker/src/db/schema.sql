@@ -104,3 +104,31 @@ CREATE TABLE IF NOT EXISTS shared_links (
 
 CREATE INDEX IF NOT EXISTS idx_shared_links_user ON shared_links(user_id);
 CREATE INDEX IF NOT EXISTS idx_shared_links_target ON shared_links(target_type, target_id);
+
+-- Automation Rules
+CREATE TABLE IF NOT EXISTS automation_rules (
+    id              TEXT PRIMARY KEY,
+    user_id         TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    name            TEXT NOT NULL,
+    trigger_type    TEXT NOT NULL,
+    trigger_config  TEXT,
+    conditions      TEXT,
+    actions         TEXT,
+    is_active       INTEGER NOT NULL DEFAULT 1,
+    created_at      TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at      TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_automation_rules_user ON automation_rules(user_id);
+CREATE INDEX IF NOT EXISTS idx_automation_rules_trigger ON automation_rules(trigger_type, is_active);
+
+-- Automation Logs
+CREATE TABLE IF NOT EXISTS automation_logs (
+    id              TEXT PRIMARY KEY,
+    rule_id         TEXT NOT NULL REFERENCES automation_rules(id) ON DELETE CASCADE,
+    status          TEXT NOT NULL,
+    details         TEXT,
+    executed_at     TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_automation_logs_rule ON automation_logs(rule_id);
