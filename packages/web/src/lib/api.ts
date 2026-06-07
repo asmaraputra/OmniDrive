@@ -110,6 +110,8 @@ export interface SharedLink {
   targetType: 'file' | 'folder';
   targetId: string;
   expiresAt: string | null;
+  viewCount: number;
+  downloadCount: number;
   createdAt: string;
 }
 

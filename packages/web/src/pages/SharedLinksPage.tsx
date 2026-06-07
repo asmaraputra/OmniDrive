@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
-import { request } from '../lib/api'; // note: use request or your project's fetch equivalent
+import { getSharedLinks, deleteSharedLink, SharedLink } from '../lib/api';
 
 export function SharedLinksPage() {
-  const [links, setLinks] = useState<any[]>([]);
+  const [links, setLinks] = useState<SharedLink[]>([]);
 
   useEffect(() => {
-    request('/api/shared').then((res: any) => setLinks(res.links));
+    getSharedLinks().then((res) => setLinks(res.links));
   }, []);
 
   const revoke = async (id: string) => {
-    await request(`/api/shared/${id}`, { method: 'DELETE' });
+    await deleteSharedLink(id);
     setLinks(links.filter(l => l.id !== id));
   };
 

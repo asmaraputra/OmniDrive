@@ -41,7 +41,12 @@ export function ShareModal({ targetType, targetId, onClose }: ShareModalProps) {
         // new Date(year, monthIndex, day, hours, minutes) explicitly creates a local date.
         isoExpiresAt = new Date(year, month - 1, day, hour, minute).toISOString();
       }
-      const resp = await createSharedLink(targetType, targetId, password || undefined, isoExpiresAt);
+      const resp = await createSharedLink({
+        targetType,
+        targetId,
+        password: password || undefined,
+        expiresAt: isoExpiresAt
+      });
       setSharedUrl(resp.url);
       useSharedStore.getState().fetchSharedLinks();
     } catch (err: any) {
