@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { LayoutDashboard, HardDrive, Settings, Plus } from 'lucide-react';
+import { LayoutDashboard, HardDrive, Settings, Plus, Zap } from 'lucide-react';
 import { useDriveStore } from '../stores/driveStore';
 import { useAuthStore } from '../stores/authStore';
 import { QuotaBar } from './QuotaBar';
@@ -32,6 +32,10 @@ export function Sidebar() {
         <NavLink to="/files" className={() => `sidebar-link ${location.pathname.startsWith('/files') ? 'active' : ''}`}>
           <HardDrive size={18} />
           <span>All Files</span>
+        </NavLink>
+        <NavLink to="/automations" className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}>
+          <Zap size={18} />
+          <span>Automations</span>
         </NavLink>
         <NavLink to="/settings/drives" className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}>
           <Settings size={18} />

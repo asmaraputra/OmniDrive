@@ -7,6 +7,7 @@ import { DashboardPage } from './pages/DashboardPage';
 import { FilesPage } from './pages/FilesPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { PublicSharedPage } from './pages/PublicSharedPage';
+import { AutomationsPage } from './pages/AutomationsPage';
 
 export function App() {
   return (
@@ -25,6 +26,7 @@ export function App() {
           <Route path="/" element={<DashboardPage />} />
           <Route path="/files" element={<FilesPage />} />
           <Route path="/files/:folderId" element={<FilesPage />} />
+          <Route path="/automations" element={<AutomationsPage />} />
           <Route path="/settings/drives" element={<SettingsPage />} />
         </Route>
       </Routes>
