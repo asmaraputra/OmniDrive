@@ -1,0 +1,188 @@
+# Omnidrive
+
+**Gateway penyimpanan multi-Google Drive terpadu yang dibangun di atas Cloudflare Workers.**
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue.svg)](https://www.typescriptlang.org/)
+[![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-orange.svg)](https://workers.cloudflare.com/)
+
+> 🌐 *Read in [English](README.md)*
+
+---
+
+## Apa itu Omnidrive?
+
+Omnidrive memungkinkan kamu menghubungkan beberapa akun Google Drive dan mengelola semua file dari satu dashboard. Semuanya berjalan di jaringan edge Cloudflare — Workers untuk API, D1 untuk database, dan KV untuk penyimpanan sesi — sehingga tidak perlu server tradisional.
+
+## Fitur
+
+- **🔗 Multi-Akun Drive** — Hubungkan beberapa akun Google Drive via OAuth atau Service Account JSON
+- **📁 Browsing File Terpadu** — Jelajahi file dari semua drive yang terhubung dalam satu tampilan gabungan
+- **🗂️ Folder Virtual** — Buat struktur folder sendiri untuk mengorganisir file lintas drive
+- **⬆️ Upload Cerdas** — Drag-and-drop upload dengan pemilihan drive otomatis (pilih drive dengan ruang kosong terbanyak)
+- **🔒 Shared Links** — Bagikan file dengan proteksi password, tanggal kadaluarsa, dan batas download
+- **⚡ Aturan Automasi** — Pindahkan atau hapus file otomatis berdasarkan pola nama atau ekstensi
+- **🔄 Sinkronisasi Real-Time** — Sinkronisasi otomatis via Google Drive Changes API (cron setiap 30 menit)
+- **🌙 Mode Gelap** — UI tema gelap modern dengan desain responsif
+
+## Tech Stack
+
+| Layer | Teknologi |
+|-------|-----------|
+| **Backend** | [Hono](https://hono.dev/) di [Cloudflare Workers](https://workers.cloudflare.com/) |
+| **Database** | [Cloudflare D1](https://developers.cloudflare.com/d1/) (SQLite) |
+| **Session Store** | [Cloudflare KV](https://developers.cloudflare.com/kv/) |
+| **Frontend** | [React 19](https://react.dev/) + [Vite](https://vite.dev/) |
+| **State Management** | [Zustand](https://zustand.docs.pmnd.rs/) |
+| **Bahasa** | [TypeScript](https://www.typescriptlang.org/) |
+| **Auth** | Google OAuth 2.0 |
+
+## Arsitektur
+
+```
+omnidrive/
+├── packages/
+│   ├── worker/          # Cloudflare Worker (API backend)
+│   │   ├── src/
+│   │   │   ├── routes/      # Handler rute API
+│   │   │   ├── services/    # Logika bisnis (Google Drive, sync, auth)
+│   │   │   ├── middleware/  # Auth guard, CORS, error handling
+│   │   │   ├── db/          # Skema D1
+│   │   │   └── types/       # Tipe TypeScript
+│   │   └── tests/           # Unit test Vitest
+│   └── web/             # React SPA (frontend)
+│       └── src/
+│           ├── components/  # Komponen UI
+│           ├── pages/       # Halaman rute
+│           ├── stores/      # State store Zustand
+│           ├── hooks/       # Custom React hooks
+│           ├── lib/         # API client, utilitas
+│           └── types/       # Tipe TypeScript
+├── docs/                # Spesifikasi desain dan rencana implementasi
+├── Makefile             # Automasi deployment
+└── package.json         # Root monorepo (npm workspaces)
+```
+
+Backend dan frontend berkomunikasi via REST API. Saat development, dev server Vite mem-proxy request `/api/*` ke Worker lokal di port 8787.
+
+## Prasyarat
+
+- [Node.js](https://nodejs.org/) 18+ dan npm
+- Akun [Cloudflare](https://dash.cloudflare.com/sign-up) (tier gratis cukup)
+- [Google Cloud project](https://console.cloud.google.com/) dengan Google Drive API yang sudah diaktifkan
+- OAuth 2.0 Client ID (tipe Web application) dari Google Cloud Console
+
+## Memulai
+
+### 1. Clone dan Install
+
+```bash
+git clone https://github.com/abilfida/omnidrive.git
+cd omnidrive
+npm install
+```
+
+### 2. Konfigurasi Worker
+
+```bash
+# Salin contoh konfigurasi
+cp packages/worker/wrangler.example.toml packages/worker/wrangler.toml
+
+# Buat database D1
+npx wrangler d1 create omnidrive
+# Salin database_id dari output ke wrangler.toml
+
+# Buat KV namespace
+npx wrangler kv namespace create KV
+# Salin namespace id dari output ke wrangler.toml
+
+# Terapkan skema database
+npx wrangler d1 execute omnidrive --local --file=packages/worker/src/db/schema.sql
+```
+
+### 3. Siapkan Kredensial Google OAuth
+
+```bash
+# Salin template secrets
+cp packages/worker/.dev.vars.example packages/worker/.dev.vars
+```
+
+Edit `packages/worker/.dev.vars` dan isi kredensial Google OAuth:
+
+1. Buka [Google Cloud Console](https://console.cloud.google.com/) → APIs & Services → Credentials
+2. Buat **OAuth 2.0 Client ID** (tipe Web application)
+3. Tambahkan `http://localhost:8787/api/auth/google/callback` sebagai authorized redirect URI
+4. Salin Client ID dan Client Secret ke `.dev.vars`
+
+### 4. Konfigurasi Frontend
+
+```bash
+cp packages/web/.env.example packages/web/.env
+```
+
+Untuk development lokal, biarkan `VITE_API_URL` kosong — dev server Vite otomatis mem-proxy panggilan API.
+
+### 5. Jalankan
+
+```bash
+npm run dev
+```
+
+Ini menjalankan Worker (port 8787) dan web app (port 5173) secara bersamaan. Buka [http://localhost:5173](http://localhost:5173) di browser.
+
+## Deployment
+
+### Backend (Cloudflare Workers)
+
+```bash
+# Set secrets untuk production
+npx wrangler secret put GOOGLE_CLIENT_ID
+npx wrangler secret put GOOGLE_CLIENT_SECRET
+
+# Update FRONTEND_URL dan WORKER_URL di wrangler.toml [vars] ke URL production
+
+# Deploy
+make deploy-worker
+```
+
+### Frontend (Cloudflare Pages)
+
+```bash
+# Set VITE_API_URL di packages/web/.env.production ke URL Worker kamu
+make deploy-web
+```
+
+Atau gunakan [dashboard Cloudflare Pages](https://dash.cloudflare.com/?to=/:account/pages) untuk deployment otomatis dari repo Git.
+
+## Variabel Environment
+
+### Secrets Worker (set via `wrangler secret put` atau `.dev.vars`)
+
+| Variabel | Deskripsi |
+|----------|-----------|
+| `GOOGLE_CLIENT_ID` | Google OAuth 2.0 Client ID |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth 2.0 Client Secret |
+
+### Konfigurasi Worker (set di `wrangler.toml` `[vars]`)
+
+| Variabel | Deskripsi | Default |
+|----------|-----------|---------|
+| `FRONTEND_URL` | Origin frontend untuk CORS dan redirect | `http://localhost:5173` |
+| `WORKER_URL` | URL Worker untuk OAuth callback | `http://localhost:8787` |
+
+### Binding Worker (set di `wrangler.toml`)
+
+| Binding | Tipe | Deskripsi |
+|---------|------|-----------|
+| `DB` | D1 Database | Database SQLite untuk semua data aplikasi |
+| `KV` | KV Namespace | Penyimpanan sesi dan cache token OAuth |
+
+### Environment Web (set di `.env` atau `.env.production`)
+
+| Variabel | Deskripsi | Default |
+|----------|-----------|---------|
+| `VITE_API_URL` | URL base API Worker (kosongkan untuk dev lokal) | `""` |
+
+## Lisensi
+
+[MIT](LICENSE) © 2026 abilfida
