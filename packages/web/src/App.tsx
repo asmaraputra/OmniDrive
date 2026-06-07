@@ -6,12 +6,14 @@ import { LoginPage } from './pages/LoginPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { FilesPage } from './pages/FilesPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { PublicSharedPage } from './pages/PublicSharedPage';
 
 export function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/shared/:id" element={<PublicSharedPage />} />
         <Route
           element={
             <AuthGuard>
