@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useDriveStore } from '../stores/driveStore';
 import { QuotaBar } from '../components/QuotaBar';
 import { FileCard } from '../components/FileCard';
+import { ShareModal } from '../components/ShareModal';
 import { formatFileSize, getDriveColor } from '../lib/utils';
 import { api } from '../lib/api';
 import { HardDrive, RefreshCw, TrendingUp } from 'lucide-react';
@@ -10,6 +11,7 @@ import type { FileEntry } from '../types';
 export function DashboardPage() {
   const { drives, aggregate, isLoading, fetchDrives } = useDriveStore();
   const [recentFiles, setRecentFiles] = useState<FileEntry[]>([]);
+  const [shareTarget, setShareTarget] = useState<{ id: string, type: 'file' | 'folder' } | null>(null);
 
   useEffect(() => {
     fetchDrives();
@@ -67,6 +69,7 @@ export function DashboardPage() {
                   key={file.id}
                   file={file}
                   driveColor={getDriveColor(driveIndex >= 0 ? driveIndex : 0)}
+                  onShare={(f) => setShareTarget({ id: f.id, type: 'file' })}
                 />
               );
             })}
@@ -78,6 +81,14 @@ export function DashboardPage() {
         <div style={{ display: 'flex', justifyContent: 'center', padding: 'var(--space-2xl)' }}>
           <div className="spinner" />
         </div>
+      )}
+
+      {shareTarget && (
+        <ShareModal
+          targetType={shareTarget.type}
+          targetId={shareTarget.id}
+          onClose={() => setShareTarget(null)}
+        />
       )}
     </div>
   );

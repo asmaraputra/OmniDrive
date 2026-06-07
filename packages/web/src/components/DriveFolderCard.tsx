@@ -1,4 +1,4 @@
-import { Folder, AlertTriangle, Loader2 } from 'lucide-react';
+import { Folder, AlertTriangle, Loader2, Share2 } from 'lucide-react';
 import type { DriveFolder } from '../types';
 
 interface DriveFolderCardProps {
@@ -8,9 +8,10 @@ interface DriveFolderCardProps {
   hasError?: boolean;
   isSyncing?: boolean;
   onClick: () => void;
+  onShare?: () => void;
 }
 
-export function DriveFolderCard({ folder, driveColor, driveEmail, hasError, isSyncing, onClick }: DriveFolderCardProps) {
+export function DriveFolderCard({ folder, driveColor, driveEmail, hasError, isSyncing, onClick, onShare }: DriveFolderCardProps) {
   const initial = driveEmail ? driveEmail.charAt(0).toUpperCase() : '?';
 
   return (
@@ -38,6 +39,36 @@ export function DriveFolderCard({ folder, driveColor, driveEmail, hasError, isSy
       {!folder.isSynced && !hasError && !isSyncing && (
         <span className="unsynced-dot" title="Not yet loaded" />
       )}
+
+      {onShare && (
+        <button
+          className="btn btn-ghost btn-sm folder-share-btn"
+          onClick={(e) => {
+            e.stopPropagation();
+            onShare();
+          }}
+          title="Share Folder"
+        >
+          <Share2 size={14} />
+        </button>
+      )}
+
+      <style>{`
+        .folder-card {
+          position: relative;
+        }
+        .folder-share-btn {
+          position: absolute;
+          right: var(--space-xs);
+          top: 50%;
+          transform: translateY(-50%);
+          opacity: 0;
+          transition: opacity var(--transition-fast);
+        }
+        .folder-card:hover .folder-share-btn {
+          opacity: 1;
+        }
+      `}</style>
     </button>
   );
 }

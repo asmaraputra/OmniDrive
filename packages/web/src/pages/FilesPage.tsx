@@ -8,6 +8,7 @@ import { DriveFolderCard } from '../components/DriveFolderCard';
 import { DropZone } from '../components/DropZone';
 import { UploadModal } from '../components/UploadModal';
 import { FilePreviewModal } from '../components/FilePreviewModal';
+import { ShareModal } from '../components/ShareModal';
 import { Upload, FolderPlus, X } from 'lucide-react';
 import { getDriveColor } from '../lib/utils';
 import { useToastStore } from '../stores/toastStore';
@@ -25,6 +26,7 @@ export function FilesPage() {
   const { showModal, setShowModal } = useUploadStore();
   const { addToast } = useToastStore();
   const [previewFile, setPreviewFile] = useState<FileEntry | null>(null);
+  const [shareTarget, setShareTarget] = useState<{ id: string, type: 'file' | 'folder' } | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
 
   const { subfolders, files, breadcrumb, isLoading, errorDrives, refresh } = useMergedDrive(folderId, driveIdParam);
@@ -135,6 +137,7 @@ export function FilesPage() {
                   if (!targetDriveId) return;
                   navigate(`/files/${folder.googleFolderId}?driveId=${targetDriveId}`);
                 }}
+                onShare={folder.id ? () => setShareTarget({ id: folder.id!, type: 'folder' }) : undefined}
               />
             );
           })}
@@ -154,6 +157,7 @@ export function FilesPage() {
                 onDelete={handleDeleteFile}
                 onRename={handleRenameFile}
                 onPreview={setPreviewFile}
+                onShare={(f) => setShareTarget({ id: f.id, type: 'file' })}
               />
             );
           })}
@@ -171,6 +175,13 @@ export function FilesPage() {
       {/* Modals */}
       {showModal && <UploadModal folderId={folderId} onClose={() => setShowModal(false)} onSuccess={() => { setShowModal(false); refresh(); }} />}
       {previewFile && <FilePreviewModal file={previewFile} onClose={() => setPreviewFile(null)} />}
+      {shareTarget && (
+        <ShareModal
+          targetType={shareTarget.type}
+          targetId={shareTarget.id}
+          onClose={() => setShareTarget(null)}
+        />
+      )}
     </DropZone>
   );
 }

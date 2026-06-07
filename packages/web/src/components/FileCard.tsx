@@ -1,4 +1,4 @@
-import { MoreVertical, Download, Trash2, Pencil, ExternalLink } from 'lucide-react';
+import { MoreVertical, Download, Trash2, Pencil, ExternalLink, Share2 } from 'lucide-react';
 import { getFileIcon, formatFileSize, formatRelativeTime } from '../lib/utils';
 import type { FileEntry } from '../types';
 import { useState } from 'react';
@@ -27,9 +27,10 @@ interface FileCardProps {
   onDelete?: (id: string) => void;
   onRename?: (id: string, name: string) => void;
   onPreview?: (file: FileEntry) => void;
+  onShare?: (file: FileEntry) => void;
 }
 
-export function FileCard({ file, driveColor, driveEmail, onDelete, onRename, onPreview }: FileCardProps) {
+export function FileCard({ file, driveColor, driveEmail, onDelete, onRename, onPreview, onShare }: FileCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const badge = getGoogleNativeBadge(file.mimeType);
   const native = isGoogleNative(file.mimeType);
@@ -79,6 +80,15 @@ export function FileCard({ file, driveColor, driveEmail, onDelete, onRename, onP
                 <Download size={14} /> Download
               </a>
             )}
+            <button
+              className="file-card-menu-item"
+              onClick={() => {
+                onShare?.(file);
+                setMenuOpen(false);
+              }}
+            >
+              <Share2 size={14} /> Share
+            </button>
             <button
               className="file-card-menu-item"
               onClick={() => {
