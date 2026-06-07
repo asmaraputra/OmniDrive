@@ -120,24 +120,32 @@ filesRouter.post('/:id/move-drive', async (c) => {
 
   const driveService = new GoogleDriveService(c.env.KV, c.env.GOOGLE_CLIENT_ID, c.env.GOOGLE_CLIENT_SECRET);
 
-  let shareSuccess = false;
+  let sharePermissionId: string | null = null;
   let copySuccessId: string | null = null;
   let trashSuccess = false;
 
   try {
-    await driveService.shareFile(
+    sharePermissionId = await driveService.shareFile(
       file.sourceDriveId,
       file.google_file_id,
       targetDrive.email,
       'writer'
     );
-    shareSuccess = true;
 
     const copiedFile = await driveService.copyFile(
       targetDriveId,
       file.google_file_id
     );
     copySuccessId = copiedFile.id;
+
+    try {
+      if (sharePermissionId) {
+        await driveService.revokeShare(file.sourceDriveId, file.google_file_id, sharePermissionId);
+        sharePermissionId = null;
+      }
+    } catch (revokeError) {
+      console.error('Failed to revoke share after copy:', revokeError);
+    }
 
     try {
       await driveService.trashFile(file.sourceDriveId, file.google_file_id);
@@ -168,8 +176,8 @@ filesRouter.post('/:id/move-drive', async (c) => {
       catch (e) { console.error('Rollback delete failed:', e); }
     }
     
-    if (shareSuccess) {
-      try { await driveService.revokeShare(file.sourceDriveId, file.google_file_id, targetDrive.email); }
+    if (sharePermissionId) {
+      try { await driveService.revokeShare(file.sourceDriveId, file.google_file_id, sharePermissionId); }
       catch (e) { console.error('Failed to revoke share:', e); }
     }
     
