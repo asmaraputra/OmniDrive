@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, ReactNode } from 'react';
 import { useParams } from 'react-router-dom';
 import { getSharedMeta, verifySharedPassword, SharedMetaResponse } from '../lib/api';
 import { getFileIcon, formatFileSize } from '../lib/utils';
@@ -14,23 +14,28 @@ export function PublicSharedPage() {
   const [verifying, setVerifying] = useState(false);
   const [passwordError, setPasswordError] = useState('');
 
-  const loadMeta = async () => {
-    if (!id) return;
+  const loadMeta = useCallback(async (skipLoadingState = false) => {
+    if (!id) {
+      setLoading(false);
+      setError('Invalid link ID');
+      return;
+    }
     try {
-      setLoading(true);
+      if (!skipLoadingState) setLoading(true);
       setError('');
       const data = await getSharedMeta(id);
       setMeta(data);
-    } catch (err: any) {
-      setError(err.message || 'Failed to load shared link');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      setError(message || 'Failed to load shared link');
     } finally {
-      setLoading(false);
+      if (!skipLoadingState) setLoading(false);
     }
-  };
+  }, [id]);
 
   useEffect(() => {
     loadMeta();
-  }, [id]);
+  }, [loadMeta]);
 
   const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,9 +45,10 @@ export function PublicSharedPage() {
       setVerifying(true);
       setPasswordError('');
       await verifySharedPassword(id, password);
-      await loadMeta();
-    } catch (err: any) {
-      setPasswordError(err.message || 'Incorrect password');
+      await loadMeta(true);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      setPasswordError(message || 'Incorrect password');
     } finally {
       setVerifying(false);
     }
@@ -54,34 +60,28 @@ export function PublicSharedPage() {
     window.location.href = `${apiUrl}/api/shared/${id}/download`;
   };
 
-  if (loading) {
-    return (
-      <div className="shared-page">
+  const renderContent = (): ReactNode => {
+    if (loading) {
+      return (
         <div className="shared-card">
           <Loader2 className="animate-spin loading-icon" size={48} />
           <p className="loading-text">Loading...</p>
         </div>
-        <style>{styles}</style>
-      </div>
-    );
-  }
+      );
+    }
 
-  if (error) {
-    return (
-      <div className="shared-page">
+    if (error) {
+      return (
         <div className="shared-card error">
           <AlertCircle size={48} className="error-icon" />
           <h2 className="shared-title">Error</h2>
           <p className="shared-subtitle">{error}</p>
         </div>
-        <style>{styles}</style>
-      </div>
-    );
-  }
+      );
+    }
 
-  if (meta?.requiresPassword) {
-    return (
-      <div className="shared-page">
+    if (meta?.requiresPassword) {
+      return (
         <div className="shared-card">
           <div className="shared-header">
             <Lock size={48} className="lock-icon" />
@@ -115,13 +115,10 @@ export function PublicSharedPage() {
             </button>
           </form>
         </div>
-        <style>{styles}</style>
-      </div>
-    );
-  }
+      );
+    }
 
-  return (
-    <div className="shared-page">
+    return (
       <div className="shared-card text-center">
         {meta?.type === 'folder' ? (
           <div className="shared-header">
@@ -133,7 +130,7 @@ export function PublicSharedPage() {
           <div className="shared-header">
             <div className="file-icon-large">{getFileIcon(meta?.target?.mimeType || null)}</div>
             <h2 className="shared-title break-words">{meta?.target?.name || 'Unknown File'}</h2>
-            {meta?.target?.size && (
+            {typeof meta?.target?.size === 'number' && (
               <p className="shared-subtitle">{formatFileSize(meta.target.size)}</p>
             )}
           </div>
@@ -147,7 +144,12 @@ export function PublicSharedPage() {
           Download
         </button>
       </div>
+    );
+  };
 
+  return (
+    <div className="shared-page">
+      {renderContent()}
       <style>{styles}</style>
     </div>
   );
