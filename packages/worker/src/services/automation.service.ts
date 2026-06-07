@@ -7,8 +7,12 @@ export const ACTION_MOVE: RuleAction['type'] = 'move';
 export const ACTION_DELETE: RuleAction['type'] = 'delete';
 
 export const IS_ACTIVE = 1;
+export const IS_INACTIVE = 0;
 export const IS_NOT_TRASHED = 0;
 export const IS_TRASHED = 1;
+
+export const BATCH_SIZE = 100;
+
 
 export interface AutomationFile {
   name: string;
@@ -31,8 +35,15 @@ interface ParsedRule {
 export function evaluateCondition(file: AutomationFile, conditions: RuleCondition[]): boolean {
   if (!conditions || conditions.length === 0) return true;
   
+  // Compute extension if missing
+  const evalFile = { ...file };
+  if (!evalFile.extension && evalFile.name) {
+    const parts = evalFile.name.split('.');
+    evalFile.extension = parts.length > 1 ? parts.pop()!.toLowerCase() : '';
+  }
+
   return conditions.every(cond => {
-    const rawFieldValue = file[cond.field];
+    const rawFieldValue = evalFile[cond.field];
     const value = rawFieldValue != null ? String(rawFieldValue).toLowerCase() : '';
     const target = cond.value != null ? String(cond.value).toLowerCase() : '';
     
@@ -94,7 +105,6 @@ export class AutomationEngine {
       }
     }
 
-    const BATCH_SIZE = 100;
 
     for (const [userId, rules] of rulesByUser.entries()) {
       let offset = 0;
@@ -147,10 +157,12 @@ export class AutomationEngine {
         }
       }
       
-      stmts.push(
-        this.env.DB.prepare('INSERT INTO automation_logs (id, rule_id, status, details) VALUES (?, ?, ?, ?)')
-          .bind(crypto.randomUUID(), ruleId, 'success', JSON.stringify({ fileId: file.id }))
-      );
+      if (actions.length > 0) {
+        stmts.push(
+          this.env.DB.prepare('INSERT INTO automation_logs (id, rule_id, status, details) VALUES (?, ?, ?, ?)')
+            .bind(crypto.randomUUID(), ruleId, 'success', JSON.stringify({ fileId: file.id }))
+        );
+      }
 
       if (stmts.length > 0) {
         await this.env.DB.batch(stmts);

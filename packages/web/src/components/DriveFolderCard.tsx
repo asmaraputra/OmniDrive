@@ -1,5 +1,6 @@
-import { Folder, AlertTriangle, Loader2, Share2 } from 'lucide-react';
+import { Folder, AlertTriangle, Loader2, Share2, MoreVertical } from 'lucide-react';
 import type { DriveFolder } from '../types';
+import { useState } from 'react';
 
 interface DriveFolderCardProps {
   folder: DriveFolder;
@@ -14,12 +15,12 @@ interface DriveFolderCardProps {
 
 export function DriveFolderCard({ folder, driveColor, driveEmail, hasError, isSyncing, onClick, onShare, isShared }: DriveFolderCardProps) {
   const initial = driveEmail ? driveEmail.charAt(0).toUpperCase() : '?';
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <button
+    <div
       className={`folder-card ${!folder.isSynced ? 'unsynced' : ''} ${hasError ? 'error' : ''}`}
       onClick={onClick}
-      disabled={isSyncing}
       title={!folder.isSynced ? 'Click to load folder contents' : folder.name}
     >
       <div className="account-badge" style={{ backgroundColor: `color-mix(in srgb, ${driveColor} 20%, transparent)`, color: driveColor, borderColor: `color-mix(in srgb, ${driveColor} 40%, transparent)` }} title={driveEmail}>
@@ -45,34 +46,25 @@ export function DriveFolderCard({ folder, driveColor, driveEmail, hasError, isSy
       )}
 
       {onShare && (
-        <button
-          className="btn btn-ghost btn-sm folder-share-btn"
-          onClick={(e) => {
-            e.stopPropagation();
-            onShare();
-          }}
-          title="Share Folder"
-        >
-          <Share2 size={14} />
-        </button>
+        <div className="file-card-actions" onClick={(e) => e.stopPropagation()}>
+          <button className="btn btn-ghost btn-sm" onClick={() => setMenuOpen(!menuOpen)}>
+            <MoreVertical size={16} />
+          </button>
+          {menuOpen && (
+            <div className="file-card-menu">
+              <button
+                className="file-card-menu-item"
+                onClick={() => {
+                  onShare();
+                  setMenuOpen(false);
+                }}
+              >
+                <Share2 size={14} /> Share
+              </button>
+            </div>
+          )}
+        </div>
       )}
-
-      <style>{`
-        .folder-card {
-          position: relative;
-        }
-        .folder-share-btn {
-          position: absolute;
-          right: var(--space-xs);
-          top: 50%;
-          transform: translateY(-50%);
-          opacity: 0;
-          transition: opacity var(--transition-fast);
-        }
-        .folder-card:hover .folder-share-btn {
-          opacity: 1;
-        }
-      `}</style>
-    </button>
+    </div>
   );
 }
