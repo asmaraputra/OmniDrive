@@ -4,21 +4,21 @@
 /* ─── CSS Custom Properties ─── */
 :root {
   /* Colors — Dark Theme */
-  --bg-primary: #0a0a0f;
-  --bg-secondary: #111118;
-  --bg-tertiary: #1a1a24;
-  --bg-elevated: #1e1e2a;
-  --bg-hover: #252533;
-  --bg-active: #2d2d3f;
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #111111;
+  --bg-tertiary: #161616;
+  --bg-elevated: #1a1a1a;
+  --bg-hover: #242424;
+  --bg-active: #2d2d2d;
 
-  --border-subtle: #2a2a3a;
-  --border-default: #3a3a4f;
-  --border-strong: #4a4a60;
+  --border-subtle: #222222;
+  --border-default: #333333;
+  --border-strong: #444444;
 
-  --text-primary: #e4e4e7;
+  --text-primary: #ededed;
   --text-secondary: #a1a1aa;
-  --text-tertiary: #71717a;
-  --text-inverse: #0a0a0f;
+  --text-tertiary: #888888;
+  --text-inverse: #0a0a0a;
 
   --accent-primary: #6366f1;
   --accent-primary-hover: #818cf8;
@@ -71,9 +71,9 @@
   --shadow-glow: 0 0 20px rgba(99, 102, 241, 0.2);
 
   /* Transitions */
-  --transition-fast: 150ms ease;
-  --transition-base: 250ms ease;
-  --transition-slow: 350ms ease;
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
 
   /* Layout */
   --sidebar-width: 260px;
