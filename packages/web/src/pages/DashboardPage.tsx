@@ -4,6 +4,7 @@ import { QuotaBar } from '../components/QuotaBar';
 import { FileGrid } from '../components/files/FileGrid';
 import { ShareModal } from '../components/ShareModal';
 import { MoveDriveModal } from '../components/MoveDriveModal';
+import { FilePreviewModal } from '../components/FilePreviewModal';
 import { formatFileSize, getDriveColor } from '../lib/utils';
 import { api } from '../lib/api';
 import { useSharedStore } from '../stores/sharedStore';
@@ -16,6 +17,7 @@ export function DashboardPage() {
   const [recentFiles, setRecentFiles] = useState<FileEntry[]>([]);
   const [shareTarget, setShareTarget] = useState<{ id: string, type: 'file' | 'folder' } | null>(null);
   const [moveFileTarget, setMoveFileTarget] = useState<FileEntry | null>(null);
+  const [previewFile, setPreviewFile] = useState<FileEntry | null>(null);
   const { addToast } = useToastStore();
   
   const { fetchSharedLinks, isTargetShared } = useSharedStore();
@@ -119,6 +121,7 @@ export function DashboardPage() {
               }}
               onShare={(id, type) => setShareTarget({ id, type })}
               onMoveDrive={setMoveFileTarget}
+              onPreviewFile={setPreviewFile}
               isTargetShared={isTargetShared}
               viewMode="list"
             />
@@ -150,6 +153,13 @@ export function DashboardPage() {
             addToast('success', 'File moved successfully');
           }}
           onError={(msg) => addToast('error', msg)}
+        />
+      )}
+
+      {previewFile && (
+        <FilePreviewModal
+          file={previewFile}
+          onClose={() => setPreviewFile(null)}
         />
       )}
     </div>

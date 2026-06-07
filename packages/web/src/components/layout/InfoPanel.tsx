@@ -1,11 +1,87 @@
 import React from 'react';
+import { useSelectionStore } from '../../stores/useSelectionStore';
+import { formatFileSize, formatRelativeTime, getFileIcon } from '../../lib/utils';
+import { X, File, Folder } from 'lucide-react';
+import { useUIStore } from '../../stores/useUIStore';
 
 export const InfoPanel: React.FC = () => {
+  const selectedItem = useSelectionStore((s) => s.selectedItem);
+  const toggleInfoPanel = useUIStore((s) => s.toggleInfoPanel);
+
+  if (!selectedItem) {
+    return (
+      <aside className="w-80 bg-white border-l border-gray-200 p-4 flex flex-col flex-shrink-0">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-semibold text-gray-800">Details</h2>
+          <button onClick={toggleInfoPanel} className="p-1.5 hover:bg-gray-100 rounded-full text-gray-500">
+            <X size={18} />
+          </button>
+        </div>
+        <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
+          <File size={48} className="text-gray-300 mb-4" />
+          <p className="text-sm text-gray-500">Select a file or folder to see its details here.</p>
+        </div>
+      </aside>
+    );
+  }
+
+  const { type, item } = selectedItem;
+
   return (
-    <aside className="w-80 bg-white border-l border-gray-200 p-4 flex flex-col">
-      <h2 className="text-lg font-semibold mb-4">Details</h2>
-      <div className="flex-1 overflow-y-auto">
-        <p className="text-sm text-gray-500">Select a file or folder to see its details here.</p>
+    <aside className="w-80 bg-white border-l border-gray-200 p-4 flex flex-col flex-shrink-0 overflow-y-auto">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-lg font-semibold text-gray-800">Details</h2>
+        <button onClick={toggleInfoPanel} className="p-1.5 hover:bg-gray-100 rounded-full text-gray-500 transition-colors">
+          <X size={18} />
+        </button>
+      </div>
+
+      <div className="mb-6 flex justify-center">
+        {type === 'folder' ? (
+          <div className="w-24 h-24 bg-blue-50 rounded-2xl flex items-center justify-center">
+            <Folder size={48} className="text-blue-500" />
+          </div>
+        ) : (
+          <div className="w-24 h-24 bg-gray-50 border border-gray-200 rounded-2xl flex items-center justify-center text-5xl shadow-sm">
+            {getFileIcon(item.mimeType)}
+          </div>
+        )}
+      </div>
+
+      <h3 className="text-base font-medium text-gray-800 text-center mb-6 break-words px-2">
+        {item.name}
+      </h3>
+
+      <div className="space-y-4">
+        <div className="border-t border-gray-100 pt-4">
+          <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Properties</h4>
+          <dl className="space-y-3 text-sm">
+            <div className="flex flex-col">
+              <dt className="text-gray-500 mb-0.5 text-xs">Type</dt>
+              <dd className="text-gray-800">{type === 'folder' ? 'Google Drive Folder' : item.mimeType || 'Unknown file type'}</dd>
+            </div>
+            {type === 'file' && (
+              <div className="flex flex-col">
+                <dt className="text-gray-500 mb-0.5 text-xs">Size</dt>
+                <dd className="text-gray-800">{formatFileSize(item.size)}</dd>
+              </div>
+            )}
+            <div className="flex flex-col">
+              <dt className="text-gray-500 mb-0.5 text-xs">Modified</dt>
+              <dd className="text-gray-800">
+                {type === 'file' 
+                  ? formatRelativeTime(item.googleModifiedAt ?? item.createdAt)
+                  : '—'}
+              </dd>
+            </div>
+            {type === 'file' && item.googleCreatedAt && (
+              <div className="flex flex-col">
+                <dt className="text-gray-500 mb-0.5 text-xs">Created</dt>
+                <dd className="text-gray-800">{formatRelativeTime(item.googleCreatedAt)}</dd>
+              </div>
+            )}
+          </dl>
+        </div>
       </div>
     </aside>
   );

@@ -1,23 +1,18 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useSelectionStore } from './useSelectionStore';
+import type { FileEntry } from '../types';
 
 describe('useSelectionStore', () => {
   beforeEach(() => {
-    useSelectionStore.setState({ selectedIds: [] });
+    useSelectionStore.setState({ selectedItem: null });
   });
 
-  it('adds and removes selection', () => {
-    useSelectionStore.getState().addSelection('file-1');
-    expect(useSelectionStore.getState().selectedIds).toContain('file-1');
-    
-    useSelectionStore.getState().removeSelection('file-1');
-    expect(useSelectionStore.getState().selectedIds).not.toContain('file-1');
-  });
+  it('adds and clears selection', () => {
+    const dummyFile = { id: 'file-1', name: 'File 1' } as FileEntry;
+    useSelectionStore.getState().setSelection({ type: 'file', item: dummyFile });
+    expect(useSelectionStore.getState().selectedItem).toEqual({ type: 'file', item: dummyFile });
 
-  it('clears selection', () => {
-    useSelectionStore.getState().addSelection('file-1');
-    useSelectionStore.getState().addSelection('file-2');
     useSelectionStore.getState().clearSelection();
-    expect(useSelectionStore.getState().selectedIds).toEqual([]);
+    expect(useSelectionStore.getState().selectedItem).toBeNull();
   });
 });

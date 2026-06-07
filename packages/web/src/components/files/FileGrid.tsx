@@ -10,7 +10,7 @@ import {
   ContextMenuSeparator,
 } from '../ui/context-menu';
 import { useUIStore } from '../../stores/useUIStore';
-
+import { useSelectionStore } from '../../stores/useSelectionStore';
 function isGoogleNative(mimeType: string | null): boolean {
   return !!mimeType && mimeType.startsWith('application/vnd.google-apps.');
 }
@@ -47,6 +47,7 @@ export const FileGrid: React.FC<FileGridProps> = ({
 }) => {
   const storeViewMode = useUIStore((s) => s.viewMode);
   const viewMode = viewModeProp ?? storeViewMode;
+  const { selectedItem, setSelection } = useSelectionStore();
 
   if (files.length === 0 && subfolders.length === 0) {
     return (
@@ -81,12 +82,22 @@ export const FileGrid: React.FC<FileGridProps> = ({
             <ContextMenu key={folder.googleFolderId}>
               <ContextMenuTrigger>
                 <div
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelection({ type: 'folder', item: folder });
+                  }}
+                  onDoubleClick={() => {
                     if (folder.driveAccountId) {
                       onNavigateFolder?.(folder.googleFolderId, folder.driveAccountId);
                     }
                   }}
-                  className={`grid grid-cols-[auto_1fr_120px_140px_44px] gap-0 items-center px-4 py-2.5 cursor-pointer hover:bg-gray-50 transition-colors border-b border-gray-50 group ${hasError ? 'bg-red-50' : ''}`}
+                  className={`grid grid-cols-[auto_1fr_120px_140px_44px] gap-0 items-center px-4 py-2.5 cursor-pointer transition-colors border-b border-gray-50 group ${
+                    selectedItem?.type === 'folder' && selectedItem.item.googleFolderId === folder.googleFolderId
+                      ? 'bg-blue-100 hover:bg-blue-200'
+                      : hasError
+                      ? 'bg-red-50 hover:bg-red-100'
+                      : 'hover:bg-gray-50'
+                  }`}
                 >
                   <div className="w-10 flex justify-center">
                     <Folder size={20} className="text-blue-500" />
@@ -122,14 +133,22 @@ export const FileGrid: React.FC<FileGridProps> = ({
             <ContextMenu key={file.id}>
               <ContextMenuTrigger>
                 <div
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelection({ type: 'file', item: file });
+                  }}
+                  onDoubleClick={() => {
                     if (native && file.webViewLink) {
                       window.open(file.webViewLink, '_blank', 'noopener,noreferrer');
                     } else {
                       onPreviewFile?.(file);
                     }
                   }}
-                  className="grid grid-cols-[auto_1fr_120px_140px_44px] gap-0 items-center px-4 py-2.5 cursor-pointer hover:bg-gray-50 transition-colors border-b border-gray-50"
+                  className={`grid grid-cols-[auto_1fr_120px_140px_44px] gap-0 items-center px-4 py-2.5 cursor-pointer transition-colors border-b border-gray-50 ${
+                    selectedItem?.type === 'file' && selectedItem.item.id === file.id
+                      ? 'bg-blue-100 hover:bg-blue-200'
+                      : 'hover:bg-gray-50'
+                  }`}
                 >
                   <div className="w-10 flex justify-center">
                     <span className="text-xl">{getFileIcon(file.mimeType)}</span>
@@ -206,12 +225,22 @@ export const FileGrid: React.FC<FileGridProps> = ({
           <ContextMenu key={folder.googleFolderId}>
             <ContextMenuTrigger>
               <div
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelection({ type: 'folder', item: folder });
+                }}
+                onDoubleClick={() => {
                   if (folder.driveAccountId) {
                     onNavigateFolder?.(folder.googleFolderId, folder.driveAccountId);
                   }
                 }}
-                className={`p-3 border rounded-xl cursor-pointer hover:bg-blue-50 hover:border-blue-200 flex items-center gap-2.5 transition-all ${hasError ? 'border-red-300 bg-red-50' : 'border-gray-200 bg-white'}`}
+                className={`p-3 border rounded-xl cursor-pointer flex items-center gap-2.5 transition-all ${
+                  selectedItem?.type === 'folder' && selectedItem.item.googleFolderId === folder.googleFolderId
+                    ? 'bg-blue-100 border-blue-300'
+                    : hasError
+                    ? 'border-red-300 bg-red-50 hover:border-red-400'
+                    : 'border-gray-200 bg-white hover:bg-blue-50 hover:border-blue-200'
+                }`}
               >
                 <Folder size={20} className="text-blue-500 flex-shrink-0" />
                 <div className="flex-1 truncate text-sm font-medium text-gray-800">
@@ -242,14 +271,22 @@ export const FileGrid: React.FC<FileGridProps> = ({
           <ContextMenu key={file.id}>
             <ContextMenuTrigger>
               <div
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelection({ type: 'file', item: file });
+                }}
+                onDoubleClick={() => {
                   if (native && file.webViewLink) {
                     window.open(file.webViewLink, '_blank', 'noopener,noreferrer');
                   } else {
                     onPreviewFile?.(file);
                   }
                 }}
-                className="p-3 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 hover:border-gray-300 bg-white flex flex-col justify-between h-36 transition-all group"
+                className={`p-3 border rounded-xl cursor-pointer flex flex-col justify-between h-36 transition-all group ${
+                  selectedItem?.type === 'file' && selectedItem.item.id === file.id
+                    ? 'bg-blue-100 border-blue-300'
+                    : 'bg-white border-gray-200 hover:bg-blue-50 hover:border-blue-200'
+                }`}
               >
                 <div className="flex justify-between items-start">
                   <div className="text-3xl">{getFileIcon(file.mimeType)}</div>
