@@ -12,69 +12,104 @@ export function FilePreviewModal({ file, onClose }: FilePreviewModalProps) {
   const isGoogleDoc = file.mimeType?.startsWith('application/vnd.google-apps.');
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" style={{ maxWidth: 600 }} onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/50 backdrop-blur-sm" onClick={onClose}>
+      <div 
+        className="bg-white rounded-2xl shadow-xl w-full max-w-2xl overflow-hidden flex flex-col max-h-full" 
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'var(--space-lg)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)', minWidth: 0 }}>
-            <span style={{ fontSize: '2rem' }}>{getFileIcon(file.mimeType)}</span>
-            <div style={{ minWidth: 0 }}>
-              <h2 style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600 }} className="truncate">{file.name}</h2>
-              <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-tertiary)' }}>
-                {file.driveEmail}
+        <div className="flex justify-between items-start p-5 border-b border-gray-100 shrink-0">
+          <div className="flex items-center gap-4 min-w-0">
+            <span className="text-4xl shrink-0">{getFileIcon(file.mimeType)}</span>
+            <div className="min-w-0">
+              <h2 className="text-lg font-semibold text-gray-800 truncate" title={file.name}>
+                {file.name}
+              </h2>
+              <div className="text-xs text-gray-500 truncate">
+                {file.driveEmail || 'Google Drive'}
               </div>
             </div>
           </div>
-          <button className="btn btn-ghost btn-sm" onClick={onClose}><X size={18} /></button>
+          <button 
+            className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors shrink-0" 
+            onClick={onClose}
+          >
+            <X size={20} />
+          </button>
         </div>
 
-        {/* Preview */}
-        {isImage && file.thumbnailUrl && (
-          <div style={{ marginBottom: 'var(--space-lg)', borderRadius: 'var(--radius-md)', overflow: 'hidden', background: 'var(--bg-tertiary)' }}>
-            <img
-              src={file.thumbnailUrl.replace('=s220', '=s600')}
-              alt={file.name}
-              style={{ width: '100%', maxHeight: 400, objectFit: 'contain' }}
-            />
-          </div>
-        )}
+        {/* Content Body - Scrollable */}
+        <div className="p-6 overflow-y-auto">
+          {/* Preview */}
+          {isImage && file.thumbnailUrl && (
+            <div className="mb-6 rounded-xl overflow-hidden bg-gray-50 border border-gray-200 flex justify-center items-center p-2">
+              <img
+                src={file.thumbnailUrl.replace('=s220', '=s600')}
+                alt={file.name}
+                className="max-w-full max-h-[400px] object-contain rounded-lg shadow-sm"
+              />
+            </div>
+          )}
 
-        {!isImage && file.thumbnailUrl && (
-          <div style={{ marginBottom: 'var(--space-lg)', display: 'flex', justifyContent: 'center', padding: 'var(--space-xl)', background: 'var(--bg-tertiary)', borderRadius: 'var(--radius-md)' }}>
-            <img src={file.thumbnailUrl} alt={file.name} style={{ maxHeight: 200 }} />
-          </div>
-        )}
+          {!isImage && file.thumbnailUrl && (
+            <div className="mb-6 flex justify-center p-8 bg-gray-50 border border-gray-200 rounded-xl">
+              <img 
+                src={file.thumbnailUrl} 
+                alt={file.name} 
+                className="max-h-[200px] object-contain shadow-sm rounded bg-white" 
+              />
+            </div>
+          )}
 
-        {/* File Info */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-md)', marginBottom: 'var(--space-lg)', fontSize: 'var(--font-size-sm)' }}>
-          <div>
-            <div style={{ color: 'var(--text-tertiary)', marginBottom: 2 }}>Size</div>
-            <div>{formatFileSize(file.size)}</div>
-          </div>
-          <div>
-            <div style={{ color: 'var(--text-tertiary)', marginBottom: 2 }}>Type</div>
-            <div>{file.mimeType ?? 'Unknown'}</div>
-          </div>
-          <div>
-            <div style={{ color: 'var(--text-tertiary)', marginBottom: 2 }}>Modified</div>
-            <div>{file.googleModifiedAt ? formatRelativeTime(file.googleModifiedAt) : '—'}</div>
-          </div>
-          <div>
-            <div style={{ color: 'var(--text-tertiary)', marginBottom: 2 }}>Created</div>
-            <div>{file.googleCreatedAt ? formatRelativeTime(file.googleCreatedAt) : '—'}</div>
+          {/* File Info */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm bg-gray-50 p-4 rounded-xl border border-gray-100">
+            <div>
+              <div className="text-gray-500 text-xs uppercase tracking-wide font-medium mb-1">Size</div>
+              <div className="text-gray-800 font-medium">{formatFileSize(file.size)}</div>
+            </div>
+            <div>
+              <div className="text-gray-500 text-xs uppercase tracking-wide font-medium mb-1">Type</div>
+              <div className="text-gray-800 font-medium truncate" title={file.mimeType ?? 'Unknown'}>
+                {file.mimeType ?? 'Unknown'}
+              </div>
+            </div>
+            <div>
+              <div className="text-gray-500 text-xs uppercase tracking-wide font-medium mb-1">Modified</div>
+              <div className="text-gray-800 font-medium truncate">
+                {file.googleModifiedAt ? formatRelativeTime(file.googleModifiedAt) : '—'}
+              </div>
+            </div>
+            <div>
+              <div className="text-gray-500 text-xs uppercase tracking-wide font-medium mb-1">Created</div>
+              <div className="text-gray-800 font-medium truncate">
+                {file.googleCreatedAt ? formatRelativeTime(file.googleCreatedAt) : '—'}
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Actions */}
-        <div style={{ display: 'flex', gap: 'var(--space-sm)', justifyContent: 'flex-end' }}>
+        {/* Footer Actions */}
+        <div className="p-5 border-t border-gray-100 bg-gray-50 flex gap-3 justify-end shrink-0">
           {file.webViewLink && (
-            <a href={file.webViewLink} target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ textDecoration: 'none' }}>
-              <ExternalLink size={16} /> Open in Drive
+            <a 
+              href={file.webViewLink} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-xl hover:bg-gray-100 transition-colors shadow-sm"
+              style={{ textDecoration: 'none' }}
+            >
+              <ExternalLink size={18} /> Open in Drive
             </a>
           )}
           {file.webContentLink && !isGoogleDoc && (
-            <a href={file.webContentLink} target="_blank" rel="noopener noreferrer" className="btn btn-primary" style={{ textDecoration: 'none' }}>
-              <Download size={16} /> Download
+            <a 
+              href={file.webContentLink} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors shadow-sm"
+              style={{ textDecoration: 'none' }}
+            >
+              <Download size={18} /> Download
             </a>
           )}
         </div>

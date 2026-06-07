@@ -74,82 +74,100 @@ export function ShareModal({ targetType, targetId, onClose }: ShareModalProps) {
   const currentDateTime = new Date().toISOString().slice(0, 16);
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-lg)' }}>
-          <h2 style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600, display: 'flex', alignItems: 'center', gap: 'var(--space-sm)' }}>
-            <Share2 size={20} />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/50 backdrop-blur-sm" onClick={onClose}>
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden flex flex-col max-h-full" onClick={(e) => e.stopPropagation()}>
+        <div className="flex justify-between items-center p-5 border-b border-gray-100 shrink-0">
+          <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+            <Share2 size={20} className="text-blue-500" />
             Share {targetType === 'file' ? 'File' : 'Folder'}
           </h2>
-          <button className="btn btn-ghost btn-sm" onClick={onClose}>
+          <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors shrink-0" onClick={onClose}>
             <X size={18} />
           </button>
         </div>
 
-        <div>
+        <div className="p-6 overflow-y-auto">
           {error && (
-            <div style={{ color: 'var(--accent-danger)', marginBottom: 'var(--space-md)', fontSize: 'var(--font-size-sm)' }}>
+            <div className="text-red-500 mb-4 text-sm bg-red-50 p-3 rounded-lg border border-red-100">
               {error}
             </div>
           )}
 
           {!sharedUrl ? (
-            <form onSubmit={handleShare} style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
-              <div className="form-group">
-                <label className="form-label">
-                  <Lock size={14} /> Password (optional)
+            <form onSubmit={handleShare} className="flex flex-col gap-4">
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium text-gray-700 flex items-center gap-1.5">
+                  <Lock size={14} className="text-gray-400" /> Password (optional)
                 </label>
                 <input
                   type="password"
                   placeholder="Leave blank for no password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="form-control"
+                  className="px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
                 />
               </div>
 
-              <div className="form-group">
-                <label className="form-label">
-                  <Calendar size={14} /> Expiration Date (optional)
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium text-gray-700 flex items-center gap-1.5">
+                  <Calendar size={14} className="text-gray-400" /> Expiration Date (optional)
                 </label>
                 <input
                   type="datetime-local"
                   value={expiresAt}
                   min={currentDateTime}
                   onChange={(e) => setExpiresAt(e.target.value)}
-                  className="form-control"
+                  className="px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
                 />
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-sm)', marginTop: 'var(--space-sm)' }}>
-                <button type="button" className="btn btn-ghost" onClick={onClose}>
+              <div className="flex justify-end gap-3 mt-4 pt-4 border-t border-gray-100">
+                <button 
+                  type="button" 
+                  className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors" 
+                  onClick={onClose}
+                >
                   Cancel
                 </button>
-                <button type="submit" className="btn btn-primary" disabled={loading}>
-                  {loading ? <div className="spinner" /> : 'Create Link'}
+                <button 
+                  type="submit" 
+                  className="flex items-center justify-center min-w-[100px] px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" 
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  ) : (
+                    'Create Link'
+                  )}
                 </button>
               </div>
             </form>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
-              <p style={{ fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)' }}>
+            <div className="flex flex-col gap-4">
+              <p className="text-sm text-gray-600 bg-blue-50 p-3 rounded-lg border border-blue-100">
                 Anyone with this link can access the {targetType}.
               </p>
-              <div style={{ display: 'flex', gap: 'var(--space-sm)' }}>
+              <div className="flex gap-2">
                 <input
                   type="text"
                   readOnly
                   value={sharedUrl}
-                  className="form-control"
-                  style={{ flex: 1 }}
+                  className="flex-1 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-600 focus:outline-none"
                   onClick={(e) => e.currentTarget.select()}
                 />
-                <button className="btn btn-secondary" onClick={copyToClipboard} title="Copy to clipboard">
-                  {copied ? <Check size={16} /> : <Copy size={16} />}
+                <button 
+                  className="flex items-center justify-center w-10 h-10 text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors shrink-0" 
+                  onClick={copyToClipboard} 
+                  title="Copy to clipboard"
+                >
+                  {copied ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
                 </button>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 'var(--space-sm)' }}>
-                <button className="btn btn-primary" onClick={onClose}>
+              <div className="flex justify-end mt-4 pt-4 border-t border-gray-100">
+                <button 
+                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors" 
+                  onClick={onClose}
+                >
                   Done
                 </button>
               </div>

@@ -63,37 +63,39 @@ export function PublicSharedPage() {
   const renderContent = (): ReactNode => {
     if (loading) {
       return (
-        <div className="shared-card">
-          <Loader2 className="animate-spin loading-icon" size={48} />
-          <p className="loading-text">Loading...</p>
+        <div className="bg-white p-10 rounded-2xl shadow-xl max-w-md w-full border border-gray-100 flex flex-col items-center">
+          <Loader2 className="animate-spin text-blue-500 mb-4" size={48} />
+          <p className="text-gray-500 font-medium">Loading...</p>
         </div>
       );
     }
 
     if (error) {
       return (
-        <div className="shared-card error">
-          <AlertCircle size={48} className="error-icon" />
-          <h2 className="shared-title">Error</h2>
-          <p className="shared-subtitle">{error}</p>
+        <div className="bg-white p-10 rounded-2xl shadow-xl max-w-md w-full border border-red-200 flex flex-col items-center">
+          <AlertCircle size={48} className="text-red-500 mb-4" />
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Error</h2>
+          <p className="text-gray-500">{error}</p>
         </div>
       );
     }
 
     if (meta?.requiresPassword) {
       return (
-        <div className="shared-card">
-          <div className="shared-header">
-            <Lock size={48} className="lock-icon" />
-            <h2 className="shared-title">Password Required</h2>
-            <p className="shared-subtitle">This shared link is protected by a password.</p>
+        <div className="bg-white p-10 rounded-2xl shadow-xl max-w-md w-full border border-gray-100">
+          <div className="text-center mb-8">
+            <div className="flex justify-center mb-4">
+              <Lock size={48} className="text-blue-500" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">Password Required</h2>
+            <p className="text-gray-500">This shared link is protected by a password.</p>
           </div>
 
           <form onSubmit={handlePasswordSubmit}>
-            <div className="form-group">
+            <div className="mb-4">
               <input
                 type="password"
-                className="form-control"
+                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
                 placeholder="Enter password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -102,15 +104,15 @@ export function PublicSharedPage() {
             </div>
             
             {passwordError && (
-              <p className="error-text">{passwordError}</p>
+              <p className="text-red-500 text-sm mb-4">{passwordError}</p>
             )}
 
             <button
               type="submit"
-              className="btn btn-primary btn-full mt-sm"
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 text-white bg-blue-600 rounded-xl font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-6"
               disabled={verifying || !password}
             >
-              {verifying && <Loader2 className="animate-spin icon-left" size={16} />}
+              {verifying && <Loader2 className="animate-spin" size={18} />}
               Unlock
             </button>
           </form>
@@ -119,28 +121,28 @@ export function PublicSharedPage() {
     }
 
     return (
-      <div className="shared-card text-center">
+      <div className="bg-white p-10 rounded-2xl shadow-xl max-w-md w-full border border-gray-100 text-center">
         {meta?.type === 'folder' ? (
-          <div className="shared-header">
-            <div className="file-icon-large">📁</div>
-            <h2 className="shared-title">Shared Folder</h2>
-            <p className="shared-subtitle">Folder view is not supported yet.</p>
+          <div className="mb-8">
+            <div className="text-7xl mb-4 leading-none">📁</div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">Shared Folder</h2>
+            <p className="text-gray-500">Folder view is not supported yet.</p>
           </div>
         ) : (
-          <div className="shared-header">
-            <div className="file-icon-large">{getFileIcon(meta?.target?.mimeType || null)}</div>
-            <h2 className="shared-title break-words">{meta?.target?.name || 'Unknown File'}</h2>
+          <div className="mb-8">
+            <div className="text-7xl mb-4 leading-none">{getFileIcon(meta?.target?.mimeType || null)}</div>
+            <h2 className="text-2xl font-bold text-gray-800 mb-2 break-words">{meta?.target?.name || 'Unknown File'}</h2>
             {typeof meta?.target?.size === 'number' && (
-              <p className="shared-subtitle">{formatFileSize(meta.target.size)}</p>
+              <p className="text-gray-500">{formatFileSize(meta.target.size)}</p>
             )}
           </div>
         )}
 
         <button
           onClick={handleDownload}
-          className="btn btn-primary btn-full mt-lg"
+          className="w-full flex items-center justify-center gap-2 px-4 py-3 text-white bg-blue-600 rounded-xl font-medium hover:bg-blue-700 transition-colors shadow-sm mt-8"
         >
-          <Download size={20} className="icon-left" />
+          <Download size={20} />
           Download
         </button>
       </div>
@@ -148,123 +150,8 @@ export function PublicSharedPage() {
   };
 
   return (
-    <div className="shared-page">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
       {renderContent()}
-      <style>{styles}</style>
     </div>
   );
 }
-
-const styles = `
-  .shared-page {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--bg-primary);
-    padding: var(--space-lg);
-  }
-
-  .shared-card {
-    background: var(--bg-secondary);
-    padding: var(--space-2xl);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-lg);
-    max-width: 480px;
-    width: 100%;
-    border: 1px solid var(--border-default);
-    text-align: center;
-  }
-
-  .shared-card.error {
-    border-color: var(--accent-danger);
-  }
-
-  .shared-header {
-    margin-bottom: var(--space-lg);
-  }
-
-  .shared-title {
-    font-size: var(--font-size-2xl);
-    font-weight: 700;
-    color: var(--text-primary);
-    margin-bottom: var(--space-xs);
-  }
-
-  .shared-subtitle {
-    color: var(--text-secondary);
-    font-size: var(--font-size-md);
-  }
-
-  .file-icon-large {
-    font-size: 5rem;
-    margin-bottom: var(--space-md);
-    line-height: 1;
-  }
-
-  .loading-icon {
-    margin: 0 auto var(--space-md) auto;
-    color: var(--accent-primary);
-  }
-
-  .loading-text {
-    color: var(--text-secondary);
-    font-size: var(--font-size-md);
-  }
-
-  .error-icon {
-    margin: 0 auto var(--space-md) auto;
-    color: var(--accent-danger);
-  }
-
-  .lock-icon {
-    margin: 0 auto var(--space-md) auto;
-    color: var(--accent-primary);
-  }
-
-  .error-text {
-    color: var(--accent-danger);
-    font-size: var(--font-size-sm);
-    margin-top: var(--space-xs);
-    text-align: left;
-  }
-
-  .btn-full {
-    width: 100%;
-  }
-
-  .mt-sm {
-    margin-top: var(--space-md);
-  }
-
-  .mt-lg {
-    margin-top: var(--space-xl);
-  }
-
-  .icon-left {
-    margin-right: var(--space-sm);
-  }
-
-  .break-words {
-    word-break: break-word;
-    overflow-wrap: break-word;
-  }
-
-  .form-group {
-    text-align: left;
-    margin-bottom: var(--space-sm);
-  }
-
-  .animate-spin {
-    animation: spin 1s linear infinite;
-  }
-
-  @keyframes spin {
-    from {
-      transform: rotate(0deg);
-    }
-    to {
-      transform: rotate(360deg);
-    }
-  }
-`;

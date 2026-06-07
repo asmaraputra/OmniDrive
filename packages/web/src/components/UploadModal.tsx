@@ -39,34 +39,41 @@ export function UploadModal({ folderId, driveId, onClose, onSuccess }: UploadMod
 
   const statusIcon = (status: string) => {
     switch (status) {
-      case 'done': return <Check size={16} color="var(--accent-success)" />;
-      case 'error': return <AlertCircle size={16} color="var(--accent-danger)" />;
+      case 'done': return <Check size={16} className="text-green-500" />;
+      case 'error': return <AlertCircle size={16} className="text-red-500" />;
       case 'uploading':
-      case 'confirming': return <Loader size={16} className="spinning" />;
+      case 'confirming': return <Loader size={16} className="text-blue-500 animate-spin" />;
       default: return null;
     }
   };
 
   return (
-    <div className="modal-overlay" onClick={handleClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-lg)' }}>
-          <h2 style={{ fontSize: 'var(--font-size-lg)', fontWeight: 600 }}>Upload Files</h2>
-          <button className="btn btn-ghost btn-sm" onClick={handleClose}><X size={18} /></button>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/50 backdrop-blur-sm" onClick={handleClose}>
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden flex flex-col max-h-full" onClick={(e) => e.stopPropagation()}>
+        <div className="flex justify-between items-center p-5 border-b border-gray-100 shrink-0">
+          <h2 className="text-lg font-semibold text-gray-800">Upload Files</h2>
+          <button className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-full transition-colors shrink-0" onClick={handleClose}>
+            <X size={18} />
+          </button>
         </div>
 
         {/* File list */}
-        <div style={{ maxHeight: 200, overflowY: 'auto', marginBottom: 'var(--space-lg)' }}>
+        <div className="max-h-[200px] overflow-y-auto px-6 py-2 border-b border-gray-100">
           {queue.map((item) => (
-            <div key={item.id} style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', padding: 'var(--space-sm) 0', borderBottom: '1px solid var(--border-subtle)' }}>
-              <span style={{ flex: 1, fontSize: 'var(--font-size-sm)' }} className="truncate">{item.file.name}</span>
-              <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-tertiary)', whiteSpace: 'nowrap' }}>{formatFileSize(item.file.size)}</span>
+            <div key={item.id} className="flex items-center gap-3 py-3 border-b border-gray-50 last:border-0">
+              <span className="flex-1 text-sm text-gray-700 truncate">{item.file.name}</span>
+              <span className="text-xs text-gray-400 whitespace-nowrap">{formatFileSize(item.file.size)}</span>
               {item.status === 'uploading' && (
-                <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--accent-primary)', minWidth: 40, textAlign: 'right' }}>{item.progress}%</span>
+                <span className="text-xs text-blue-600 min-w-[40px] text-right font-medium">{item.progress}%</span>
               )}
-              {statusIcon(item.status)}
+              <div className="w-4 h-4 flex items-center justify-center shrink-0">
+                {statusIcon(item.status)}
+              </div>
               {item.status === 'pending' && !isUploading && (
-                <button className="btn btn-ghost btn-sm" onClick={() => removeFile(item.id)}>
+                <button 
+                  className="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-md transition-colors" 
+                  onClick={() => removeFile(item.id)}
+                >
                   <X size={14} />
                 </button>
               )}
@@ -76,21 +83,35 @@ export function UploadModal({ folderId, driveId, onClose, onSuccess }: UploadMod
 
         {/* Drive selector */}
         {!isUploading && !allDone && (
-          <div style={{ marginBottom: 'var(--space-lg)' }}>
-            <label style={{ display: 'block', fontSize: 'var(--font-size-sm)', color: 'var(--text-secondary)', marginBottom: 'var(--space-xs)' }}>
+          <div className="p-6 pb-2">
+            <label className="block text-sm font-medium text-gray-700 mb-3">
               Target Drive
             </label>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-xs)' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', padding: 'var(--space-sm)', borderRadius: 'var(--radius-md)', cursor: 'pointer', background: !selectedDriveId ? 'var(--accent-primary-subtle)' : 'transparent' }}>
-                <input type="radio" name="drive" value="" checked={!selectedDriveId} onChange={() => setSelectedDriveId('')} />
-                <span style={{ fontSize: 'var(--font-size-sm)' }}>Auto (most free space)</span>
+            <div className="flex flex-col gap-2">
+              <label className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer border transition-colors ${!selectedDriveId ? 'bg-blue-50 border-blue-200' : 'border-gray-200 hover:bg-gray-50'}`}>
+                <input 
+                  type="radio" 
+                  name="drive" 
+                  value="" 
+                  checked={!selectedDriveId} 
+                  onChange={() => setSelectedDriveId('')} 
+                  className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-800">Auto (most free space)</span>
               </label>
               {drives.map((drive, i) => (
-                <label key={drive.id} style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-sm)', padding: 'var(--space-sm)', borderRadius: 'var(--radius-md)', cursor: 'pointer', background: selectedDriveId === drive.id ? 'var(--accent-primary-subtle)' : 'transparent' }}>
-                  <input type="radio" name="drive" value={drive.id} checked={selectedDriveId === drive.id} onChange={() => setSelectedDriveId(drive.id)} />
-                  <div className="drive-dot" style={{ backgroundColor: getDriveColor(i) }} />
-                  <span style={{ fontSize: 'var(--font-size-sm)', flex: 1 }}>{drive.email}</span>
-                  <span style={{ fontSize: 'var(--font-size-xs)', color: 'var(--text-tertiary)' }}>{formatFileSize(drive.freeSpace)} free</span>
+                <label key={drive.id} className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer border transition-colors ${selectedDriveId === drive.id ? 'bg-blue-50 border-blue-200' : 'border-gray-200 hover:bg-gray-50'}`}>
+                  <input 
+                    type="radio" 
+                    name="drive" 
+                    value={drive.id} 
+                    checked={selectedDriveId === drive.id} 
+                    onChange={() => setSelectedDriveId(drive.id)} 
+                    className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                  />
+                  <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: getDriveColor(i) }} />
+                  <span className="text-sm text-gray-800 flex-1 truncate">{drive.email}</span>
+                  <span className="text-xs text-gray-500 whitespace-nowrap">{formatFileSize(drive.freeSpace)} free</span>
                 </label>
               ))}
             </div>
@@ -98,24 +119,38 @@ export function UploadModal({ folderId, driveId, onClose, onSuccess }: UploadMod
         )}
 
         {/* Actions */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--space-sm)' }}>
+        <div className="p-5 flex justify-end gap-3 shrink-0">
           {allDone ? (
-            <button className="btn btn-primary" onClick={handleClose}>Done</button>
+            <button 
+              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors" 
+              onClick={handleClose}
+            >
+              Done
+            </button>
           ) : (
             <>
-              <button className="btn btn-secondary" onClick={handleClose} disabled={isUploading}>Cancel</button>
-              <button className="btn btn-primary" onClick={handleUpload} disabled={isUploading || queue.length === 0}>
-                {isUploading ? <><Loader size={16} className="spinning" /> Uploading...</> : <><Upload size={16} /> Upload</>}
+              <button 
+                className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50" 
+                onClick={handleClose} 
+                disabled={isUploading}
+              >
+                Cancel
+              </button>
+              <button 
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" 
+                onClick={handleUpload} 
+                disabled={isUploading || queue.length === 0}
+              >
+                {isUploading ? (
+                  <><Loader size={16} className="animate-spin" /> Uploading...</>
+                ) : (
+                  <><Upload size={16} /> Upload</>
+                )}
               </button>
             </>
           )}
         </div>
       </div>
-
-      <style>{`
-        .spinning { animation: spin 1s linear infinite; }
-        input[type="radio"] { accent-color: var(--accent-primary); }
-      `}</style>
     </div>
   );
 }

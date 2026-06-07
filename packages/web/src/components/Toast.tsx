@@ -3,10 +3,10 @@ import { useToastStore } from '../stores/toastStore';
 import type { ToastType } from '../types';
 
 const icons: Record<ToastType, React.ReactNode> = {
-  success: <CheckCircle size={18} color="var(--accent-success)" />,
-  error: <AlertCircle size={18} color="var(--accent-danger)" />,
-  warning: <AlertTriangle size={18} color="var(--accent-warning)" />,
-  info: <Info size={18} color="var(--accent-info)" />,
+  success: <CheckCircle size={18} className="text-green-500" />,
+  error: <AlertCircle size={18} className="text-red-500" />,
+  warning: <AlertTriangle size={18} className="text-amber-500" />,
+  info: <Info size={18} className="text-blue-500" />,
 };
 
 export function ToastContainer() {
@@ -15,12 +15,18 @@ export function ToastContainer() {
   if (toasts.length === 0) return null;
 
   return (
-    <div className="toast-container">
+    <div className="fixed bottom-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none">
       {toasts.map((toast) => (
-        <div key={toast.id} className="toast">
+        <div 
+          key={toast.id} 
+          className="flex items-center gap-3 px-4 py-3 bg-white border border-gray-100 rounded-xl shadow-lg pointer-events-auto min-w-[300px] animate-in slide-in-from-bottom-5 fade-in duration-300"
+        >
           {icons[toast.type]}
-          <span style={{ flex: 1, fontSize: 'var(--font-size-sm)' }}>{toast.message}</span>
-          <button className="btn btn-ghost btn-sm" onClick={() => removeToast(toast.id)}>
+          <span className="flex-1 text-sm font-medium text-gray-700">{toast.message}</span>
+          <button 
+            className="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors" 
+            onClick={() => removeToast(toast.id)}
+          >
             <X size={14} />
           </button>
         </div>
