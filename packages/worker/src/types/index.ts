@@ -211,13 +211,18 @@ export function mapDriveFolderRow(row: Record<string, unknown>): DriveFolder {
 }
 
 export function mapSharedLinkRow(row: Record<string, unknown>): SharedLink {
+  const targetType = row.target_type as string;
+  if (targetType !== 'file' && targetType !== 'folder') {
+    throw new Error(`Invalid target_type: ${targetType}`);
+  }
+
   return {
     id: row.id as string,
     userId: row.user_id as string,
-    targetType: row.target_type as 'file' | 'folder',
+    targetType: targetType as 'file' | 'folder',
     targetId: row.target_id as string,
-    passwordHash: (row.password_hash as string) ?? null,
-    expiresAt: (row.expires_at as string) ?? null,
+    passwordHash: (row.password_hash as string | null | undefined) ?? null,
+    expiresAt: (row.expires_at as string | null | undefined) ?? null,
     createdAt: row.created_at as string,
   };
 }

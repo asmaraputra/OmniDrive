@@ -95,9 +95,12 @@ CREATE INDEX IF NOT EXISTS idx_drive_folders_parent ON drive_folders(drive_accou
 CREATE TABLE IF NOT EXISTS shared_links (
     id              TEXT PRIMARY KEY,
     user_id         TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    target_type     TEXT NOT NULL,
+    target_type     TEXT NOT NULL CHECK (target_type IN ('file', 'folder')),
     target_id       TEXT NOT NULL,
     password_hash   TEXT,
     expires_at      TEXT,
     created_at      TEXT NOT NULL DEFAULT (datetime('now'))
 );
+
+CREATE INDEX IF NOT EXISTS idx_shared_links_user ON shared_links(user_id);
+CREATE INDEX IF NOT EXISTS idx_shared_links_target ON shared_links(target_type, target_id);
