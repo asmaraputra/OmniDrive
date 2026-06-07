@@ -26,7 +26,6 @@ export function FilesPage() {
   const { addToast } = useToastStore();
   const [previewFile, setPreviewFile] = useState<FileEntry | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [syncingFolderId, setSyncingFolderId] = useState<string | null>(null);
 
   const { subfolders, files, breadcrumb, isLoading, errorDrives, refresh } = useMergedDrive(folderId, driveIdParam);
 
@@ -109,8 +108,9 @@ export function FilesPage() {
       </div>
 
       {isLoading ? (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: 'var(--space-2xl)' }}>
-          <div className="spinner" />
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 'var(--space-4xl)' }}>
+          <div className="spinner" style={{ marginBottom: 'var(--space-md)' }} />
+          <p style={{ color: 'var(--text-tertiary)' }}>Loading folder contents...</p>
         </div>
       ) : drives.length === 0 ? (
         <div className="card" style={{ textAlign: 'center', padding: 'var(--space-2xl)', color: 'var(--text-tertiary)' }}>
@@ -130,25 +130,10 @@ export function FilesPage() {
                 driveColor={getDriveColor(index)}
                 driveEmail={drive?.email || ''}
                 hasError={drive ? errorDrives.has(drive.id) : false}
-                isSyncing={syncingFolderId === folder.googleFolderId}
-                onClick={async () => {
+                onClick={() => {
                   const targetDriveId = folder.driveAccountId;
                   if (!targetDriveId) return;
-
-                  if (!folder.isSynced) {
-                    setSyncingFolderId(folder.googleFolderId);
-                    try {
-                      await api.syncDriveFolder(targetDriveId, folder.googleFolderId);
-                      refresh();
-                      navigate(`/files/${folder.googleFolderId}?driveId=${targetDriveId}`);
-                    } catch {
-                      addToast('error', `Failed to sync folder "${folder.name}"`);
-                    } finally {
-                      setSyncingFolderId(null);
-                    }
-                  } else {
-                    navigate(`/files/${folder.googleFolderId}?driveId=${targetDriveId}`);
-                  }
+                  navigate(`/files/${folder.googleFolderId}?driveId=${targetDriveId}`);
                 }}
               />
             );
