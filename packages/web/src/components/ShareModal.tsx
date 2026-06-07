@@ -33,7 +33,13 @@ export function ShareModal({ targetType, targetId, onClose }: ShareModalProps) {
     try {
       let isoExpiresAt = undefined;
       if (expiresAt) {
-        isoExpiresAt = new Date(expiresAt).toISOString();
+        // expiresAt is in "YYYY-MM-DDThh:mm" format.
+        // Manually parse it to avoid browser-specific quirks where it might be parsed as UTC.
+        const [datePart, timePart] = expiresAt.split('T');
+        const [year, month, day] = datePart.split('-').map(Number);
+        const [hour, minute] = timePart.split(':').map(Number);
+        // new Date(year, monthIndex, day, hours, minutes) explicitly creates a local date.
+        isoExpiresAt = new Date(year, month - 1, day, hour, minute).toISOString();
       }
       const resp = await createSharedLink(targetType, targetId, password || undefined, isoExpiresAt);
       setSharedUrl(resp.url);
