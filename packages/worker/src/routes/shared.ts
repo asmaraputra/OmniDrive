@@ -226,7 +226,7 @@ sharedRouter.post('/:id/verify', async (c) => {
   }
   
   const token = await sign({ id }, c.env.GOOGLE_CLIENT_SECRET, 'HS256');
-  setCookie(c, `shared_session_${id}`, token, { path: '/', httpOnly: true, secure: true, maxAge: 60 * 60 * 24 });
+  setCookie(c, `shared_session_${id}`, token, { path: '/', httpOnly: true, secure: true, sameSite: 'None', maxAge: 60 * 60 * 24 });
   return c.json({ success: true });
 });
 
