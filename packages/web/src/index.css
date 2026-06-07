@@ -130,12 +130,12 @@ input, textarea, select {
   border-radius: var(--radius-md);
   padding: var(--space-sm) var(--space-md);
   outline: none;
-  transition: border-color var(--transition-fast);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 input:focus, textarea:focus, select:focus {
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 1px var(--bg-primary), 0 0 0 3px var(--accent-primary-subtle);
+  box-shadow: 0 0 0 3px var(--accent-primary-subtle);
 }
 
 /* ─── Scrollbar ─── */
