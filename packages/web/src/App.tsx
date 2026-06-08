@@ -11,6 +11,7 @@ import { PublicSharedPage } from './pages/PublicSharedPage';
 import { AutomationsPage } from './pages/AutomationsPage';
 import { SearchPage } from './pages/SearchPage';
 import { TrashPage } from './pages/TrashPage';
+import { StarredPage } from './pages/StarredPage';
 
 export const App = () => {
   return (
@@ -35,6 +36,7 @@ export const App = () => {
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/shared" element={<SharedLinksPage />} />
           <Route path="/trash" element={<TrashPage />} />
+          <Route path="/starred" element={<StarredPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

@@ -54,10 +54,10 @@ export const Sidebar: React.FC = () => {
           <Clock size={20} />
           <span>Recent</span>
         </NavLink>
-        <div className="flex items-center gap-3 px-4 py-2 hover:bg-gray-100 rounded-full cursor-pointer text-gray-700 text-sm">
+        <NavLink to="/starred" className={navLinkClass}>
           <Star size={20} />
           <span>Starred</span>
-        </div>
+        </NavLink>
         <NavLink to="/shared" className={navLinkClass}>
           <Users size={20} />
           <span>Shared with me</span>
