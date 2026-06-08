@@ -16,6 +16,7 @@ import { useSharedStore } from '../stores/sharedStore';
 import { useMergedDrive } from '../hooks/useMergedDrive';
 import { api } from '../lib/api';
 import { useUIStore } from '../stores/useUIStore';
+import { useSelectionStore } from '../stores/useSelectionStore';
 import type { FileEntry } from '../types';
 
 export function FilesPage() {
@@ -32,7 +33,14 @@ export function FilesPage() {
   const [moveFileTarget, setMoveFileTarget] = useState<FileEntry | null>(null);
   const [virtualFolderTarget, setVirtualFolderTarget] = useState<FileEntry | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const { viewMode, setViewMode, isInfoPanelOpen, toggleInfoPanel } = useUIStore();
+  const { viewMode, setViewMode, isInfoPanelOpen, toggleInfoPanel, setIsInfoPanelOpen } = useUIStore();
+  const { clearSelection, toggleSelection } = useSelectionStore();
+
+  const handleViewInfo = (item: any, type: 'file' | 'folder') => {
+    clearSelection();
+    toggleSelection({ type, item });
+    setIsInfoPanelOpen(true);
+  };
 
   const { fetchSharedLinks, isTargetShared } = useSharedStore();
 
@@ -179,6 +187,7 @@ export function FilesPage() {
               onDeleteFile={handleDeleteFile}
               onMoveDrive={setMoveFileTarget}
               onAddToVirtualFolder={setVirtualFolderTarget}
+              onViewInfo={handleViewInfo}
               isTargetShared={isTargetShared}
               errorDrives={errorDrives}
             />

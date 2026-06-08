@@ -5,10 +5,10 @@ import { X, File, Folder } from 'lucide-react';
 import { useUIStore } from '../../stores/useUIStore';
 
 export const InfoPanel: React.FC = () => {
-  const selectedItem = useSelectionStore((s) => s.selectedItem);
+  const selectedItems = useSelectionStore((s) => s.selectedItems);
   const toggleInfoPanel = useUIStore((s) => s.toggleInfoPanel);
 
-  if (!selectedItem) {
+  if (selectedItems.length === 0) {
     return (
       <aside className="w-80 bg-white border-l border-gray-200 p-4 flex flex-col flex-shrink-0">
         <div className="flex justify-between items-center mb-4">
@@ -25,7 +25,7 @@ export const InfoPanel: React.FC = () => {
     );
   }
 
-  const { type, item } = selectedItem;
+  const { type, item } = selectedItems[0];
 
   return (
     <aside className="w-80 bg-white border-l border-gray-200 p-4 flex flex-col flex-shrink-0 overflow-y-auto">
