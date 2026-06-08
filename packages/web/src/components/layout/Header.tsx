@@ -1,9 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Menu, Search, Settings, HelpCircle, Grid3X3 } from 'lucide-react';
 import { useUIStore } from '../../stores/useUIStore';
 
 export const Header: React.FC = () => {
   const toggleSidebar = useUIStore((state) => state.toggleSidebar);
+  const navigate = useNavigate();
+  const [query, setQuery] = useState('');
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && query.trim()) {
+      navigate(`/search?q=${encodeURIComponent(query.trim()).replace(/%20/g, '+')}`);
+    }
+  };
 
   return (
     <header className="flex items-center justify-between px-2 py-2 bg-surface h-16 w-full gap-4">
@@ -27,6 +36,9 @@ export const Header: React.FC = () => {
             type="text" 
             placeholder="Search in Drive" 
             className="bg-transparent outline-none w-full text-gray-800 placeholder-gray-600" 
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={handleKeyDown}
           />
         </div>
       </div>
