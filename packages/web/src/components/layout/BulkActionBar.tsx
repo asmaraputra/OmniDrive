@@ -27,18 +27,18 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({ onActionComplete, 
     let successCount = 0;
     let failCount = 0;
     
-    await Promise.all(selectedItems.map(async (selected) => {
+    for (const selected of selectedItems) {
       try {
-        if (selected.type === 'file') {
-          await api.deleteFile(selected.item.id);
-        } else {
-          // Fallback if folders are supported or ignore
+        if (selected.type !== 'file') {
+          throw new Error('Only files can be deleted via bulk action');
         }
+        await api.deleteFile(selected.item.id);
         successCount++;
-      } catch {
+      } catch (error) {
+        console.error('Deletion failed for item:', selected, error);
         failCount++;
       }
-    }));
+    }
     
     if (failCount === 0) {
       addToast('success', `✅ Deleted ${successCount} items`);
