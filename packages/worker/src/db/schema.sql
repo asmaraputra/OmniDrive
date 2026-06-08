@@ -1,9 +1,11 @@
--- Users (from Google OAuth login)
+-- Users (from local auth and Google OAuth)
 CREATE TABLE IF NOT EXISTS users (
     id              TEXT PRIMARY KEY,
-    google_id       TEXT UNIQUE NOT NULL,
-    email           TEXT UNIQUE NOT NULL,
-    name            TEXT NOT NULL,
+    username        TEXT UNIQUE NOT NULL,
+    password_hash   TEXT NOT NULL,
+    google_id       TEXT UNIQUE,
+    email           TEXT UNIQUE,
+    name            TEXT,
     avatar_url      TEXT,
     created_at      TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at      TEXT NOT NULL DEFAULT (datetime('now'))
@@ -73,6 +75,7 @@ CREATE TABLE IF NOT EXISTS files (
     google_modified_at TEXT,
     synced_at       TEXT NOT NULL DEFAULT (datetime('now')),
     created_at      TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at      TEXT NOT NULL DEFAULT (datetime('now')),
     UNIQUE(drive_account_id, google_file_id)
 );
 
