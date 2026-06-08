@@ -6,6 +6,7 @@ export interface User {
   avatarUrl: string | null;
   createdAt: string;
   updatedAt: string;
+  isStarred?: boolean;
 }
 
 export interface DriveAccount {
@@ -41,6 +42,7 @@ export interface VirtualFolder {
   color: string;
   createdAt: string;
   updatedAt: string;
+  isStarred?: boolean;
 }
 
 export interface FileEntry {
@@ -62,6 +64,7 @@ export interface FileEntry {
   syncedAt: string;
   createdAt: string;
   driveEmail?: string;  // optional — not present in folder-browse responses
+  isStarred?: boolean;
 }
 
 

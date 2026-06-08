@@ -102,6 +102,13 @@ export const api = {
   deleteFilePermanent: (id: string) =>
     request<{ success: boolean }>(`/api/files/${id}/permanent`, { method: 'DELETE' }),
 
+  // Starred Files
+  getStarred: () => request<{ files: import('../types').FileEntry[], folders: import('../types').VirtualFolder[] }>('/api/files/starred'),
+  starFile: (id: string) => request<{ success: boolean }>(`/api/files/${id}/star`, { method: 'POST' }),
+  unstarFile: (id: string) => request<{ success: boolean }>(`/api/files/${id}/unstar`, { method: 'POST' }),
+  starFolder: (id: string) => request<{ success: boolean }>(`/api/folders/${id}/star`, { method: 'POST' }),
+  unstarFolder: (id: string) => request<{ success: boolean }>(`/api/folders/${id}/unstar`, { method: 'POST' }),
+
   // Recent files (uses root contents, sorted by date)
   getRecentFiles: () =>
     request<{ files: import('../types').FileEntry[] }>('/api/files/search?q=%'),
