@@ -66,6 +66,20 @@ export const api = {
     }),
   deleteFolder: (id: string) => request<{ success: boolean }>(`/api/folders/${id}`, { method: 'DELETE' }),
 
+  getVirtualFolderTree: () => request<{ folders: import('../types').VirtualFolder[] }>('/api/folders/tree'),
+  updateVirtualFolder: (id: string, data: { name?: string; parentId?: string | null; icon?: string; color?: string }) =>
+    request<{ success: boolean }>(`/api/folders/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    }),
+  addFilesToVirtualFolder: (id: string, fileIds: string[]) =>
+    request<{ success: boolean }>(`/api/folders/${id}/files`, {
+      method: 'POST',
+      body: JSON.stringify({ fileIds }),
+    }),
+  syncVirtualFolder: (id: string) =>
+    request<{ success: boolean }>(`/api/folders/${id}/sync`, { method: 'POST' }),
+
   // Files
   searchFiles: (query: string) =>
     request<{ files: import('../types').FileEntry[]; query: string }>(`/api/files/search?q=${encodeURIComponent(query)}`),
