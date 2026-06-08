@@ -25,6 +25,24 @@ export const InfoPanel: React.FC = () => {
     );
   }
 
+  if (selectedItems.length > 1) {
+    return (
+      <aside className="w-80 bg-white border-l border-gray-200 p-4 flex flex-col flex-shrink-0">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-semibold text-gray-800">Details</h2>
+          <button onClick={toggleInfoPanel} className="p-1.5 hover:bg-gray-100 rounded-full text-gray-500">
+            <X size={18} />
+          </button>
+        </div>
+        <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
+          <File size={48} className="text-gray-300 mb-4" />
+          <p className="text-sm text-gray-800 font-medium">{selectedItems.length} items selected</p>
+          <p className="text-xs text-gray-500 mt-2">Select a single item to view its properties.</p>
+        </div>
+      </aside>
+    );
+  }
+
   const { type, item } = selectedItems[0];
 
   return (

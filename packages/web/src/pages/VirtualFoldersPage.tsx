@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { api } from '../lib/api';
-import type { VirtualFolder, FileEntry } from '../types';
+import type { VirtualFolder, FileEntry, DriveFolder } from '../types';
 import { VirtualFolderSidebar } from '../components/virtual-folders/VirtualFolderSidebar';
 import { FileGrid } from '../components/files/FileGrid';
 import { useToastStore } from '../stores/toastStore';
@@ -91,7 +91,7 @@ export function VirtualFoldersPage() {
     }
   };
 
-  const handleViewInfo = (item: any, type: 'file' | 'folder') => {
+  const handleViewInfo = (item: FileEntry | VirtualFolder | DriveFolder, type: 'file' | 'folder') => {
     clearSelection();
     toggleSelection({ type, item });
     setIsInfoPanelOpen(true);

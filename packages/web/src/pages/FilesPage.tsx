@@ -17,7 +17,7 @@ import { useMergedDrive } from '../hooks/useMergedDrive';
 import { api } from '../lib/api';
 import { useUIStore } from '../stores/useUIStore';
 import { useSelectionStore } from '../stores/useSelectionStore';
-import type { FileEntry } from '../types';
+import type { FileEntry, DriveFolder, VirtualFolder } from '../types';
 
 export function FilesPage() {
   const { folderId = 'root' } = useParams<{ folderId: string }>();
@@ -36,7 +36,7 @@ export function FilesPage() {
   const { viewMode, setViewMode, isInfoPanelOpen, toggleInfoPanel, setIsInfoPanelOpen } = useUIStore();
   const { clearSelection, toggleSelection } = useSelectionStore();
 
-  const handleViewInfo = (item: any, type: 'file' | 'folder') => {
+  const handleViewInfo = (item: FileEntry | DriveFolder | VirtualFolder, type: 'file' | 'folder') => {
     clearSelection();
     toggleSelection({ type, item });
     setIsInfoPanelOpen(true);
