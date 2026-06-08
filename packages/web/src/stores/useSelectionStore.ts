@@ -12,12 +12,32 @@ interface SelectionState {
   clearSelection: () => void;
 }
 
+export const isSameItem = (a: SelectedItem, b: SelectedItem): boolean => {
+  if (a.type !== b.type) return false;
+  
+  if (a.type === 'file' && b.type === 'file') {
+    return a.item.id === b.item.id;
+  }
+  
+  if (a.type === 'folder' && b.type === 'folder') {
+    if (a.item.id && b.item.id) {
+      return a.item.id === b.item.id;
+    }
+    if ('googleFolderId' in a.item && 'googleFolderId' in b.item) {
+      return a.item.googleFolderId === b.item.googleFolderId;
+    }
+    return false;
+  }
+  
+  return false;
+};
+
 export const useSelectionStore = create<SelectionState>((set) => ({
   selectedItems: [],
   toggleSelection: (item) => set((state) => {
-    const exists = state.selectedItems.some(i => i.item.id === item.item.id);
+    const exists = state.selectedItems.some(i => isSameItem(i, item));
     if (exists) {
-      return { selectedItems: state.selectedItems.filter(i => i.item.id !== item.item.id) };
+      return { selectedItems: state.selectedItems.filter(i => !isSameItem(i, item)) };
     }
     return { selectedItems: [...state.selectedItems, item] };
   }),
