@@ -275,3 +275,61 @@ filesRouter.post('/upload/finalize', async (c) => {
 
   return c.json({ file: mapFileRow(created!), success: true }, 201);
 });
+
+// GET /api/files/trash
+filesRouter.get('/trash', async (c) => {
+  const userId = c.get('userId');
+  const db = c.env.DB;
+  
+  const { results } = await db.prepare(
+    `SELECT f.*, d.email as driveEmail FROM files f
+     JOIN drive_accounts d ON f.drive_account_id = d.id
+     WHERE f.user_id = ? AND f.is_trashed = 1
+     ORDER BY f.updated_at DESC`
+  ).bind(userId).all();
+
+  return c.json({
+    files: results.map((r: any) => ({
+      ...mapFileRow(r),
+      driveEmail: r.driveEmail,
+    }))
+  });
+});
+
+// POST /api/files/:id/restore
+filesRouter.post('/:id/restore', async (c) => {
+  const userId = c.get('userId');
+  const fileId = c.req.param('id');
+  
+  await c.env.DB.prepare('UPDATE files SET is_trashed = 0, updated_at = datetime("now") WHERE id = ? AND user_id = ?')
+    .bind(fileId, userId).run();
+	  return c.json({ success: true });
+});
+
+// DELETE /api/files/:id/permanent
+filesRouter.delete('/:id/permanent', async (c) => {
+  const userId = c.get('userId');
+  const fileId = c.req.param('id');
+  const db = c.env.DB;
+
+  const file = await db.prepare(
+    `SELECT f.google_file_id, d.id as driveId 
+     FROM files f
+     JOIN drive_accounts d ON f.drive_account_id = d.id
+     WHERE f.id = ? AND f.user_id = ? AND f.is_trashed = 1`
+  ).bind(fileId, userId).first<{ google_file_id: string; driveId: string }>();
+
+  if (!file) throw new AppError(404, 'File not found in trash');
+
+  const driveService = new GoogleDriveService(c.env.KV, c.env.GOOGLE_CLIENT_ID, c.env.GOOGLE_CLIENT_SECRET);
+  
+  try {
+    await driveService.deleteFile(file.driveId, file.google_file_id);
+  } catch (error) {
+    console.error('Failed to permanently delete file from Google Drive:', error);
+  }
+
+  await db.prepare('DELETE FROM files WHERE id = ? AND user_id = ?').bind(fileId, userId).run();
+
+  return c.json({ success: true });
+});
