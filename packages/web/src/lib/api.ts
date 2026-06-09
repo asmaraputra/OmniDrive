@@ -132,6 +132,12 @@ export const api = {
       method: 'PATCH',
       body: JSON.stringify({ is_active }),
     }),
+
+  // Audit Logs
+  getWorkspaceAuditLogs: (workspaceId: string) =>
+    request<{ logs: import('../types').AuditLog[] }>(`/api/workspaces/${workspaceId}/audit-logs`),
+  getAdminAuditLogs: () =>
+    request<{ logs: import('../types').AuditLog[] }>('/api/admin/audit-logs'),
 };
 
 export { ApiError };
