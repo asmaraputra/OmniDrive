@@ -407,3 +407,27 @@ filesRouter.delete('/:id/permanent', async (c) => {
 
   return c.json({ success: true });
 });
+
+filesRouter.patch('/:id/metadata', async (c) => {
+  const userId = c.get('userId');
+  const fileId = c.req.param('id');
+  const { metadata } = await c.req.json();
+  const db = c.env.DB;
+
+  const file = await db.prepare('SELECT user_id, workspace_id FROM files WHERE id = ?').bind(fileId).first<{ user_id: string; workspace_id: string }>();
+  if (!file) throw new AppError(404, 'File not found');
+
+  if (file.workspace_id) {
+    const { getWorkspaceRole, hasPermission } = await import('../middleware/rbac');
+    const role = await getWorkspaceRole(db, file.workspace_id, userId);
+    if (!role || !hasPermission(role, 'editor')) {
+      throw new AppError(403, 'Forbidden');
+    }
+  } else if (file.user_id !== userId) {
+    throw new AppError(403, 'Forbidden');
+  }
+
+  await db.prepare('UPDATE files SET metadata = ? WHERE id = ?').bind(JSON.stringify(metadata), fileId).run();
+  
+  return c.json({ success: true });
+});

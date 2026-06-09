@@ -212,3 +212,20 @@ workspacesRouter.delete('/:id/policies/:policyId', async (c) => {
 
   return c.json({ success: true });
 });
+
+workspacesRouter.patch('/:id/folders/:folderId/metadata', async (c) => {
+  const userId = c.get('userId');
+  const db = c.env.DB;
+  const workspaceId = c.req.param('id');
+  const folderId = c.req.param('folderId');
+  const { metadata } = await c.req.json();
+
+  const role = await getWorkspaceRole(db, workspaceId, userId);
+  if (!role || !hasPermission(role, 'editor')) {
+    return c.json({ error: 'Forbidden' }, 403);
+  }
+
+  await db.prepare('UPDATE workspace_folders SET metadata = ? WHERE id = ? AND workspace_id = ?').bind(JSON.stringify(metadata), folderId, workspaceId).run();
+
+  return c.json({ success: true });
+});
