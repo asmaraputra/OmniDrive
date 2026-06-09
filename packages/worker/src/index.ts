@@ -16,7 +16,7 @@ import { workspacesRouter } from './routes/workspaces';
 import { adminRouter } from './routes/admin';
 import { AutomationEngine } from './services/automation.service';
 
-const app = new Hono<AppContext>({ strict: false });
+export const app = new Hono<AppContext>({ strict: false });
 
 // Global middleware
 app.use('*', corsMiddleware());
