@@ -100,6 +100,52 @@ export const InfoPanel: React.FC = () => {
             )}
           </dl>
         </div>
+        
+        <div className="border-t border-gray-100 pt-4">
+          <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Tags & Metadata</h4>
+          {item.metadata ? (
+            <div className="flex flex-wrap gap-2 mb-3">
+              {Object.entries(typeof item.metadata === 'string' ? JSON.parse(item.metadata) : item.metadata).map(([k, v]) => (
+                <div key={k} className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full flex items-center">
+                  <span className="font-semibold mr-1">{k}:</span> {v as string}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-gray-400 mb-3">No tags applied.</p>
+          )}
+          <form 
+            onSubmit={async (e) => {
+              e.preventDefault();
+              const form = e.target as HTMLFormElement;
+              const key = (form.elements.namedItem('metaKey') as HTMLInputElement).value;
+              const value = (form.elements.namedItem('metaValue') as HTMLInputElement).value;
+              if (!key || !value) return;
+
+              const api = await import('../../lib/api');
+              const currentMeta = typeof item.metadata === 'string' ? JSON.parse(item.metadata || '{}') : (item.metadata || {});
+              const newMeta = { ...currentMeta, [key]: value };
+
+              try {
+                if (type === 'file') {
+                  await api.updateFileMetadata(item.id, newMeta);
+                } else if ((item as any).workspaceId) {
+                  await api.updateFolderMetadata((item as any).workspaceId, item.id, newMeta);
+                }
+                // Update local state temporarily for UX
+                item.metadata = newMeta;
+                form.reset();
+              } catch (err) {
+                console.error(err);
+              }
+            }}
+            className="flex gap-2"
+          >
+            <input name="metaKey" placeholder="Key" className="w-1/3 border rounded px-2 py-1 text-xs" />
+            <input name="metaValue" placeholder="Value" className="flex-1 border rounded px-2 py-1 text-xs" />
+            <button type="submit" className="bg-gray-800 text-white px-2 py-1 rounded text-xs">Add</button>
+          </form>
+        </div>
       </div>
     </aside>
   );
