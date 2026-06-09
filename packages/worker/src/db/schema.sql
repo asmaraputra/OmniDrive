@@ -70,6 +70,7 @@ CREATE TABLE IF NOT EXISTS workspace_folders (
     icon            TEXT,
     color           TEXT,
     is_starred      INTEGER NOT NULL DEFAULT 0,
+    metadata        TEXT DEFAULT '{}',
     created_at      TEXT NOT NULL DEFAULT (datetime('now')),
     updated_at      TEXT NOT NULL DEFAULT (datetime('now')),
     UNIQUE(workspace_id, parent_id, name)
@@ -92,6 +93,7 @@ CREATE TABLE IF NOT EXISTS files (
     web_content_link TEXT,
     is_trashed      INTEGER NOT NULL DEFAULT 0,
     is_starred      INTEGER NOT NULL DEFAULT 0,
+    metadata        TEXT DEFAULT '{}',
     google_created_at  TEXT,
     google_modified_at TEXT,
     synced_at       TEXT NOT NULL DEFAULT (datetime('now')),
