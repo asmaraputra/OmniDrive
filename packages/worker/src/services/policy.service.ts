@@ -29,10 +29,8 @@ export class PolicyService {
 
     if (!policy) return false;
 
-    const config = JSON.parse(policy.config) as { active?: boolean, prevent_deletion?: boolean };
-    // Depending on exactly how retention policy is configured. 
-    // We will assume active or prevent_deletion means it's protected.
-    return config.active === true || config.prevent_deletion === true;
+    const config = JSON.parse(policy.config) as { action: string, days?: number };
+    return config.action === 'prevent_deletion';
   }
 
   async updateWorkspaceStorage(workspaceId: string, sizeDelta: number) {
