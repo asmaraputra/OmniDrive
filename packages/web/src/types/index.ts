@@ -56,6 +56,7 @@ export interface WorkspaceFolder {
   parentId: string | null;
   icon: string | null;
   color: string | null;
+  metadata?: string | Record<string, string>;
   isStarred: boolean;
   createdAt: string;
   updatedAt: string;
@@ -76,6 +77,7 @@ export interface FileEntry {
   webViewLink: string | null;
   webContentLink: string | null;
   isTrashed: boolean;
+  metadata?: string | Record<string, string>;
   googleCreatedAt: string | null;
   googleModifiedAt: string | null;
   syncedAt: string;
