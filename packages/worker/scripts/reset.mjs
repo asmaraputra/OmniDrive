@@ -15,3 +15,12 @@ export async function promptUser(isRemote) {
     });
   });
 }
+
+export function resetD1(execSync, flag) {
+  console.log(`\n=> Mereset D1 Database (${flag})...`);
+  console.log('Menghapus semua tabel...');
+  execSync(`npx wrangler d1 execute omnidrive ${flag} --command="PRAGMA writable_schema = 1; delete from sqlite_master where type in ('table', 'index', 'trigger'); PRAGMA writable_schema = 0; VACUUM;"`, { stdio: 'inherit' });
+  
+  console.log('Menerapkan schema baru...');
+  execSync(`npx wrangler d1 execute omnidrive ${flag} --file=src/db/schema.sql`, { stdio: 'inherit' });
+}
