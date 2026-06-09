@@ -9,20 +9,40 @@ import { authGuard } from '../middleware/auth-guard';
 
 export const authRouter = new Hono<AppContext>({ strict: false });
 
+authRouter.get('/setup-status', async (c) => {
+  const result = await c.env.DB.prepare('SELECT COUNT(*) as count FROM users').first<{ count: number }>();
+  return c.json({ isSetup: (result?.count || 0) > 0 });
+});
+
 authRouter.post('/register', async (c) => {
-  const { username, password, email } = await c.req.json();
+  const { username, password, email, invitation_code } = await c.req.json();
   if (!username || !password) throw new AppError(400, 'Username and password required');
 
   const db = c.env.DB;
+  
+  // Check setup status
+  const setupRes = await db.prepare('SELECT COUNT(*) as count FROM users').first<{ count: number }>();
+  const isSetup = (setupRes?.count || 0) > 0;
+
+  if (isSetup) {
+    if (!invitation_code) throw new AppError(400, 'Invitation code required');
+    const inv = await db.prepare('SELECT id, max_uses, used_count FROM invitation_codes WHERE code = ?').bind(invitation_code).first<{ id: string, max_uses: number, used_count: number }>();
+    if (!inv) throw new AppError(400, 'Invalid invitation code');
+    if (inv.max_uses > 0 && inv.used_count >= inv.max_uses) throw new AppError(400, 'Invitation code has reached its usage limit');
+    
+    await db.prepare('UPDATE invitation_codes SET used_count = used_count + 1 WHERE id = ?').bind(inv.id).run();
+  }
+
   const existing = await db.prepare('SELECT id FROM users WHERE username = ?').bind(username).first();
   if (existing) throw new AppError(400, 'Username already exists');
 
   const id = generateId();
   const passwordHash = await bcrypt.hash(password, 10);
+  const isSuperAdmin = isSetup ? 0 : 1;
   
   await db.prepare(
-    'INSERT INTO users (id, username, password_hash, email, name) VALUES (?, ?, ?, ?, ?)'
-  ).bind(id, username, passwordHash, email || null, username).run();
+    'INSERT INTO users (id, username, password_hash, email, name, is_super_admin) VALUES (?, ?, ?, ?, ?, ?)'
+  ).bind(id, username, passwordHash, email || null, username, isSuperAdmin).run();
 
   const sessionData: SessionData = { userId: id, username, email: email || null, name: username, avatarUrl: null };
   const sessionId = generateId();
@@ -30,7 +50,7 @@ authRouter.post('/register', async (c) => {
   await c.env.KV.put(`session:${sessionId}`, JSON.stringify(sessionData), { expirationTtl: 60 * 60 * 24 * 7 });
   setCookie(c, 'omnidrive_sid', sessionId, { path: '/', secure: true, httpOnly: true, sameSite: 'None', maxAge: 60 * 60 * 24 * 7 });
 
-  return c.json({ success: true, user: sessionData });
+  return c.json({ success: true, user: sessionData, isSuperAdmin: !!isSuperAdmin });
 });
 
 authRouter.post('/login', async (c) => {
