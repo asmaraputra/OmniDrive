@@ -12,6 +12,7 @@ import { filesRouter } from './routes/files';
 import { sharedRouter } from './routes/shared';
 import { automationsRouter } from './routes/automations';
 import { workspacesRouter } from './routes/workspaces';
+import { adminRouter } from './routes/admin';
 import { AutomationEngine } from './services/automation.service';
 
 const app = new Hono<AppContext>({ strict: false });
@@ -27,6 +28,7 @@ app.route('/api/files', filesRouter);
 app.route('/api/shared', sharedRouter);
 app.route('/api/automations', automationsRouter);
 app.route('/api/workspaces', workspacesRouter);
+app.route('/api/admin', adminRouter);
 
 // Health check (public)
 app.get('/api/health', (c) => {
