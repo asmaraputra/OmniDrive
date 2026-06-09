@@ -21,8 +21,25 @@ export async function promptUser(isRemote) {
 
 export function resetD1(execSync, flag) {
   console.log(`\n=> Mereset D1 Database (${flag})...`);
-  console.log('Menghapus semua tabel...');
-  execSync(`npx wrangler d1 execute omnidrive ${flag} --command="PRAGMA writable_schema = 1; delete from sqlite_master where type in ('table', 'index', 'trigger'); PRAGMA writable_schema = 0; VACUUM;"`, { stdio: 'inherit' });
+  console.log('Mendapatkan daftar tabel...');
+  
+  const tablesOutput = execSync(`npx wrangler d1 execute omnidrive ${flag} --command="SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name NOT LIKE '_cf_%';" --json`).toString();
+  
+  const jsonStart = tablesOutput.indexOf('[');
+  if (jsonStart !== -1) {
+    const parsed = JSON.parse(tablesOutput.substring(jsonStart));
+    const tables = parsed[0]?.results?.map(r => r.name) || [];
+    
+    if (tables.length > 0) {
+      console.log(`Menghapus ${tables.length} tabel...`);
+      const dropCommands = tables.map(t => `DROP TABLE IF EXISTS ${t};`).join(' ');
+      execSync(`npx wrangler d1 execute omnidrive ${flag} --command="PRAGMA defer_foreign_keys = ON; ${dropCommands}"`, { stdio: 'inherit' });
+    } else {
+      console.log('Database D1 sudah kosong.');
+    }
+  } else {
+    console.warn('Gagal mendapatkan daftar tabel, melanjutkan penerapan schema...');
+  }
   
   console.log('Menerapkan schema baru...');
   execSync(`npx wrangler d1 execute omnidrive ${flag} --file=src/db/schema.sql`, { stdio: 'inherit' });
