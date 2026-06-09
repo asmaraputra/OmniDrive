@@ -11,6 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
+import { Omnibar } from './Omnibar';
 
 export const Header: React.FC = () => {
   const toggleSidebar = useUIStore((state) => state.toggleSidebar);
@@ -40,19 +41,7 @@ export const Header: React.FC = () => {
         </div>
       </div>
       
-      <div className="flex-1 max-w-[720px]">
-        <div className="bg-[#e9eef6] hover:bg-white hover:shadow-md focus-within:bg-white focus-within:shadow-md rounded-full h-12 flex items-center px-4 transition-all">
-          <Search size={20} className="text-gray-600 mr-3" />
-          <input 
-            type="text" 
-            placeholder="Search in Drive" 
-            className="bg-transparent outline-none w-full text-gray-800 placeholder-gray-600" 
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={handleKeyDown}
-          />
-        </div>
-      </div>
+      <Omnibar />
       
       <div className="flex items-center gap-2 px-2 text-gray-600">
 
