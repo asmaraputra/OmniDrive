@@ -149,6 +149,25 @@ export const api = {
     }),
   deleteWorkspacePolicy: (workspaceId: string, policyId: string) =>
     request<{ success: boolean }>(`/api/workspaces/${workspaceId}/policies/${policyId}`, { method: 'DELETE' }),
+
+  // Metadata & Search
+  updateFileMetadata: (fileId: string, metadata: Record<string, string>) =>
+    request<{ success: boolean }>(`/api/files/${fileId}/metadata`, {
+      method: 'PATCH',
+      body: JSON.stringify({ metadata }),
+    }),
+  updateFolderMetadata: (workspaceId: string, folderId: string, metadata: Record<string, string>) =>
+    request<{ success: boolean }>(`/api/workspaces/${workspaceId}/folders/${folderId}/metadata`, {
+      method: 'PATCH',
+      body: JSON.stringify({ metadata }),
+    }),
+  globalSearch: (query: string, workspaceId?: string, metadata?: Record<string, string>) => {
+    const params = new URLSearchParams();
+    if (query) params.set('q', query);
+    if (workspaceId) params.set('workspaceId', workspaceId);
+    if (metadata && Object.keys(metadata).length > 0) params.set('metadata', JSON.stringify(metadata));
+    return request<{ files: import('../types').FileEntry[], query: string }>(`/api/files/search?${params.toString()}`);
+  },
 };
 
 export { ApiError };
