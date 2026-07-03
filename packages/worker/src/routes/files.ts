@@ -3,8 +3,8 @@ import type { AppContext } from '../types/env';
 import { generateId } from '../lib/id';
 import { authGuard } from '../middleware/auth-guard';
 import { AppError } from '../middleware/error-handler';
-import { DriveService } from '../services/drive.service';
 import { GoogleDriveService } from '../services/google-drive';
+import { resolveDrivesWithQuota } from '../services/drive-quota';
 import { UploadRouter } from '../services/upload-router';
 import { AutomationEngine } from '../services/automation.service';
 import { PolicyService } from '../services/policy.service';
@@ -26,7 +26,7 @@ filesRouter.get('/recent', async (c) => {
     LEFT JOIN workspace_members wm ON f.workspace_id = wm.workspace_id
     WHERE (f.user_id = ? OR wm.user_id = ?)
       AND f.is_trashed = 0
-    ORDER BY f.updated_at DESC LIMIT 20
+    ORDER BY COALESCE(f.google_modified_at, f.synced_at, f.updated_at) DESC LIMIT 20
   `).bind(userId, userId).all<Record<string, unknown> & { driveEmail: string }>();
 
   const { results: folderRows } = await db.prepare(`
@@ -348,7 +348,7 @@ filesRouter.post('/:id/move-drive', async (c) => {
 // Initialize upload (returns Google Drive Resumable URL)
 filesRouter.post('/upload/init', async (c) => {
   const userId = c.get('userId');
-  const { name, mimeType, size, folderId, workspaceId } = await c.req.json();
+  const { name, mimeType, size, folderId, workspaceId, driveAccountId } = await c.req.json();
   console.log(`Init upload for folder: ${folderId}`); // prevent unused var error
   const db = c.env.DB;
 
@@ -360,35 +360,30 @@ filesRouter.post('/upload/init', async (c) => {
     }
   }
 
-  // 1. Get all drives to calculate routing
-  const { results: driveRows } = await db.prepare('SELECT * FROM drive_accounts WHERE user_id = ?').bind(userId).all();
-  if (driveRows.length === 0) throw new AppError(400, 'No connected drives');
+  const drives = await resolveDrivesWithQuota(c.env, db, userId, (driveId, total, used) => {
+    c.executionCtx.waitUntil(
+      db.prepare('UPDATE drive_accounts SET total_quota = ?, used_quota = ?, quota_updated_at = CURRENT_TIMESTAMP WHERE id = ?')
+        .bind(total, used, driveId)
+        .run()
+    );
+  });
+  if (drives.length === 0) throw new AppError(400, 'No connected drives');
 
-  const drives = driveRows.map(mapDriveRow).map((d) => ({
-    ...d,
-    freeSpace: Math.max(0, d.totalQuota - d.usedQuota),
-    usagePercent: d.totalQuota > 0 ? (d.usedQuota / d.totalQuota) * 100 : 0
-  }));
+  const hasAnyTokens = await Promise.all(
+    drives.map(async (d) =>
+      !!(await c.env.KV.get(`tokens:${d.id}`) ?? await c.env.KV.get(`oauth:${d.id}`))
+    )
+  );
+  if (!hasAnyTokens.some(Boolean)) {
+    throw new AppError(400, 'Google Drive session expired. Disconnect and reconnect your account in Settings.');
+  }
 
-  // 2. Select target drive using UploadRouter
   const router = new UploadRouter(drives);
-  const targetDrive = router.selectDriveForUpload(size);
+  const targetDrive = router.selectDriveForUpload(size, driveAccountId);
 
   const gDrive = new GoogleDriveService(c.env.KV, c.env.GOOGLE_CLIENT_ID, c.env.GOOGLE_CLIENT_SECRET, c.env.TOKEN_ENCRYPTION_KEY);
-  const accessToken = await gDrive.getValidToken(targetDrive.id);
-
-  const driveService = new DriveService(c.env, targetDrive.id, {
-    accessToken,
-    refreshToken: '',
-    expiresAt: Date.now() + 3_600_000,
-  });
-  
-  // Note: we place it in root or a specific Omnidrive hidden folder inside Google Drive.
-  // For simplicity, we just put it in root of that specific Drive.
-  const uploadUrl = await driveService.createResumableUploadSession({
-    name,
-    mimeType,
-  });
+  const parentFolderId = targetDrive.rootFolderId || 'root';
+  const uploadUrl = await gDrive.initiateResumableUpload(targetDrive.id, name, mimeType, parentFolderId);
 
   // 5. Return the URL so the client can stream bytes directly to Google
   return c.json({

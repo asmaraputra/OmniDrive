@@ -9,6 +9,14 @@ import { mapDriveRow, mapDriveFolderRow, mapFileRow } from '../types';
 import { generateId } from '../lib/id';
 import type { BreadcrumbItem } from '../types';
 import { generatePKCE } from '../lib/pkce';
+import { computeDriveQuota } from '../lib/storage-quota';
+import { encrypt } from '../lib/crypto';
+import { resolveGoogleFolderId } from '../lib/drive-folder';
+import {
+  fetchServiceAccountAccessToken,
+  parseServiceAccountJson,
+  verifySharedFolderAccess,
+} from '../lib/google-service-account';
 
 export async function buildDriveBreadcrumb(db: D1Database, driveId: string, googleFolderId: string): Promise<BreadcrumbItem[]> {
   const path: BreadcrumbItem[] = [];
@@ -90,27 +98,27 @@ drivesRouter.get('/', async (c) => {
 
   const drivesWithQuota = await Promise.all(drives.map(async (drive) => {
     const hasTokens = await c.env.KV.get(`tokens:${drive.id}`) ?? await c.env.KV.get(`oauth:${drive.id}`);
-    if (!hasTokens) return { ...drive, freeSpace: 0, usagePercent: 0 };
+    if (!hasTokens) {
+      const { freeSpace, usagePercent } = computeDriveQuota(drive);
+      return { ...drive, freeSpace, usagePercent };
+    }
 
     try {
       const driveService = new GoogleDriveService(c.env.KV, c.env.GOOGLE_CLIENT_ID, c.env.GOOGLE_CLIENT_SECRET, c.env.TOKEN_ENCRYPTION_KEY);
       const quota = await driveService.getQuota(drive.id);
-
-      const freeSpace = quota.total - quota.used;
-      const usagePercent = quota.total > 0 ? (quota.used / quota.total) * 100 : 0;
 
       c.executionCtx.waitUntil(
         db.prepare('UPDATE drive_accounts SET total_quota = ?, used_quota = ?, quota_updated_at = CURRENT_TIMESTAMP WHERE id = ?')
           .bind(quota.total, quota.used, drive.id).run()
       );
 
-      return { ...drive, totalQuota: quota.total, usedQuota: quota.used, freeSpace, usagePercent };
+      const computed = computeDriveQuota(drive, quota);
+      return { ...drive, ...computed };
 
     } catch (e) {
       console.error(`Failed to fetch quota for drive ${drive.id}`, e);
-      const freeSpace = Math.max(0, drive.totalQuota - drive.usedQuota);
-      const usagePercent = drive.totalQuota > 0 ? (drive.usedQuota / drive.totalQuota) * 100 : 0;
-      return { ...drive, freeSpace, usagePercent };
+      const computed = computeDriveQuota({ totalQuota: 0, usedQuota: drive.usedQuota });
+      return { ...drive, ...computed };
     }
   }));
 
@@ -122,6 +130,94 @@ drivesRouter.get('/', async (c) => {
   };
 
   return c.json({ drives: drivesWithQuota, aggregate });
+});
+
+drivesRouter.post('/service-account', async (c) => {
+  const userId = c.get('userId');
+  const body = await c.req.json<{ credentials?: string; folderId?: string }>();
+  const credentials = body.credentials?.trim();
+  const folderId = body.folderId?.trim();
+
+  if (!credentials) throw new AppError(400, 'Service account JSON is required');
+  if (!folderId) throw new AppError(400, 'Shared folder ID is required');
+
+  let sa;
+  try {
+    sa = parseServiceAccountJson(credentials);
+  } catch (err) {
+    throw new AppError(400, err instanceof Error ? err.message : 'Invalid service account JSON');
+  }
+
+  const serviceAccount = { clientEmail: sa.client_email, privateKey: sa.private_key };
+
+  let accessToken: string;
+  let expiresAt: number;
+  try {
+    ({ accessToken, expiresAt } = await fetchServiceAccountAccessToken(serviceAccount));
+  } catch (err) {
+    throw new AppError(400, err instanceof Error ? err.message : 'Service account authentication failed');
+  }
+
+  let folderInfo: { id: string; name: string };
+  try {
+    folderInfo = await verifySharedFolderAccess(accessToken, folderId);
+  } catch (err) {
+    throw new AppError(400, err instanceof Error ? err.message : 'Cannot access shared folder');
+  }
+
+  const db = c.env.DB;
+
+  const existing = await db
+    .prepare('SELECT id FROM drive_accounts WHERE user_id = ? AND google_account_id = ?')
+    .bind(userId, sa.client_email)
+    .first();
+
+  if (existing) throw new AppError(409, 'This service account is already connected');
+
+  const driveId = generateId();
+  const countRow = await db
+    .prepare('SELECT COUNT(*) as count FROM drive_accounts WHERE user_id = ?')
+    .bind(userId)
+    .first<{ count: number }>();
+  const isPrimary = (countRow?.count ?? 0) === 0 ? 1 : 0;
+
+  await db
+    .prepare(
+      `INSERT INTO drive_accounts (id, user_id, google_account_id, email, name, type, is_primary, root_folder_id)
+       VALUES (?, ?, ?, ?, ?, 'service_account', ?, ?)`
+    )
+    .bind(
+      driveId,
+      userId,
+      sa.client_email,
+      sa.client_email,
+      folderInfo.name || sa.project_id || sa.client_email,
+      isPrimary,
+      folderId
+    )
+    .run();
+
+  const tokens = {
+    authType: 'service_account' as const,
+    accessToken,
+    expiresAt,
+    serviceAccount,
+  };
+  await c.env.KV.put(`tokens:${driveId}`, await encrypt(JSON.stringify(tokens), c.env.TOKEN_ENCRYPTION_KEY));
+
+  const driveRow = await db.prepare('SELECT * FROM drive_accounts WHERE id = ?').bind(driveId).first();
+  if (driveRow) {
+    const driveObj = mapDriveRow(driveRow as Record<string, unknown>);
+    const driveService = new GoogleDriveService(
+      c.env.KV,
+      c.env.GOOGLE_CLIENT_ID,
+      c.env.GOOGLE_CLIENT_SECRET,
+      c.env.TOKEN_ENCRYPTION_KEY
+    );
+    c.executionCtx.waitUntil(syncDriveAccount(driveObj, db, c.env.KV, driveService));
+  }
+
+  return c.json({ success: true, driveId });
 });
 
 // ─── Folder read endpoint (from DB, no Google API call) ───
@@ -234,8 +330,10 @@ drivesRouter.post('/:driveId/folders/:googleFolderId/sync', async (c) => {
   const hasTokens = await c.env.KV.get(`tokens:${driveId}`) ?? await c.env.KV.get(`oauth:${driveId}`);
   if (!hasTokens) return c.json({ error: 'No tokens for drive' }, 400);
 
+  const drive = mapDriveRow(driveRow as Record<string, unknown>);
   const driveService = new GoogleDriveService(c.env.KV, c.env.GOOGLE_CLIENT_ID, c.env.GOOGLE_CLIENT_SECRET, c.env.TOKEN_ENCRYPTION_KEY);
-  const { files: gFiles, folders: gFolders } = await driveService.listFolderContents(driveId, googleFolderId);
+  const effectiveFolderId = resolveGoogleFolderId(drive, googleFolderId);
+  const { files: gFiles, folders: gFolders } = await driveService.listFolderContents(driveId, effectiveFolderId);
 
   const ownerUserId = (driveRow as Record<string, unknown>).user_id as string;
 
@@ -326,12 +424,36 @@ drivesRouter.post('/:driveId/folders/:googleFolderId/sync', async (c) => {
 drivesRouter.delete('/:id', async (c) => {
   const userId = c.get('userId');
   const driveId = c.req.param('id');
+  const db = c.env.DB;
 
-  const driveService = new GoogleDriveService(c.env.KV, c.env.GOOGLE_CLIENT_ID, c.env.GOOGLE_CLIENT_SECRET, c.env.TOKEN_ENCRYPTION_KEY);
-  await driveService.revokeTokens(driveId);
+  const row = await db
+    .prepare('SELECT * FROM drive_accounts WHERE id = ? AND user_id = ?')
+    .bind(driveId, userId)
+    .first();
 
-  await c.env.DB.prepare('DELETE FROM drive_accounts WHERE id = ? AND user_id = ?')
+  if (!row) throw new AppError(404, 'Drive not found');
+
+  const wasPrimary = (row as Record<string, unknown>).is_primary === 1;
+  const driveType = (row as Record<string, unknown>).type as string;
+
+  if (driveType === 'oauth') {
+    const driveService = new GoogleDriveService(c.env.KV, c.env.GOOGLE_CLIENT_ID, c.env.GOOGLE_CLIENT_SECRET, c.env.TOKEN_ENCRYPTION_KEY);
+    await driveService.revokeTokens(driveId);
+  }
+
+  await db.prepare('DELETE FROM drive_accounts WHERE id = ? AND user_id = ?')
     .bind(driveId, userId).run();
+
+  if (wasPrimary) {
+    const next = await db
+      .prepare('SELECT id FROM drive_accounts WHERE user_id = ? ORDER BY created_at ASC LIMIT 1')
+      .bind(userId)
+      .first<{ id: string }>();
+    if (next) {
+      await db.prepare('UPDATE drive_accounts SET is_primary = 1 WHERE id = ?')
+        .bind(next.id).run();
+    }
+  }
 
   await c.env.KV.delete(`tokens:${driveId}`);
   await c.env.KV.delete(`oauth:${driveId}`);

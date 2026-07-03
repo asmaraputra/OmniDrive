@@ -1,4 +1,5 @@
 import type { OAuthTokens, QuotaCache } from '../types/index';
+import { parseStorageQuota } from '../lib/storage-quota';
 
 const DRIVE_API = 'https://www.googleapis.com/drive/v3';
 const TOKEN_URL = 'https://oauth2.googleapis.com/token';
@@ -60,10 +61,47 @@ export class GoogleDriveService {
 
   async getValidToken(driveAccountId: string): Promise<string> {
     const tokens = await this.loadTokens(driveAccountId);
+    if (tokens.authType === 'service_account' && tokens.serviceAccount) {
+      if (tokens.expiresAt > Date.now() + 60_000) {
+        return tokens.accessToken;
+      }
+      return this.refreshServiceAccountToken(driveAccountId, tokens);
+    }
     if (tokens.expiresAt > Date.now() + 60_000) {
       return tokens.accessToken;
     }
+    if (!tokens.refreshToken) {
+      throw new Error(`No refresh token for drive ${driveAccountId}`);
+    }
     return this.refreshToken(driveAccountId, tokens.refreshToken);
+  }
+
+  private async persistTokens(driveAccountId: string, tokens: import('../types/env').OAuthTokens): Promise<void> {
+    const serialized = JSON.stringify(tokens);
+    if (this.encryptionKey) {
+      const { encrypt } = await import('../lib/crypto');
+      await this.kv.put(`tokens:${driveAccountId}`, await encrypt(serialized, this.encryptionKey));
+    } else {
+      await this.kv.put(`tokens:${driveAccountId}`, serialized);
+    }
+  }
+
+  private async refreshServiceAccountToken(
+    driveAccountId: string,
+    tokens: import('../types/env').OAuthTokens
+  ): Promise<string> {
+    if (!tokens.serviceAccount) {
+      throw new Error(`No service account credentials for drive ${driveAccountId}`);
+    }
+    const { fetchServiceAccountAccessToken } = await import('../lib/google-service-account');
+    const refreshed = await fetchServiceAccountAccessToken(tokens.serviceAccount);
+    const nextTokens = {
+      ...tokens,
+      accessToken: refreshed.accessToken,
+      expiresAt: refreshed.expiresAt,
+    };
+    await this.persistTokens(driveAccountId, nextTokens);
+    return refreshed.accessToken;
   }
 
   // ponytail: best-effort revoke on disconnect; Google ignores already-revoked tokens
@@ -98,18 +136,14 @@ export class GoogleDriveService {
     const data: { access_token: string; expires_in: number } = await response.json();
 
     // Update KV with new access token (keep existing refresh token)
-    const newTokens = JSON.stringify({
+    const existing = await this.loadTokens(driveAccountId);
+    const nextTokens = {
+      ...existing,
       accessToken: data.access_token,
       refreshToken,
       expiresAt: Date.now() + data.expires_in * 1000,
-    } satisfies OAuthTokens);
-
-    if (this.encryptionKey) {
-      const { encrypt } = await import('../lib/crypto');
-      await this.kv.put(`tokens:${driveAccountId}`, await encrypt(newTokens, this.encryptionKey));
-    } else {
-      await this.kv.put(`tokens:${driveAccountId}`, newTokens);
-    }
+    } satisfies import('../types/env').OAuthTokens;
+    await this.persistTokens(driveAccountId, nextTokens);
 
     return data.access_token;
   }
@@ -123,7 +157,10 @@ export class GoogleDriveService {
     const cached = await this.kv.get(`quota:${driveAccountId}`);
     if (cached) {
       const quota: QuotaCache = JSON.parse(cached);
-      return { total: quota.total, used: quota.used };
+      // Skip stale cache entries written before unlimited-quota handling (total=0)
+      if (quota.total > 0) {
+        return { total: quota.total, used: quota.used };
+      }
     }
 
     // Fetch from Google Drive API
@@ -140,8 +177,7 @@ export class GoogleDriveService {
       storageQuota: { limit?: string; usage?: string };
     } = await response.json();
 
-    const total = parseInt(data.storageQuota.limit ?? '0', 10);
-    const used = parseInt(data.storageQuota.usage ?? '0', 10);
+    const { total, used } = parseStorageQuota(data.storageQuota.limit, data.storageQuota.usage);
 
     // Cache in KV (5-min TTL)
     await this.kv.put(

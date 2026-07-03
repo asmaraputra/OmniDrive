@@ -12,6 +12,7 @@ import type { DriveAccount } from '../types/index';
 import { mapDriveRow } from '../types/index';
 import { GoogleDriveService, type GDriveFile, type GDriveFolder } from './google-drive';
 import { generateId } from '../lib/id';
+import { resolveSyncRootFolderId } from '../lib/drive-folder';
 import type { Env } from '../types/env';
 
 const MIME_TYPE_FOLDER = 'application/vnd.google-apps.folder';
@@ -91,7 +92,7 @@ async function performInitialSync(
 ): Promise<boolean> {
   console.log(`Initial sync for ${drive.email} — chunk processing`);
 
-  const rootFolderId = await driveService.getRootFolderId(drive.id);
+  const rootFolderId = await resolveSyncRootFolderId(drive, () => driveService.getRootFolderId(drive.id));
   const iterator = driveService.iterateAllFilesAndFolders(drive.id, startPageToken);
 
   for await (const chunk of iterator) {
@@ -129,7 +130,7 @@ async function performIncrementalSync(
 ): Promise<string> {
   console.log(`Incremental sync for ${drive.email} from token ${pageToken}`);
 
-  const rootFolderId = await driveService.getRootFolderId(drive.id);
+  const rootFolderId = await resolveSyncRootFolderId(drive, () => driveService.getRootFolderId(drive.id));
 
   let currentToken = pageToken;
   let hasMore = true;
