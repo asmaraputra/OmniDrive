@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Removed
+
+- **Pembersihan artefak dev/testing:** hapus skrip smoke-test production (`scripts/prod-browser-test*.mjs`, `scripts/prod-upload-test.mjs`), skrip one-off migrasi/rename (`replace_terms.mjs`, `packages/worker/refactor*.js`, `packages/worker/scripts/add_sync_cache_columns.sql`), skrip debug SQLite (`query.cjs`, `query2.cjs`), dump diff (`full_diff.txt`), dan artefak lokal hasil test (`.prod-auth-state.json`, `.prod-test-files/`). Hapus `console.log` debug di `sync.ts` dan `index.ts` (cron handler); pertahankan `console.error` untuk error handling.
+
 ### Changed
 
 - **S3 bucket lifecycle rules (Option A — trash, bukan hard delete):** endpoint S3 baru `PutBucketLifecycleConfiguration` / `GetBucketLifecycleConfiguration` / `DeleteBucketLifecycleConfiguration` via subresource `?lifecycle` di route `/:bucket` (kompatibel aws-cli/rclone). Rule `Expiration/Days` per prefix disimpan di tabel baru `s3_lifecycle_rules` (migrasi `0008`). Cron `*/30` yang sudah ada menjalankan `runLifecycleExpiration`: file yang lebih tua dari `expiration_days` di-**trash** ke Google Drive (`trashFile`, recoverable ~30 hari) + `is_trashed = 1`, **bukan** hard delete. Parser XML pakai regex (tanpa dep baru, ikut pola multipart). Test: `tests/s3-lifecycle.test.ts`.

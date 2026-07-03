@@ -33,8 +33,4 @@ docs/
 mcps/
 terminals/
 
-# Production smoke-test artifacts (contains saved auth session = secret)
-scripts/.prod-auth-state.json
-scripts/.prod-test-files/
-scripts/prod-browser-test-results.json
-scripts/prod-upload-test-results.json
+

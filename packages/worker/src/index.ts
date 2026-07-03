@@ -50,9 +50,6 @@ app.onError((err, c) => {
   
   if (status >= 500) {
     console.error('Unhandled server error:', err);
-  } else {
-    // Optional: Just log 4xx errors as info if needed, or suppress
-    // console.info(`[${status}] ${message}`);
   }
   
   if (c.req.path.startsWith('/s3')) {
@@ -122,8 +119,7 @@ app.get('/api/health', (c) => {
 
 export default {
   fetch: app.fetch,
-  async scheduled(event: ScheduledController, env: Env, ctx: ExecutionContext) {
-    console.log('Cron triggered:', event.cron);
+  async scheduled(_event: ScheduledController, env: Env, ctx: ExecutionContext) {
     ctx.waitUntil(runScheduledSync(env));
     ctx.waitUntil(runLifecycleExpiration(env));
     const engine = new AutomationEngine(env);

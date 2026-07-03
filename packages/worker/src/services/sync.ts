@@ -90,14 +90,11 @@ async function performInitialSync(
   driveService: GoogleDriveService,
   startPageToken?: string
 ): Promise<boolean> {
-  console.log(`Initial sync for ${drive.email} — chunk processing`);
-
   const rootFolderId = await resolveSyncRootFolderId(drive, () => driveService.getRootFolderId(drive.id));
   const iterator = driveService.iterateAllFilesAndFolders(drive.id, startPageToken);
 
   for await (const chunk of iterator) {
     if (getIsShuttingDown()) {
-      console.log(`Sync interrupted by shutdown for ${drive.email}. State saved.`);
       return false;
     }
 
@@ -128,8 +125,6 @@ async function performIncrementalSync(
   pageToken: string,
   driveService: GoogleDriveService
 ): Promise<string> {
-  console.log(`Incremental sync for ${drive.email} from token ${pageToken}`);
-
   const rootFolderId = await resolveSyncRootFolderId(drive, () => driveService.getRootFolderId(drive.id));
 
   let currentToken = pageToken;
@@ -261,12 +256,9 @@ export async function runScheduledSync(env: {
   const rows = await env.DB.prepare("SELECT * FROM drive_accounts WHERE type = 'oauth'").all();
   const driveAccounts = (rows.results ?? []).map(mapDriveRow);
 
-  console.log(`Syncing ${driveAccounts.length} drive accounts`);
-
   await Promise.allSettled(
     driveAccounts.map(async (drive) => {
       if (activeSyncs.has(drive.id)) {
-        console.log(`Skipping sync for ${drive.email} as it is already syncing.`);
         return;
       }
 
