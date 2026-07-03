@@ -5,10 +5,10 @@ import { FileGrid } from '../components/files/FileGrid';
 import { ShareModal } from '../components/ShareModal';
 import { MoveDriveModal } from '../components/MoveDriveModal';
 import { FilePreviewModal } from '../components/FilePreviewModal';
-import { formatFileSize, getDriveColor, parseSizeToBytes } from '../lib/utils';
+import { formatFileSize, getDriveColor } from '../lib/utils';
 import { api } from '../lib/api';
 import { useSharedStore } from '../stores/sharedStore';
-import { HardDrive, RefreshCw, TrendingUp, Clock, Settings2 } from 'lucide-react';
+import { HardDrive, RefreshCw, TrendingUp, Clock } from 'lucide-react';
 import { useToastStore } from '../stores/toastStore';
 import type { FileEntry } from '../types';
 
@@ -19,36 +19,8 @@ export function DashboardPage() {
   const [shareTarget, setShareTarget] = useState<{ id: string, type: 'file' | 'folder' } | null>(null);
   const [moveDriveFiles, setMoveDriveFiles] = useState<FileEntry[]>([]);
   const [previewFile, setPreviewFile] = useState<FileEntry | null>(null);
-  const [quotaEditingId, setQuotaEditingId] = useState<string | null>(null);
-  const [quotaInput, setQuotaInput] = useState('');
-  const [quotaSaving, setQuotaSaving] = useState(false);
   const { addToast } = useToastStore();
 
-  const startEditQuota = (driveId: string, currentOverride: number | null | undefined, totalQuota: number) => {
-    // Show override if set, else current computed total so the user sees what's in use.
-    setQuotaInput(formatFileSize(currentOverride && currentOverride > 0 ? currentOverride : totalQuota));
-    setQuotaEditingId(driveId);
-  };
-
-  const saveQuota = async (driveId: string) => {
-    const bytes = parseSizeToBytes(quotaInput);
-    if (bytes === null) {
-      addToast('error', 'Invalid size. Use format like 5 TB, 500 GB, 200 GB');
-      return;
-    }
-    setQuotaSaving(true);
-    try {
-      await api.updateDriveQuota(driveId, bytes === 0 ? null : bytes);
-      addToast('success', 'Storage capacity updated');
-      setQuotaEditingId(null);
-      await fetchDrives();
-    } catch (e) {
-      addToast('error', e instanceof Error ? e.message : 'Failed to update capacity');
-    } finally {
-      setQuotaSaving(false);
-    }
-  };
-  
   const { fetchSharedLinks, isTargetShared } = useSharedStore();
 
   const refreshRecent = useCallback(() => {
@@ -80,7 +52,7 @@ export function DashboardPage() {
 
       {/* Aggregate Quota */}
       {aggregate.driveCount > 0 && (
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-2xl p-5">
+        <div className="bg-white border border-gray-200 rounded-2xl p-5">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <TrendingUp size={18} className="text-blue-600" />
@@ -125,56 +97,12 @@ export function DashboardPage() {
                       )}
                     </div>
                   </div>
-                  <button
-                    className="ml-auto p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
-                    onClick={() => startEditQuota(drive.id, drive.quotaOverride, drive.totalQuota)}
-                    title="Set storage capacity manually (for Workspace / service accounts where Google omits the limit)"
-                  >
-                    <Settings2 size={14} />
-                  </button>
                 </div>
-                {quotaEditingId === drive.id ? (
-                  <div className="space-y-2">
-                    <input
-                      autoFocus
-                      className="w-full px-2 py-1 text-xs border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-blue-500"
-                      placeholder="e.g. 5 TB, 500 GB"
-                      value={quotaInput}
-                      onChange={(e) => setQuotaInput(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') saveQuota(drive.id);
-                        if (e.key === 'Escape') setQuotaEditingId(null);
-                      }}
-                    />
-                    <p className="text-[10px] text-gray-400">
-                      Google's API hides the real limit for Workspace / service accounts. Enter the actual capacity (e.g. 5 TB). Set 0 to clear.
-                    </p>
-                    <div className="flex gap-2">
-                      <button
-                        className="px-2 py-1 text-xs text-white bg-blue-500 rounded hover:bg-blue-600 disabled:opacity-50"
-                        onClick={() => saveQuota(drive.id)}
-                        disabled={quotaSaving}
-                      >
-                        {quotaSaving ? 'Saving…' : 'Save'}
-                      </button>
-                      <button
-                        className="px-2 py-1 text-xs text-gray-600 bg-gray-100 rounded hover:bg-gray-200"
-                        onClick={() => setQuotaEditingId(null)}
-                        disabled={quotaSaving}
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <>
-                    <QuotaBar used={drive.usedQuota} total={drive.totalQuota} color={getDriveColor(i)} showLabel={false} />
-                    <div className="flex justify-between mt-2 text-xs text-gray-400">
-                      <span>{formatFileSize(drive.usedQuota)} used</span>
-                      <span>{drive.usagePercent}%</span>
-                    </div>
-                  </>
-                )}
+                <QuotaBar used={drive.usedQuota} total={drive.totalQuota} color={getDriveColor(i)} showLabel={false} />
+                <div className="flex justify-between mt-2 text-xs text-gray-400">
+                  <span>{formatFileSize(drive.usedQuota)} used</span>
+                  <span>{drive.usagePercent}%</span>
+                </div>
               </div>
             ))}
           </div>

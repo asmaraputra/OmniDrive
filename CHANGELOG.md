@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- **Pindah editor kapasitas storage manual dari Dashboard ke Settings:** tombol gear + form input override (`quota_override`) sekarang ada di `DriveAccountCard` (halaman Settings > Connected Drives), bukan lagi inline di kartu drive Dashboard. Dashboard "Connected Drives" kembali read-only (bar + badge `· manual` saja). Logic edit/save quota (`startEditQuota`/`saveQuota`/`parseSizeToBytes`) dipindah ke `DriveAccountCard` dengan callback `onQuotaSaved` untuk refresh drives; `SettingsPage` mewire `onQuotaSaved={fetchDrives}`.
+
+- **Hapus AI-slop visual di halaman auth & Dashboard:** `LoginPage`, `SetupPage`, dan banner "Total Storage" di `DashboardPage` sebelumnya memakai gradient (`bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100`, dsb), floating blur blob, glassmorphism (`bg-white/80 backdrop-blur-sm`), dan palet indigo yang tidak dipakai di mana pun lagi di app inti (inkonsistensi accent). Diseragamkan ke bahasa visual app inti: `bg-surface` (#F0F4F9), card `bg-white border border-gray-200 rounded-2xl shadow-sm`, accent `primary` (#0B57D0), radius `rounded-lg`, input focus `ring-primary`. Ganti `min-h-screen` → `min-h-[100dvh]` (viewport stability). Copy hero login "Your unified Google Drive gateway" → "Sign in to your account".
+
 ### Fixed
 
 - **Kapasitas storage per akun tidak akurat:** `parseStorageQuota` memakai `storageQuota.usage` dari Google Drive API, yang mencakup **seluruh akun Google** (Drive + Gmail + Photos), bukan hanya pemakaian Drive akun tersebut. Diperbaiki untuk memakai `storageQuota.usageInDrive` (Drive-only) dengan fallback ke `usage` bila `usageInDrive` tidak ada (mis. beberapa shared folder service account). Cache KV quota diberi `QUOTA_CACHE_VERSION` agar entri lama (angka akun-wide) otomatis diabaikan dan angka langsung akurat tanpa menunggu TTL 5 menit.
