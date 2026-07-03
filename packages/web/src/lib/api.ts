@@ -58,6 +58,11 @@ export const api = {
       body: JSON.stringify({ credentials, folderId }),
     }),
   triggerSync: (id: string) => request<{ success: boolean }>(`/api/drives/${id}/sync`, { method: 'POST' }),
+  updateDriveQuota: (id: string, totalQuotaBytes: number | null) =>
+    request<{ success: boolean }>(`/api/drives/${id}/quota`, {
+      method: 'PATCH',
+      body: JSON.stringify({ totalQuotaBytes }),
+    }),
   getDriveFolderContents: (driveId: string, googleFolderId: string) =>
     request<import('../types').DriveFolderContents>(`/api/drives/${driveId}/folders/${googleFolderId}`),
   syncDriveFolder: (driveId: string, googleFolderId: string) =>

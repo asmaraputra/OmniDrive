@@ -108,17 +108,28 @@ drivesRouter.get('/', async (c) => {
       const driveService = new GoogleDriveService(c.env.KV, c.env.GOOGLE_CLIENT_ID, c.env.GOOGLE_CLIENT_SECRET, c.env.TOKEN_ENCRYPTION_KEY);
       const quota = await driveService.getQuota(drive.id);
 
-      c.executionCtx.waitUntil(
-        db.prepare('UPDATE drive_accounts SET total_quota = ?, used_quota = ?, quota_updated_at = CURRENT_TIMESTAMP WHERE id = ?')
-          .bind(quota.total, quota.used, drive.id).run()
-      );
+      // Only persist the total quota Google actually reports. Google omits
+      // storageQuota.limit for Google Workspace pooled storage and service
+      // accounts (it is returned only "if applicable"); persisting the 1 TiB
+      // fallback there would clobber a user-set override on next refresh.
+      if (quota.hasLimit) {
+        c.executionCtx.waitUntil(
+          db.prepare('UPDATE drive_accounts SET total_quota = ?, used_quota = ?, quota_updated_at = CURRENT_TIMESTAMP WHERE id = ?')
+            .bind(quota.total, quota.used, drive.id).run()
+        );
+      } else {
+        c.executionCtx.waitUntil(
+          db.prepare('UPDATE drive_accounts SET used_quota = ?, quota_updated_at = CURRENT_TIMESTAMP WHERE id = ?')
+            .bind(quota.used, drive.id).run()
+        );
+      }
 
-      const computed = computeDriveQuota(drive, quota);
+      const computed = computeDriveQuota(drive, { total: quota.hasLimit ? quota.total : 0, used: quota.used });
       return { ...drive, ...computed };
 
     } catch (e) {
       console.error(`Failed to fetch quota for drive ${drive.id}`, e);
-      const computed = computeDriveQuota({ totalQuota: 0, usedQuota: drive.usedQuota });
+      const computed = computeDriveQuota({ totalQuota: 0, usedQuota: drive.usedQuota, quotaOverride: drive.quotaOverride });
       return { ...drive, ...computed };
     }
   }));
@@ -131,6 +142,43 @@ drivesRouter.get('/', async (c) => {
   };
 
   return c.json({ drives: drivesWithQuota, aggregate });
+});
+
+/**
+ * Manually set the total capacity for a drive. Google's Drive API omits
+ * storageQuota.limit for Google Workspace pooled storage and service accounts
+ * (returned only "if applicable"), so those drives otherwise always show the
+ * 1 TiB unlimited fallback instead of their real pool (e.g. 5 TiB). The user
+ * sets the real capacity once here; it takes precedence over both the live API
+ * value and the fallback. Send `null`/0 to clear the override.
+ */
+drivesRouter.patch('/:id/quota', async (c) => {
+  const userId = c.get('userId');
+  const driveId = c.req.param('id');
+  const body = await c.req.json<{ totalQuotaBytes?: number | null }>();
+  const totalQuotaBytes = body.totalQuotaBytes ?? null;
+
+  if (typeof totalQuotaBytes !== 'number' || totalQuotaBytes < 0 || !Number.isFinite(totalQuotaBytes)) {
+    throw new AppError(400, 'totalQuotaBytes must be a non-negative finite number');
+  }
+
+  const row = await c.env.DB
+    .prepare('SELECT id FROM drive_accounts WHERE id = ? AND user_id = ?')
+    .bind(driveId, userId)
+    .first();
+  if (!row) throw new AppError(404, 'Drive not found');
+
+  // 0 means "no override" — store NULL so the fallback chain applies again.
+  const overrideValue = totalQuotaBytes > 0 ? totalQuotaBytes : null;
+  await c.env.DB
+    .prepare('UPDATE drive_accounts SET quota_override = ? WHERE id = ?')
+    .bind(overrideValue, driveId)
+    .run();
+
+  // Drop the live quota cache so the next read reflects the new total immediately.
+  await c.env.KV.delete(`quota:${driveId}`);
+
+  return c.json({ success: true });
 });
 
 drivesRouter.post('/service-account', async (c) => {

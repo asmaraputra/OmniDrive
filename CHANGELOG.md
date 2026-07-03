@@ -6,7 +6,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- **Kapasitas storage per akun tidak akurat:** `parseStorageQuota` memakai `storageQuota.usage` dari Google Drive API, yang mencakup **seluruh akun Google** (Drive + Gmail + Photos), bukan hanya pemakaian Drive akun tersebut. Diperbaiki untuk memakai `storageQuota.usageInDrive` (Drive-only) dengan fallback ke `usage` bila `usageInDrive` tidak ada (mis. beberapa shared folder service account). Cache KV quota diberi `QUOTA_CACHE_VERSION` agar entri lama (angka akun-wide) otomatis diabaikan dan angka langsung akurat tanpa menunggu TTL 5 menit.
+
 ### Added
+
+- **Manual storage capacity override per drive:** Google Drive API **tidak** mengekspos `storageQuota.limit` untuk Google Workspace pooled storage dan service account (hanya "if applicable"), sehingga drive-drive terebut selalu menampilkan 1 TiB (fallback `UNLIMITED_DRIVE_QUOTA_BYTES`) alih-alih kapasitas asli (mis. 5 TiB). Tambah kolom DB `drive_accounts.quota_override` (migrasi `0007`), endpoint `PATCH /api/drives/:id/quota`, dan tombol pengaturan (ikon gear) di kartu drive Dashboard untuk set kapasitas manual sekali. Override diprioritaskan di `computeDriveQuota` di atas nilai live API dan fallback. Saat Google omit limit, route tidak lagi menimpa `total_quota` DB dengan 1 TiB. Helper frontend `parseSizeToBytes` mendukung input seperti "5 TB", "500 GB".
+
+- **Dokumentasi proyek diperkuat untuk AI agent:** `AGENTS.md` sekarang memuat peta navigasi dokumen (kapan baca, section utama, anchor) untuk `ARCHITECTURE.md`, `DESIGN.md`, `SCHEMA.md`, `CHANGELOG.md` agar agent baru tidak kesusahan menemukan komponen dan hemat token. Keempat dokumen di-update dengan status terkini proyek (kolom `quota_override` + migrasi `0007` di SCHEMA, alur quota/override di ARCHITECTURE, capacity editor di DESIGN).
 
 - **Agentation integration:** wired `<Agentation>` component into `main.tsx` (dev-only via `import.meta.env.DEV`) for in-browser annotation feedback during development
 - **Smooth expand/collapse animations across the web app:** installed `tailwindcss-animate` plugin and added transitions to 15 components:

@@ -21,6 +21,7 @@ export interface DriveAccount {
   rootFolderId: string | null;
   totalQuota: number;
   usedQuota: number;
+  quotaOverride: number | null;
   freeSpace: number;
   usagePercent: number;
   syncStatus?: 'idle' | 'syncing' | 'error';

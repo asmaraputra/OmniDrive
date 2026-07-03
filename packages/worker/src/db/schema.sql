@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS drive_accounts (
     root_folder_id  TEXT,
     total_quota     INTEGER DEFAULT 0,
     used_quota      INTEGER DEFAULT 0,
+    quota_override  INTEGER,
     quota_updated_at TEXT,
     created_at      TEXT NOT NULL DEFAULT (datetime('now')),
     UNIQUE(user_id, google_account_id)

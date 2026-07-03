@@ -117,7 +117,7 @@ Urutan menu (dari `Sidebar.tsx`):
 |-------|------|--------|
 | `/setup` | `SetupPage` | First-run admin setup |
 | `/login` | `LoginPage` | Login/register |
-| `/` | `DashboardPage` | Home — storage overview, recent files |
+| `/` | `DashboardPage` | Home — storage overview, recent files, per-drive capacity editor (gear icon → `parseSizeToBytes`) |
 | `/files/:folderId?` | `FilesPage` | File browser |
 | `/search` | `SearchPage` | Global search |
 | `/workspaces` | `WorkspacesPage` | Workspace tabs (files, members, audit, settings) |

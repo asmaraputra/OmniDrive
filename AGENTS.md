@@ -28,6 +28,64 @@ Alasan: deploy dan dev server memengaruhi lingkungan production/lokal milik main
 
 **OmniDrive** adalah gateway penyimpanan multi-Google Drive dengan workspace tim, shared links, automasi, dan API kompatibel S3.
 
+## Dokumentasi Proyek — Baca Dulu Sebelum Develop
+
+Keempat dokumen di bawah adalah **sumber kebenaran** untuk domain, data, UI, dan riwayat proyek. Baca yang relevan **sebelum** menulis/mengubah kode supaya tidak kesusahan menemukan komponen dan hemat token. Setiap dokumen punya daftar section (anchor) — lompat langsung dengan `read` + `offset`/`limit` daripada baca seluruh file.
+
+### `ARCHITECTURE.md` — Arsitektur Sistem (301 baris)
+
+**Baca saat:** menyentuh backend/frontend flow, auth, sync, S3, deploy, atau butuh gambaran besar.
+
+| Section (anchor) | Isi |
+|------------------|-----|
+| `#overview` | Gambaran sistem & diagram alur data |
+| `#monorepo-structure` | Layout `packages/worker` vs `packages/web` |
+| `#backend-architecture` | Route table, service table, middleware |
+| `#authentication-flow` | OAuth Google + PKCE + session cookie |
+| `#data-sync-architecture` | Initial/incremental sync, **Storage Quota & Capacity** (override + fallback chain) |
+| `#s3-compatibility-layer` | SigV4, multipart upload, endpoint `/s3` |
+| `#frontend-architecture` | Routing, Zustand stores, API client |
+| `#scheduled-jobs-cron` | Cron `*/30` sync |
+| `#security-model` | CSRF, RBAC, enkripsi token |
+| `#deployment-topology` | Worker + Pages + D1 + KV |
+| `#environment-configuration` | Env vars wajib |
+| `#testing-strategy` | Vitest, area high-value test |
+
+### `SCHEMA.md` — Skema Database D1 (413 baris)
+
+**Baca saat:** mengubah tabel, menambah kolom, bikin migrasi, atau query D1.
+
+| Section (anchor) | Isi |
+|------------------|-----|
+| `#diagram-relasi` | ERD mermaid semua tabel |
+| `#tabel` | Detail kolom + tipe per tabel (drive_accounts, files, workspaces, …) — termasuk `quota_override` |
+| `#migrasi-incremental` | Daftar `0001`–`0007` + perubahan |
+| `#perintah-database` | `make db-migrate-local/remote`, factory reset |
+| `#kv-store-bukan-d1` | Key KV (`tokens:`, `quota:`, `oauth_state:`) |
+
+### `DESIGN.md` — UI & Design System (229 baris)
+
+**Baca saat:** bikin/ubah komponen UI, page, styling, atau token warna.
+
+| Section (anchor) | Isi |
+|------------------|-----|
+| `#filosofi-desain` | Prinsip desain OmniDrive |
+| `#tech-stack-ui` | React 19, Vite, Tailwind, Radix, Zustand |
+| `#design-tokens` | Token warna `--drive-*`, spacing, radius |
+| `#layout` | `AppLayout` → Sidebar + Header + MainContent |
+| `#halaman` | Tabel route → page (termasuk capacity editor di Dashboard) |
+| `#komponen-ui-reusable` | Primitives & komponen bisnis |
+| `#pola-interaksi` | Pola modal, toast, dropdown |
+| `#responsive-aksesibilitas` | Breakpoint + a11y |
+| `#panduan-menambah-ui-baru` | Checklist UI baru |
+| `#anti-patterns-jangan` | Yang dihindari |
+
+### `CHANGELOG.md` — Riwayat Perubahan (366 baris)
+
+**Baca saat:** mulai sesi (cek `[Unreleased]`), selesai task (catat di `[Unreleased]`), atau cari kapan fitur/bug diperkenalkan. Versi pakai Keep a Changelog. Entry terbaru session ini: storage quota fix (`usageInDrive`) + manual capacity override (`quota_override`, migrasi `0007`).
+
+> **Aturan:** setiap task yang mengubah perilaku/library UI wajib tambah entry di `CHANGELOG.md` bagian `[Unreleased]`. Lihat section "Menambah Fitur Baru" langkah 5.
+
 ## Struktur Monorepo
 
 ```
@@ -130,11 +188,11 @@ git merge upstream/main
 
 ## Menambah Fitur Baru
 
-1. **Baca dulu** `ARCHITECTURE.md` dan `SCHEMA.md` untuk memahami domain
+1. **Baca dulu** dokumentasi relevan (lihat "Dokumentasi Proyek — Baca Dulu Sebelum Develop" di atas): `ARCHITECTURE.md` (flow), `SCHEMA.md` (tabel), `DESIGN.md` (UI), dan `CHANGELOG.md` `[Unreleased]` (konteks terkini)
 2. **Backend**: route → service → query D1; tambah test di `packages/worker/tests/`
 3. **Frontend**: method di `api.ts` → store (jika perlu) → komponen/page
-4. **Schema change**: update `schema.sql` + buat migrasi `000N_*.sql` baru
-5. **Dokumentasi**: update `CHANGELOG.md` di bagian `[Unreleased]`
+4. **Schema change**: update `schema.sql` + buat migrasi `000N_*.sql` baru + update tabel di `SCHEMA.md` bagian `#tabel` + daftar di `#migrasi-incremental`
+5. **Dokumentasi**: update `CHANGELOG.md` di bagian `[Unreleased]` (wajib); update `ARCHITECTURE.md`/`SCHEMA.md`/`DESIGN.md` bila flow/tabel/UI berubah
 6. **UI**: ikuti `DESIGN.md` — jangan introduce design system baru
 
 ## Testing
@@ -178,13 +236,15 @@ Worker membaca secrets via `.dev.vars` (symlink dari `.env` saat `make dev`).
 
 ## Dokumentasi Terkait
 
-| File | Isi |
-|------|-----|
-| `ARCHITECTURE.md` | Diagram, alur data, komponen sistem |
-| `SCHEMA.md` | Tabel, relasi, indeks D1 |
-| `DESIGN.md` | Token warna, layout, pola komponen |
-| `CHANGELOG.md` | Riwayat versi |
-| `README.md` / `README.id.md` | Panduan user & setup |
+Peta navigasi lengkap (kapan baca + section anchor) ada di section **"Dokumentasi Proyek — Baca Dulu Sebelum Develop"** di bagian atas dokumen ini. Ringkasan:
+
+| File | Isi | Update terakhir |
+|------|-----|-----------------|
+| `ARCHITECTURE.md` | Diagram, alur data, komponen sistem, quota/capacity | Session ini (Storage Quota & Capacity subsection) |
+| `SCHEMA.md` | Tabel, relasi, indeks D1, migrasi `0001`–`0007` | Session ini (`quota_override` + migrasi `0007`) |
+| `DESIGN.md` | Token warna, layout, pola komponen | Session ini (capacity editor di Dashboard) |
+| `CHANGELOG.md` | Riwayat versi (`[Unreleased]` + `0.9.7` ke bawah) | Session ini (quota fix + override + doc update) |
+| `README.md` / `README.id.md` | Panduan user & setup | — |
 
 ## Hal yang Jangan Dilakukan
 

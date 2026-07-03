@@ -92,6 +92,7 @@ D1 / KV / Google API
 | `AuditService` | `services/audit.service.ts` | Workspace audit logging |
 | `PolicyService` | `services/policy.service.ts` | Quota & data retention |
 | `UploadRouter` | `services/upload-router.ts` | Smart drive selection for uploads |
+| `computeDriveQuota` | `lib/storage-quota.ts` | Hitung total/used/free/percent + fallback chain & override |
 
 ### Middleware
 
@@ -164,6 +165,25 @@ Cron */30 * * * *
 
 - Per drive: `POST /api/drives/:id/sync`
 - Per folder: `POST /api/folders/:id/sync` atau `force-sync`
+
+### Storage Quota & Capacity
+
+Kapasitas tiap drive dihitung di `computeDriveQuota()` (`lib/storage-quota.ts`) dengan prioritas:
+
+1. `drive_accounts.quota_override` (manual, via `PATCH /api/drives/:id/quota`)
+2. `storageQuota.limit` dari Google API (bila ada — "if applicable")
+3. `drive_accounts.total_quota` (cached)
+4. `UNLIMITED_DRIVE_QUOTA_BYTES` (1 TiB fallback)
+
+**Catatan penting:** Google Drive API **tidak** mengembalikan `storageQuota.limit` untuk:
+- Google Workspace pooled storage (akun 5 TB dst.)
+- Service account
+
+Akun-akun tersebut akan jatuh ke fallback 1 TiB kecuali user set `quota_override` manual via UI Dashboard (tombol gear per drive). `getQuota()` mengekspos `hasLimit` agar route tidak menimpa `total_quota` DB dengan nilai fallback saat Google omit limit.
+
+Pemakaian (`used`) memakai `storageQuota.usageInDrive` (Drive-only), bukan `usage` (akun-wide: Drive+Gmail+Photos).
+
+Cache quota di KV (`quota:{driveId}`, TTL 5 menit) diberi `QUOTA_CACHE_VERSION` agar entri lama otomatis invalid saat skema berubah.
 
 ## S3 Compatibility Layer
 

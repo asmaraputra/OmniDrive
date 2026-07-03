@@ -1,5 +1,5 @@
 import type { OAuthTokens, QuotaCache } from '../types/index';
-import { parseStorageQuota } from '../lib/storage-quota';
+import { parseStorageQuota, QUOTA_CACHE_VERSION } from '../lib/storage-quota';
 
 const DRIVE_API = 'https://www.googleapis.com/drive/v3';
 const TOKEN_URL = 'https://oauth2.googleapis.com/token';
@@ -150,16 +150,23 @@ export class GoogleDriveService {
 
   // ─── Quota ───
 
+  /**
+   * Google omits storageQuota.limit for Google Workspace pooled storage and
+   * service accounts (returned only "if applicable"). `hasLimit` tells callers
+   * whether `total` is a real Google-reported limit or the unlimited fallback,
+   * so they avoid overwriting a user-set override / stored value with the 1 TiB
+   * ceiling when Google provides no real limit.
+   */
   async getQuota(
     driveAccountId: string
-  ): Promise<{ total: number; used: number }> {
-    // Check KV cache first
+  ): Promise<{ total: number; used: number; hasLimit: boolean }> {
+    // Check KV cache first. Cache entries carry the schema version so stale
+    // pre-usageInDrive entries (which stored account-wide usage) are ignored.
     const cached = await this.kv.get(`quota:${driveAccountId}`);
     if (cached) {
       const quota: QuotaCache = JSON.parse(cached);
-      // Skip stale cache entries written before unlimited-quota handling (total=0)
-      if (quota.total > 0) {
-        return { total: quota.total, used: quota.used };
+      if (quota.v === QUOTA_CACHE_VERSION && quota.total > 0) {
+        return { total: quota.total, used: quota.used, hasLimit: quota.hasLimit };
       }
     }
 
@@ -174,19 +181,30 @@ export class GoogleDriveService {
     }
 
     const data: {
-      storageQuota: { limit?: string; usage?: string };
+      storageQuota: { limit?: string; usageInDrive?: string; usage?: string };
     } = await response.json();
 
-    const { total, used } = parseStorageQuota(data.storageQuota.limit, data.storageQuota.usage);
+    const hasLimit = data.storageQuota.limit != null && data.storageQuota.limit !== '';
+    const { total, used } = parseStorageQuota(
+      data.storageQuota.limit,
+      data.storageQuota.usageInDrive,
+      data.storageQuota.usage
+    );
 
     // Cache in KV (5-min TTL)
     await this.kv.put(
       `quota:${driveAccountId}`,
-      JSON.stringify({ total, used, updatedAt: new Date().toISOString() } satisfies QuotaCache),
+      JSON.stringify({
+        v: QUOTA_CACHE_VERSION,
+        total,
+        used,
+        hasLimit,
+        updatedAt: new Date().toISOString(),
+      } satisfies QuotaCache),
       { expirationTtl: 300 }
     );
 
-    return { total, used };
+    return { total, used, hasLimit };
   }
 
   // ─── Folder Operations ───

@@ -71,8 +71,9 @@ Akun Google Drive yang terhubung per user.
 | `type` | TEXT | `'oauth'` atau `'service_account'` |
 | `is_primary` | INTEGER | Drive utama |
 | `root_folder_id` | TEXT | Folder root (shared drive / subfolder) |
-| `total_quota` | INTEGER | Kuota total (bytes) |
-| `used_quota` | INTEGER | Kuota terpakai (bytes) |
+| `total_quota` | INTEGER | Kuota total (bytes) — dari Google API bila tersedia |
+| `used_quota` | INTEGER | Kuota terpakai (bytes) — `storageQuota.usageInDrive` |
+| `quota_override` | INTEGER | Override kapasitas manual (bytes). NULL/0 = tidak ada. Prioritas tertinggi untuk total; dipakai saat Google API omit `storageQuota.limit` (Workspace pooled / service account) |
 | `quota_updated_at` | TEXT | Terakhir update kuota |
 | `created_at` | TEXT | |
 
@@ -387,6 +388,7 @@ Part individual dari multipart upload.
 | `0004_enterprise_workspace_phase3.sql` | Search indexes, invitation codes |
 | `0005_add_workspace_id_to_s3_credentials.sql` | Kolom `workspace_id` di s3_credentials |
 | `0006_add_sync_cache_columns.sql` | `sync_ttl_minutes`, `last_synced_at`, `sync_status` |
+| `0007_add_quota_override.sql` | Kolom `quota_override` di `drive_accounts` (manual capacity untuk Workspace/service account) |
 
 ## Perintah Database
 

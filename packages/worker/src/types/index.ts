@@ -24,6 +24,7 @@ export interface DriveAccount {
   rootFolderId: string | null;
   totalQuota: number;
   usedQuota: number;
+  quotaOverride: number | null;
   quotaUpdatedAt: string | null;
   createdAt: string;
 }
@@ -109,8 +110,10 @@ export interface OAuthTokens {
 }
 
 export interface QuotaCache {
+  v?: number;
   total: number;
   used: number;
+  hasLimit: boolean;
   updatedAt: string;
 }
 
@@ -172,6 +175,7 @@ export function mapDriveRow(row: Record<string, unknown>): DriveAccount {
     rootFolderId: (row.root_folder_id as string) ?? null,
     totalQuota: (row.total_quota as number) ?? 0,
     usedQuota: (row.used_quota as number) ?? 0,
+    quotaOverride: row.quota_override != null ? (row.quota_override as number) : null,
     quotaUpdatedAt: (row.quota_updated_at as string) ?? null,
     syncStatus: (row.sync_status as 'idle' | 'syncing' | 'error') ?? 'idle',
     lastSyncedAt: (row.last_synced_at as string) ?? null,
