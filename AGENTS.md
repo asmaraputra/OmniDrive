@@ -2,6 +2,19 @@
 
 Dokumen ini menjelaskan cara bekerja di repo **OmniDrive** (fork independen milik `asmaraputra`, berasal dari [`abilfida/OmniDrive`](https://github.com/abilfida/OmniDrive)).
 
+## Aturan Keamanan — WAJIB DIIKUTI
+
+**DILARANG membaca isi file `.env` (lokal), `packages/worker/.dev.vars`, atau file apa pun yang berisi secret** (`read`, `cat`, `grep`, `ctx_execute_file`, atau tool lain yang mengembalikan isi file ke konteks). Secret production disimpan di Cloudflare Workers Secrets — verifikasi via `wrangler secret list` atau `.env.example`, bukan dengan membaca nilai.
+
+**DILARANG menjalankan deploy dan dev server** — agent **tidak boleh** mengeksekusi perintah berikut (termasuk variasi lewat `npm`, `npx wrangler`, `make`, atau script di `scripts/`):
+
+| Dilarang | Contoh perintah |
+|----------|-----------------|
+| Dev server | `npm run dev`, `npm run dev:worker`, `npm run dev:web`, `wrangler dev`, `vite`, `vite preview` |
+| Deploy | `npm run deploy:worker`, `npm run deploy:web`, `npm run deploy:code`, `npm run deploy:full`, `node scripts/onboard-deploy.mjs`, `wrangler deploy`, `wrangler pages deploy` |
+
+Alasan: deploy dan dev server memengaruhi lingkungan production/lokal milik maintainer. Agent cukup mengubah kode, menjalankan **test** (`npm test`), dan memberi instruksi deploy/dev kepada user jika diperlukan.
+
 ## Ringkasan Proyek
 
 | Item | Nilai |
@@ -32,24 +45,30 @@ omnidrive/
 
 ## Perintah Penting
 
+> **Catatan agent:** Perintah dev dan deploy di bawah hanya untuk **maintainer (manusia)**. Agent dilarang menjalankannya — lihat "Aturan Keamanan".
+
 ```bash
-# Install dependencies (dari root)
+# Install dependencies (dari root) — agent BOLEH
 npm install
 
-# Development (web + worker bersamaan)
+# Development (web + worker bersamaan) — agent DILARANG
 npm run dev
-# atau: make dev
+npm run dev:worker    # worker saja
+npm run dev:web       # web saja
 
-# Test backend
+# Test backend — agent BOLEH
 npm test
 
-# Migrate database lokal
-make db-migrate-local
+# Migrate database — agent DILARANG kecuali user meminta eksplisit
+npm run migrate:remote                    # migrasi D1 production (dari root)
+npm run db:migrate:local -w packages/worker # migrasi D1 lokal
 
-# Deploy
-make deploy-worker    # Cloudflare Worker
-make deploy-web       # Cloudflare Pages
-make deploy-all       # Keduanya
+# Deploy — agent DILARANG (jalankan sendiri sebagai maintainer)
+npm run deploy:worker   # Worker saja
+npm run deploy:web      # build + Pages (frontend)
+npm run deploy:code     # worker + web (tanpa migrasi)
+npm run deploy:full     # migrasi remote + worker + web
+node scripts/onboard-deploy.mjs   # wizard setup/deploy awal
 ```
 
 **Port default** (dari `.env.example`): Web `8999`, Worker `8888`.
@@ -153,9 +172,9 @@ Worker membaca secrets via `.dev.vars` (symlink dari `.env` saat `make dev`).
 
 1. `wrangler.toml` dikonfigurasi (D1 `database_id`, KV `id`)
 2. Secrets di-set: `npx wrangler secret put JWT_SECRET` (dan lainnya)
-3. `make db-migrate-remote` untuk schema production
+3. `npm run migrate:remote` untuk schema production
 4. `packages/web/.env.production` berisi `VITE_API_URL` production
-5. `make deploy-all`
+5. `npm run deploy:full` (atau `npm run deploy:code` jika schema sudah up-to-date)
 
 ## Dokumentasi Terkait
 
@@ -169,12 +188,14 @@ Worker membaca secrets via `.dev.vars` (symlink dari `.env` saat `make dev`).
 
 ## Hal yang Jangan Dilakukan
 
+- **Jangan jalankan dev server atau deploy** — `npm run dev*`, `npm run deploy:*`, `node scripts/onboard-deploy.mjs`, `wrangler dev`, `wrangler deploy`, `wrangler pages deploy` (lihat "Aturan Keamanan")
 - Jangan push ke `upstream` — tidak punya akses write
 - Jangan hapus copyright MIT asli
 - Jangan bypass `authGuard` / `csrfGuard` pada endpoint mutasi
 - Jangan load seluruh Google Drive tree ke memori — gunakan generator/iterator
 - Jangan hardcode URL production di kode — gunakan env vars
 - Jangan buat file markdown baru kecuali diminta (kecuali update dokumen di atas)
+- **Jangan baca file `.env`, `.dev.vars`, atau file berisi secret** — lihat "Aturan Keamanan" di paling atas
 
 ## Konteks Rebrand (Masa Depan)
 

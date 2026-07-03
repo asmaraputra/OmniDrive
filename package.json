@@ -19,7 +19,12 @@
     "dev": "concurrently \"npm run dev:worker\" \"npm run dev:web\"",
     "build:worker": "npm run build -w packages/worker",
     "build:web": "npm run build -w packages/web",
-    "test": "npm run test -w packages/worker"
+    "test": "npm run test -w packages/worker",
+    "deploy:worker": "npm run deploy -w packages/worker",
+    "deploy:web": "npm run build:web && npm run deploy -w packages/web",
+    "deploy:code": "npm run deploy:worker && npm run deploy:web",
+    "migrate:remote": "npm run db:migrate:remote -w packages/worker",
+    "deploy:full": "npm run migrate:remote && npm run deploy:code"
   },
   "devDependencies": {
     "@clack/prompts": "^1.5.1",
