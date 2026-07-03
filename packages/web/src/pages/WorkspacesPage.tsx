@@ -3,6 +3,7 @@ import { api } from '../lib/api';
 import type { WorkspaceFolder, FileEntry, DriveFolder, BreadcrumbItem } from '../types';
 import { WorkspaceSidebar } from '../components/workspaces/WorkspaceSidebar';
 import { WorkspaceMainView } from '../components/workspaces/WorkspaceMainView';
+import { CreateFolderModal } from '../components/CreateFolderModal';
 import { useToastStore } from '../stores/toastStore';
 import { useSelectionStore, type SelectedItem } from '../stores/useSelectionStore';
 import { useUIStore } from '../stores/useUIStore';
@@ -14,6 +15,7 @@ export function WorkspacesPage() {
   const [subfolders, setSubfolders] = useState<WorkspaceFolder[]>([]);
   const [isSyncing, setIsSyncing] = useState(false);
   const [retentionTargetId, setRetentionTargetId] = useState<string | null>(null);
+  const [createModal, setCreateModal] = useState<{ parentId: string | null; title: string } | null>(null);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -72,17 +74,9 @@ export function WorkspacesPage() {
     return () => { ignore = true; };
   }, [activeFolderId, clearSelection, fetchContents]);
 
-  const handleCreateFolder = async (parentId?: string | null) => {
-    const promptMessage = parentId ? 'New subfolder name:' : 'New workspace name:';
-    const name = prompt(promptMessage);
-    if (name?.trim()) {
-      try {
-        await api.createFolder(name.trim(), parentId === null ? undefined : parentId);
-        fetchTree();
-      } catch {
-        addToast('error', 'Failed to create workspace');
-      }
-    }
+  const openCreateModal = (parentId?: string | null) => {
+    const title = parentId ? 'New Folder' : 'New Workspace';
+    setCreateModal({ parentId: parentId ?? null, title });
   };
 
   const handleRename = async (id: string) => {
@@ -218,16 +212,23 @@ export function WorkspacesPage() {
         onSelect={setActiveFolderId} 
         onRename={handleRename}
         onDelete={handleDelete}
-        onNewSubfolder={handleCreateFolder}
+        onNewSubfolder={openCreateModal}
       />
       <WorkspaceMainView
         activeFolder={activeFolder}
         path={breadcrumbPath}
-        onCreateFolder={() => activeFolder && handleCreateFolder(activeFolder.id)}
-        onCreateRootFolder={() => handleCreateFolder(null)}
+        onCreateFolder={() => activeFolder && openCreateModal(activeFolder.id)}
+        onCreateRootFolder={() => openCreateModal(null)}
         onSync={handleSync}
         isSyncing={isSyncing}
         fileTabProps={fileTabProps as any}
+      />
+      <CreateFolderModal
+        open={!!createModal}
+        parentId={createModal?.parentId ?? null}
+        title={createModal?.title ?? 'New Folder'}
+        onClose={() => setCreateModal(null)}
+        onSuccess={fetchTree}
       />
       {retentionTargetId && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">

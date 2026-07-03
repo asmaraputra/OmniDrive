@@ -25,6 +25,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **Production deploy (Cloudflare):** D1/KV resource akun `asmaraputra`, `wrangler.toml` + `.env.production` diarahkan ke Worker (`omnidrive-api.asmara-putra.workers.dev`) dan Pages (`omnidrive-ajm.pages.dev`)
 - **Google Drive move:** perbaikan logika move file/folder di `google-drive.ts` beserta test
 
+### Fixed
+
+- **Dialog/popup warna gelap saat OS dark mode:** shadcn components (Dialog, DropdownMenu, ContextMenu, Button) dan `SidebarStorage` memuat `dark:*` utilities yang, karena `tailwind.config.js` tidak menetapkan `darkMode`, memakai default Tailwind v3 `'media'` — sehingga aktif otomatis mengikuti `prefers-color-scheme: dark` OS dan membuat dialog/pop-up tampak hitam meski proyek tidak punya dark mode. Ditambah `darkMode: 'class'` agar `dark:*` hanya aktif under eksplisit `.dark` ancestor (yang tidak pernah ditambahkan app), mematikan efek gelap di seluruh dialog/form/pop-up sekaligus.
+- **Login "Too many requests" (429) prematur:** `rateLimiter` memakai satu `Map` shared level modul untuk semua instance. Karena `POST /api/auth/login` cocok dengan dua middleware sekaligus — limiter login (`10/60s`) dan limiter global `/api/*` (`100/60s`) — keduanya menulis ke bucket IP yang sama, sehingga satu request login terhitung dua kali (5 × 2 = 10 → 429). Di `wrangler dev`, semua request dari `127.0.0.1` juga berbagi satu bucket, sehingga traffic API lain menghabiskan budget login. Diperbaiki dengan memberi setiap instance `rateLimiter` `Map`-nya sendiri sehingga bucket tiap limiter independen — tidak ada double-counting maupun collision antar limiter. Ditambah test regresi untuk skenario overlap route.
+- **New Folder / New Workspace memakai modal browser (`prompt()`):** button "New Folder" di FilesPage dan "New Workspace"/"New Folder" di WorkspacesPage sebelumnya memanggil `prompt()` browser asli, yang tidak konsisten dengan UI lain dan tidak bisa di-style. Dibuat komponen `CreateFolderModal` (Radix Dialog, mengikuti pola `EditShareModal`) dengan text input, loading state, error display, dan toast. Modal ini reusable — menangani baik pembuatan folder maupun workspace via `api.createFolder(name, parentId)` (parentId `null` = root workspace, string = subfolder).
+
 ### Notes
 
 - Fork dari [`abilfida/OmniDrive`](https://github.com/abilfida/OmniDrive) v0.9.7

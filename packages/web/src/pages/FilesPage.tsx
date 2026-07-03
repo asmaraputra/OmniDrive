@@ -10,6 +10,7 @@ import { FilePreviewModal } from '../components/FilePreviewModal';
 import { ShareModal } from '../components/ShareModal';
 import { MoveDriveModal } from '../components/MoveDriveModal';
 import { AddToWorkspaceModal } from '../components/workspaces/AddToWorkspaceModal';
+import { CreateFolderModal } from '../components/CreateFolderModal';
 import { Upload, FolderPlus, X, LayoutGrid, List, Info } from 'lucide-react';
 import { useToastStore } from '../stores/toastStore';
 import { useSharedStore } from '../stores/sharedStore';
@@ -33,6 +34,7 @@ export function FilesPage() {
   const [shareTarget, setShareTarget] = useState<{ id: string, type: 'file' | 'folder' } | null>(null);
   const [moveDriveFiles, setMoveDriveFiles] = useState<FileEntry[]>([]);
   const [workspaceTarget, setWorkspaceTarget] = useState<FileEntry | null>(null);
+  const [showCreateFolder, setShowCreateFolder] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isConnecting, setIsConnecting] = useState(false);
   const { viewMode, setViewMode, isInfoPanelOpen, toggleInfoPanel, setIsInfoPanelOpen } = useUIStore();
@@ -87,16 +89,8 @@ export function FilesPage() {
     }
   };
 
-  const handleCreateFolder = async () => {
-    const name = prompt('New folder name:');
-    if (name?.trim()) {
-      try {
-        await api.createFolder(name.trim(), folderId === 'root' ? undefined : folderId);
-        refresh();
-      } catch {
-        addToast('error', 'Failed to create folder');
-      }
-    }
+  const handleCreateFolder = () => {
+    setShowCreateFolder(true);
   };
 
   const getDriveInfo = (driveAccountId?: string) => {
@@ -222,6 +216,13 @@ export function FilesPage() {
         )}
 
         {/* Modals — always mounted so Radix Dialog can play enter/exit animations */}
+        <CreateFolderModal
+          open={showCreateFolder}
+          parentId={folderId === 'root' ? null : folderId}
+          title="New Folder"
+          onClose={() => setShowCreateFolder(false)}
+          onSuccess={refresh}
+        />
         <UploadModal open={showModal} folderId={folderId} onClose={() => setShowModal(false)} onSuccess={() => { setShowModal(false); refresh(); }} />
         <FilePreviewModal open={!!previewFile} file={previewFile ?? undefined} onClose={() => setPreviewFile(null)} />
         <ShareModal

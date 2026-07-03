@@ -2,6 +2,12 @@ import animate from 'tailwindcss-animate';
 
 /** @type {import('tailwindcss').Config} */
 export default {
+  // This project has no dark mode. Use the 'class' strategy so that the
+  // shadcn `dark:*` utilities only apply under an explicit `.dark` ancestor
+  // (which we never add) instead of reacting to the OS color-scheme setting.
+  // Without this, the Tailwind v3 default ('media') makes dialogs/popups
+  // render dark when the user's OS is in dark mode.
+  darkMode: 'class',
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
