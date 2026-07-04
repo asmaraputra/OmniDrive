@@ -11,7 +11,7 @@ Dokumen ini menjelaskan cara bekerja di repo **OmniDrive** (fork independen mili
 | Dilarang | Contoh perintah |
 |----------|-----------------|
 | Dev server | `npm run dev`, `npm run dev:worker`, `npm run dev:web`, `wrangler dev`, `vite`, `vite preview` |
-| Deploy | `npm run deploy:worker`, `npm run deploy:web`, `npm run deploy:code`, `npm run deploy:full`, `node scripts/onboard-deploy.mjs`, `wrangler deploy`, `wrangler pages deploy` |
+| Deploy | `npm run deploy:code`, `npm run deploy:full`, `npm run deploy --prefix packages/worker`, `npm run deploy --prefix packages/web`, `node scripts/onboard-deploy.mjs`, `wrangler deploy`, `wrangler pages deploy` |
 
 Alasan: deploy dan dev server memengaruhi lingkungan production/lokal milik maintainer. Agent cukup mengubah kode, menjalankan **test** (`npm test`), dan memberi instruksi deploy/dev kepada user jika diperlukan.
 
@@ -119,11 +119,11 @@ npm test
 
 # Migrate database — agent DILARANG kecuali user meminta eksplisit
 npm run migrate:remote                    # migrasi D1 production (dari root)
-npm run db:migrate:local -w packages/worker # migrasi D1 lokal
+npm run db:migrate:local --prefix packages/worker # migrasi D1 lokal
 
 # Deploy — agent DILARANG (jalankan sendiri sebagai maintainer)
-npm run deploy:worker   # Worker saja
-npm run deploy:web      # build + Pages (frontend)
+npm run deploy --prefix packages/worker   # Worker saja
+npm run deploy --prefix packages/web      # build + Pages (frontend) saja
 npm run deploy:code     # worker + web (tanpa migrasi)
 npm run deploy:full     # migrasi remote + worker + web
 node scripts/onboard-deploy.mjs   # wizard setup/deploy awal
@@ -141,7 +141,7 @@ node scripts/onboard-deploy.mjs   # wizard setup/deploy awal
 - Auth: cookie `omnidrive_sid` + KV session (`middleware/auth-guard.ts`)
 - S3: route terpisah di `/s3/*` dengan SigV4 (`middleware/s3-auth.ts`)
 - Error: gunakan `AppError` dari `middleware/error-handler.ts`
-- Database: D1 (SQLite) — skema di `src/db/schema.sql`, migrasi incremental `0001`–`0006`
+- Database: D1 (SQLite) — skema di `src/db/schema.sql`, migrasi incremental `0001`–`0007`
 - Tipe: `src/types/env.ts` untuk `Env`, `SessionData`, `AppContext`
 
 ### Frontend (`packages/web`)
@@ -202,7 +202,7 @@ git merge upstream/main
 npm test
 
 # Test spesifik
-npm run test -w packages/worker -- tests/s3-api.test.ts
+npm test -- tests/s3-api.test.ts
 
 # Frontend (vitest tersedia di web package)
 cd packages/web && npx vitest run
@@ -248,7 +248,7 @@ Peta navigasi lengkap (kapan baca + section anchor) ada di section **"Dokumentas
 
 ## Hal yang Jangan Dilakukan
 
-- **Jangan jalankan dev server atau deploy** — `npm run dev*`, `npm run deploy:*`, `node scripts/onboard-deploy.mjs`, `wrangler dev`, `wrangler deploy`, `wrangler pages deploy` (lihat "Aturan Keamanan")
+- **Jangan jalankan dev server atau deploy** — `npm run dev`, `npm run dev:worker`, `npm run dev:web`, `npm run deploy:code`, `npm run deploy:full`, `npm run deploy --prefix packages/worker`, `npm run deploy --prefix packages/web`, `node scripts/onboard-deploy.mjs`, `wrangler dev`, `wrangler deploy`, `wrangler pages deploy` (lihat "Aturan Keamanan")
 - Jangan push ke `upstream` — tidak punya akses write
 - Jangan hapus copyright MIT asli
 - Jangan bypass `authGuard` / `csrfGuard` pada endpoint mutasi
