@@ -188,7 +188,7 @@ export function SettingsPage() {
   };
 
   return (
-    <div className="p-6 space-y-6 max-w-3xl">
+    <div className="p-4 sm:p-6 space-y-6 max-w-3xl">
       <h1 className="text-2xl font-semibold text-gray-800">Settings</h1>
 
       {/* Section: Connected Drives */}

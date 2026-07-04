@@ -291,7 +291,7 @@ export const FileGrid: React.FC<FileGridProps> = ({
     return (
       <div className="w-full">
         {/* Table header */}
-        <div className="grid grid-cols-[auto_1fr_120px_140px_44px] gap-0 border-b border-gray-100 px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wide group">
+        <div className="grid grid-cols-[auto_1fr_44px] sm:grid-cols-[auto_1fr_120px_140px_44px] gap-0 border-b border-gray-100 px-4 py-2 text-xs font-medium text-gray-500 uppercase tracking-wide group">
           <div className="w-[72px] flex items-center pl-3">
             <input
               type="checkbox"
@@ -312,8 +312,8 @@ export const FileGrid: React.FC<FileGridProps> = ({
             />
           </div>
           <span>{renderSortHeader('Name', 'name')}</span>
-          <span className="text-right">{renderSortHeader('Size', 'size', 'right')}</span>
-          <span className="text-right">{renderSortHeader('Modified', 'modified', 'right')}</span>
+          <span className="text-right hidden sm:block">{renderSortHeader('Size', 'size', 'right')}</span>
+          <span className="text-right hidden sm:block">{renderSortHeader('Modified', 'modified', 'right')}</span>
           <span />
         </div>
 
@@ -354,7 +354,7 @@ export const FileGrid: React.FC<FileGridProps> = ({
                   onMouseLeave={() => {
                     if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
                   }}
-                  className={`grid grid-cols-[auto_1fr_120px_140px_44px] gap-0 items-center px-4 py-2.5 cursor-pointer transition-colors border-b border-gray-50 group ${
+                  className={`grid grid-cols-[auto_1fr_44px] sm:grid-cols-[auto_1fr_120px_140px_44px] gap-0 items-center px-4 py-2.5 cursor-pointer transition-colors border-b border-gray-50 group ${
                     isSelected
                       ? 'bg-blue-100 hover:bg-blue-200'
                       : hasError
@@ -381,8 +381,8 @@ export const FileGrid: React.FC<FileGridProps> = ({
                     {shared && <Share2 size={12} className="text-blue-400 flex-shrink-0" />}
                     {renderMetadataBadges('metadata' in folder ? folder.metadata : undefined)}
                   </div>
-                  <div className="text-right text-xs text-gray-400">—</div>
-                  <div className="text-right text-xs text-gray-400">—</div>
+                  <div className="text-right text-xs text-gray-400 hidden sm:block">—</div>
+                  <div className="text-right text-xs text-gray-400 hidden sm:block">—</div>
                   <div />
                 </div>
               </ContextMenuTrigger>
@@ -434,7 +434,7 @@ export const FileGrid: React.FC<FileGridProps> = ({
                   onMouseLeave={() => {
                     if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
                   }}
-                  className={`grid grid-cols-[auto_1fr_120px_140px_44px] gap-0 items-center px-4 py-2.5 cursor-pointer transition-colors border-b border-gray-50 group ${
+                  className={`grid grid-cols-[auto_1fr_44px] sm:grid-cols-[auto_1fr_120px_140px_44px] gap-0 items-center px-4 py-2.5 cursor-pointer transition-colors border-b border-gray-50 group ${
                     isSelected
                       ? 'bg-blue-100 hover:bg-blue-200'
                       : 'hover:bg-gray-50'
@@ -460,10 +460,10 @@ export const FileGrid: React.FC<FileGridProps> = ({
                     {renderMetadataBadges(file.metadata)}
                     <div className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: driveColor }} />
                   </div>
-                  <div className="text-right text-xs text-gray-500">
+                  <div className="text-right text-xs text-gray-500 hidden sm:block">
                     {!native ? formatFileSize(file.size) : '—'}
                   </div>
-                  <div className="text-right text-xs text-gray-500">
+                  <div className="text-right text-xs text-gray-500 hidden sm:block">
                     {formatRelativeTime(file.googleModifiedAt ?? file.createdAt)}
                   </div>
                   <div />

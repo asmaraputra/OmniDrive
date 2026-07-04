@@ -37,7 +37,7 @@ export function DashboardPage() {
   }, [fetchDrives, fetchSharedLinks, refreshRecent]);
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 sm:p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold text-gray-800">Home</h1>
@@ -63,7 +63,7 @@ export function DashboardPage() {
             </span>
           </div>
           <QuotaBar used={aggregate.totalUsed} total={aggregate.totalQuota} />
-          <div className="flex gap-4 mt-3 text-sm text-gray-500">
+          <div className="flex gap-2 sm:gap-4 mt-3 text-sm text-gray-500 flex-wrap">
             <span className="text-blue-700 font-medium">{formatFileSize(aggregate.totalUsed)} used</span>
             <span>·</span>
             <span>{formatFileSize(aggregate.totalFree)} free</span>

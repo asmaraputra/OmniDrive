@@ -151,7 +151,7 @@ export function PublicSharedPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4 sm:p-6">
       {renderContent()}
     </div>
   );

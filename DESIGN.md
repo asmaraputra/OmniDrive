@@ -202,10 +202,19 @@ Urutan menu (dari `Sidebar.tsx`):
 
 ## Responsive & Aksesibilitas
 
-- Sidebar: fixed `w-64`, collapsible via `useUIStore.isSidebarOpen`
-- Target tap: minimal `py-2` pada nav items
+- **Breakpoint mobile:** `<md` (<768px) = phone/tablet-portrait → drawer pattern; `md+` = desktop inline pattern
+- Sidebar: desktop `w-64`/`w-16` inline collapsible via `useUIStore.isSidebarOpen`; mobile fixed drawer via `useUIStore.mobileSidebarOpen` + overlay backdrop, auto-close on route change
+- InfoPanel: desktop inline `w-80` collapsible; mobile fixed right-drawer + overlay
+- WorkspaceSidebar: desktop inline `w-64`; mobile drawer + toggle button (`PanelLeft`) in `WorkspaceMainView` breadcrumb row
+- Toolbar (FilesPage, DashboardPage, SettingsPage, dll): `flex-wrap` + padding `p-4 sm:p-6`
+- FileGrid list view: kolom Size/Modified `hidden sm:block` di mobile (hanya name + checkbox + action)
+- BulkActionBar: `flex-wrap`, `bottom-4 left-2 right-2` mobile / centered pill desktop; touch target `py-2`+
+- Dialog: `w-[calc(100%-1rem)] max-w-lg` + `p-4 sm:p-6` + `rounded-lg` di mobile
+- Tabel (AdminUsersPage, SettingsPage S3 keys): `overflow-x-auto` wrapper
+- Touch target: minimal `py-2`/`p-2` pada nav items & icon buttons (≈40–48px)
 - Radix primitives menyediakan keyboard navigation dan focus trap di modal
-- Icon + text label pada semua nav items (bukan icon-only)
+- Icon + text label pada semua nav items (bukan icon-only); label sembunyi di very-small viewport bila perlu (`hidden sm:inline`)
+- Omnibar: `hidden sm:block` di Header (search via dedicated route di phone) — wrapper width diatur Header, bukan hardcode `max-w-[720px]`
 
 ## Panduan Menambah UI Baru
 

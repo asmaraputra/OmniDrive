@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- **Mobile responsiveness (web SPA <768px):** sidebar & InfoPanel kini drawer overlay di mobile (sebelumnya inline fixed-width yang makan layar / overflow horizontal), Header & Omnibar wrap + sembuny di very-small viewport, BulkActionBar wrap + touch target ≥44px (sebelumnya `min-w-[500px]` fixed yang pasti overflow di phone), FilesPage toolbar wrap + filter collapse, FileGrid list view sembunyikan kolom Size/Modified di mobile, WorkspaceSidebar drawer + toggle button di WorkspaceMainView, padding halaman responsif (`p-4 sm:p-6`), Dialog width `calc(100%-1rem)` + padding responsif, AdminUsersPage tabel `overflow-x-auto`, AutomationsPage dikonversi dari inline-style CSS-var (yang tak terdefinisi di Tailwind setup ini) ke Tailwind classes. Store `useUIStore` tambah state `mobileSidebarOpen` terpisah dari desktop collapse `isSidebarOpen`.
+
 ### Removed
 
 - **Pembersihan artefak dev/testing:** hapus skrip smoke-test production (`scripts/prod-browser-test*.mjs`, `scripts/prod-upload-test.mjs`), skrip one-off migrasi/rename (`replace_terms.mjs`, `packages/worker/refactor*.js`, `packages/worker/scripts/add_sync_cache_columns.sql`), skrip debug SQLite (`query.cjs`, `query2.cjs`), dump diff (`full_diff.txt`), dan artefak lokal hasil test (`.prod-auth-state.json`, `.prod-test-files/`). Hapus `console.log` debug di `sync.ts` dan `index.ts` (cron handler); pertahankan `console.error` untuk error handling.

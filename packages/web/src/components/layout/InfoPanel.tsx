@@ -199,20 +199,31 @@ export const InfoPanel: React.FC = () => {
   };
 
   return (
-    <aside
-      className={`bg-white border-l border-gray-200 h-full flex-shrink-0 overflow-hidden transition-[width] duration-300 ease-in-out ${
-        isInfoPanelOpen ? 'w-80' : 'w-0'
-      }`}
-      aria-hidden={!isInfoPanelOpen}
-    >
+    <>
+      {/* Mobile: overlay backdrop */}
+      {isInfoPanelOpen && (
+        <div
+          className="md:hidden fixed inset-0 z-40 bg-black/40"
+          onClick={toggleInfoPanel}
+          aria-hidden
+        />
+      )}
+      <aside
+        className={`bg-white border-l border-gray-200 h-full flex-shrink-0 overflow-hidden transition-[width] duration-300 ease-in-out z-50 ${
+          // Mobile: fixed drawer from right; Desktop: inline collapsible panel
+          isInfoPanelOpen ? 'fixed right-0 top-16 bottom-0 w-[88%] max-w-sm shadow-xl md:relative md:top-0 md:shadow-none md:w-80 md:max-w-none' : 'w-0 md:w-0'
+        }`}
+        aria-hidden={!isInfoPanelOpen}
+      >
       {/* Fixed-width inner wrapper so content stays put while the aside width animates */}
       <div
-        className={`w-80 h-full flex flex-col p-4 transition-opacity duration-200 ${
+        className={`w-[88%] max-w-sm md:w-80 h-full flex flex-col p-4 transition-opacity duration-200 ${
           isInfoPanelOpen ? 'opacity-100' : 'pointer-events-none opacity-0'
         }`}
       >
         {renderContent()}
       </div>
     </aside>
+    </>
   );
 };

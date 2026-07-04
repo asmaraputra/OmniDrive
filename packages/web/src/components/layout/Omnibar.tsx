@@ -46,7 +46,7 @@ export const Omnibar: React.FC = () => {
   }, [query, metadataKey, metadataValue]);
 
   return (
-    <div className="relative flex-1 max-w-[720px]" ref={wrapperRef}>
+    <div className="relative w-full" ref={wrapperRef}>
       <div className="bg-[#e9eef6] hover:bg-white hover:shadow-md focus-within:bg-white focus-within:shadow-md rounded-full h-12 flex items-center px-4 transition-all">
         <Search size={20} className="text-gray-600 mr-3" />
         <input 

@@ -116,61 +116,65 @@ export function FilesPage() {
           }}
         />
 
-        <div className="flex items-center justify-between mb-6 flex-wrap gap-4 px-4 pt-4">
-            <div className="flex items-center gap-2 flex-1 min-w-0 overflow-hidden">
+        <div className="flex items-center justify-between mb-4 flex-wrap gap-3 px-4 pt-4">
+            <div className="flex items-center gap-2 flex-1 min-w-0 overflow-hidden order-2 md:order-1">
               <Breadcrumb items={breadcrumb} driveId={driveIdParam || undefined} />
             </div>
 
-            <div className="flex gap-2 items-center">
-              <div className="relative">
+            <div className="flex gap-2 items-center flex-wrap order-1 md:order-2">
+              <div className="relative w-32 sm:w-48">
                 <input
                   type="text"
-                  placeholder="Filter files..."
+                  placeholder="Filter..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-48 pl-3 pr-8 py-1.5 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full pl-3 pr-8 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 {searchQuery && (
                   <button
                     type="button"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
                     onClick={() => setSearchQuery('')}
+                    aria-label="Clear filter"
                   >
                     <X size={14} />
                   </button>
                 )}
               </div>
-              
+
               <div className="flex items-center border border-gray-300 rounded-md overflow-hidden bg-white mr-1">
-                <button 
+                <button
                   onClick={() => setViewMode('list')}
-                  className={`p-1.5 ${viewMode === 'list' ? 'bg-[#c2e7ff] text-gray-900' : 'text-gray-600 hover:bg-gray-50'}`}
+                  className={`p-2 ${viewMode === 'list' ? 'bg-[#c2e7ff] text-gray-900' : 'text-gray-600 hover:bg-gray-50'}`}
                   title="List layout"
+                  aria-label="List layout"
                 >
                   <List size={18} />
                 </button>
-                <button 
+                <button
                   onClick={() => setViewMode('grid')}
-                  className={`p-1.5 ${viewMode === 'grid' ? 'bg-[#c2e7ff] text-gray-900' : 'text-gray-600 hover:bg-gray-50'}`}
+                  className={`p-2 ${viewMode === 'grid' ? 'bg-[#c2e7ff] text-gray-900' : 'text-gray-600 hover:bg-gray-50'}`}
                   title="Grid layout"
+                  aria-label="Grid layout"
                 >
                   <LayoutGrid size={18} />
                 </button>
               </div>
-              
-              <button 
+
+              <button
                 onClick={toggleInfoPanel}
-                className={`p-1.5 rounded-full mr-1 ${isInfoPanelOpen ? 'bg-[#c2e7ff] text-gray-900' : 'text-gray-600 hover:bg-gray-100'}`}
+                className={`p-2 rounded-full mr-1 ${isInfoPanelOpen ? 'bg-[#c2e7ff] text-gray-900' : 'text-gray-600 hover:bg-gray-100'}`}
                 title="View details"
+                aria-label="View details"
               >
                 <Info size={20} />
               </button>
 
-              <button className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50" onClick={handleCreateFolder}>
-                <FolderPlus size={16} /> New Folder
+              <button className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50" onClick={handleCreateFolder}>
+                <FolderPlus size={16} /> <span className="hidden sm:inline">New Folder</span>
               </button>
-              <button className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700" onClick={() => setShowModal(true)}>
-                <Upload size={16} /> Upload
+              <button className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700" onClick={() => setShowModal(true)}>
+                <Upload size={16} /> <span>Upload</span>
               </button>
             </div>
           </div>

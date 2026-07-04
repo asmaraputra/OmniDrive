@@ -22,6 +22,7 @@ export function WorkspacesPage() {
   const addToast = useToastStore(state => state.addToast);
   const { clearSelection, toggleSelection } = useSelectionStore();
   const setIsInfoPanelOpen = useUIStore(s => s.setIsInfoPanelOpen);
+  const [wsSidebarOpen, setWsSidebarOpen] = useState(false);
 
   const fetchTree = useCallback(async () => {
     try {
@@ -205,15 +206,21 @@ export function WorkspacesPage() {
   ]);
 
   return (
-    <div className="flex h-full w-full overflow-hidden bg-white">
-      <WorkspaceSidebar 
-        folders={folders}
-        activeFolderId={activeFolderId}
-        onSelect={setActiveFolderId} 
-        onRename={handleRename}
-        onDelete={handleDelete}
-        onNewSubfolder={openCreateModal}
-      />
+    <div className="flex h-full w-full overflow-hidden bg-white relative">
+      {/* Mobile drawer for workspace tree */}
+      {wsSidebarOpen && (
+        <div className="md:hidden fixed inset-0 z-40 bg-black/40" onClick={() => setWsSidebarOpen(false)} aria-hidden />
+      )}
+      <div className={`${wsSidebarOpen ? 'fixed left-0 top-0 bottom-0 z-50 shadow-xl' : 'hidden'} md:relative md:block md:shadow-none md:z-auto`}>
+        <WorkspaceSidebar
+          folders={folders}
+          activeFolderId={activeFolderId}
+          onSelect={(id) => { setActiveFolderId(id); setWsSidebarOpen(false); }}
+          onRename={handleRename}
+          onDelete={handleDelete}
+          onNewSubfolder={openCreateModal}
+        />
+      </div>
       <WorkspaceMainView
         activeFolder={activeFolder}
         path={breadcrumbPath}
@@ -222,6 +229,7 @@ export function WorkspacesPage() {
         onSync={handleSync}
         isSyncing={isSyncing}
         fileTabProps={fileTabProps as any}
+        onToggleSidebar={() => setWsSidebarOpen(true)}
       />
       <CreateFolderModal
         open={!!createModal}

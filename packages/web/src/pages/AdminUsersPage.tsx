@@ -181,7 +181,7 @@ export const AdminUsersPage: React.FC = () => {
   };
 
   return (
-    <div className="p-6 h-full flex flex-col">
+    <div className="p-4 sm:p-6 h-full flex flex-col">
       <div className="mb-6">
         <h1 className="text-2xl font-semibold text-gray-800">Users</h1>
       </div>
@@ -214,7 +214,7 @@ export const AdminUsersPage: React.FC = () => {
               </button>
             </div>
 
-            <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+            <div className="bg-white border border-gray-200 rounded-lg overflow-hidden overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-200">

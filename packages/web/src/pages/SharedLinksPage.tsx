@@ -52,7 +52,7 @@ export function SharedLinksPage() {
   };
 
   return (
-    <div className="p-6 md:p-8 max-w-7xl mx-auto w-full">
+    <div className="p-4 md:p-8 max-w-7xl mx-auto w-full">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 tracking-tight flex items-center gap-3">
           <Link className="text-blue-600" size={32} />
