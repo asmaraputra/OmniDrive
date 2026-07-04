@@ -13,15 +13,6 @@ export function formatFileSize(bytes: number): string {
   return `${value.toFixed(i > 0 ? 1 : 0)} ${units[i]}`;
 }
 
-/** Parse a human size string like "5 TB", "500GB", "1.5TB" into bytes. Returns null when unparseable. */
-export function parseSizeToBytes(input: string): number | null {
-  const m = input.trim().toLowerCase().match(/^(\d+(?:\.\d+)?)\s*(b|kb|mb|gb|tb)$/);
-  if (!m) return null;
-  const value = parseFloat(m[1]);
-  const units: Record<string, number> = { b: 0, kb: 1, mb: 2, gb: 3, tb: 4 };
-  return Math.round(value * Math.pow(1024, units[m[2]]));
-}
-
 export function formatRelativeTime(dateString: string): string {
   const date = new Date(dateString);
   const now = new Date();

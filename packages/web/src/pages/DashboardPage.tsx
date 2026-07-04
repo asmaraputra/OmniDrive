@@ -332,14 +332,6 @@ export function DashboardPage() {
                       <div className="text-xs text-gray-400">
                         {drive.type === 'service_account' ? 'Service Account' : 'OAuth'}
                         {drive.isPrimary && <span className="ml-1.5 text-primary font-medium">· Primary</span>}
-                        {drive.quotaOverride && drive.quotaOverride > 0 && (
-                          <span
-                            className="ml-1.5 text-amber-600"
-                            title="Capacity set manually — Google's API does not report it for this account"
-                          >
-                            · manual
-                          </span>
-                        )}
                       </div>
                     </div>
                   </div>

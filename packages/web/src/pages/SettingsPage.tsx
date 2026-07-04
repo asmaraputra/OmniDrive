@@ -202,7 +202,6 @@ export function SettingsPage() {
               index={i}
               onSync={handleSync}
               onDisconnect={handleDisconnect}
-              onQuotaSaved={fetchDrives}
             />
           ))}
           {drives.length === 0 && (

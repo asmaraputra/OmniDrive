@@ -16,7 +16,7 @@ interface UploadState {
   addFiles: (files: File[]) => void;
   removeFile: (id: string) => void;
   clearQueue: () => void;
-  startUpload: (driveAccountId?: string, workspaceFolderId?: string) => Promise<void>;
+  startUpload: (driveAccountId?: string, parentFolderId?: string) => Promise<void>;
   setShowModal: (show: boolean) => void;
 }
 
@@ -41,7 +41,7 @@ export const useUploadStore = create<UploadState>((set, get) => ({
 
   clearQueue: () => set({ queue: [], isUploading: false }),
 
-  startUpload: async (driveAccountId?: string, workspaceFolderId?: string) => {
+  startUpload: async (driveAccountId?: string, parentFolderId?: string) => {
     set({ isUploading: true });
     const { queue } = get();
 
@@ -60,7 +60,7 @@ export const useUploadStore = create<UploadState>((set, get) => ({
           mimeType: item.file.type || 'application/octet-stream',
           size: item.file.size,
           driveAccountId,
-          workspaceFolderId,
+          parentFolderId,
         });
 
         // 2. Upload via Worker proxy (bypasses Google CORS restriction)
@@ -78,7 +78,7 @@ export const useUploadStore = create<UploadState>((set, get) => ({
         await api.confirmUpload({
           googleFileId: uploadResponse.id,
           driveAccountId: actualDriveId,
-          workspaceFolderId,
+          parentFolderId,
         });
 
         set((state) => ({

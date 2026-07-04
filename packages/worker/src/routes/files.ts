@@ -395,7 +395,10 @@ filesRouter.put('/upload/proxy', async (c) => {
 
 filesRouter.post('/upload/init', async (c) => {
   const userId = c.get('userId');
-  const { name, mimeType, size, workspaceId, driveAccountId } = await c.req.json(); // ponytail: L12 — removed unused folderId + console.log
+  // parentFolderId is the Google Drive folder id the user is currently viewing
+  // ('root' at top level), NOT a workspace_folders id. It controls where the
+  // resumable upload's `parents` point, so files land in the right Drive folder.
+  const { name, mimeType, size, parentFolderId, workspaceId, driveAccountId } = await c.req.json();
   const db = c.env.DB;
 
   if (workspaceId && size) {
@@ -428,26 +431,41 @@ filesRouter.post('/upload/init', async (c) => {
   const targetDrive = router.selectDriveForUpload(size, driveAccountId);
 
   const gDrive = new GoogleDriveService(c.env.KV, c.env.GOOGLE_CLIENT_ID, c.env.GOOGLE_CLIENT_SECRET, c.env.TOKEN_ENCRYPTION_KEY);
-  const parentFolderId = targetDrive.rootFolderId || 'root';
-  const uploadUrl = await gDrive.initiateResumableUpload(targetDrive.id, name, mimeType, parentFolderId);
+  // parentFolderId (current view) wins; fall back to the drive's configured root folder, then Google 'root'.
+  const uploadParent = parentFolderId || targetDrive.rootFolderId || 'root';
+  console.log('upload/init', { driveId: targetDrive.id, type: targetDrive.type, rootFolderId: targetDrive.rootFolderId, override: targetDrive.quotaOverride, freeSpace: targetDrive.freeSpace, size, parentFolderId, uploadParent });
+  let uploadUrl: string;
+  try {
+    uploadUrl = await gDrive.initiateResumableUpload(targetDrive.id, name, mimeType, uploadParent);
+  } catch (err) {
+    const msg = (err as Error).message || '';
+    console.error('upload/init initiateResumableUpload failed', { driveId: targetDrive.id, uploadParent, msg });
+    // Auth/refresh failures → 401 so the client can prompt reconnect; upstream Google errors → 502.
+    const status = /token|refresh|No tokens|expired/i.test(msg) ? 401 : 502;
+    throw new AppError(status, `Failed to start resumable upload: ${msg}`);
+  }
 
-  // 5. Return the URL so the client can stream bytes directly to Google
+  // Return the URL so the client can stream bytes to Google via the proxy.
   return c.json({
     uploadUrl,
     driveAccountId: targetDrive.id,
-    googleFolderId: targetDrive.rootFolderId,
+    googleFolderId: uploadParent,
   });
 });
 
 filesRouter.post('/upload/finalize', async (c) => {
   const userId = c.get('userId');
-  const { googleFileId, driveAccountId, virtualFolderId, workspaceFolderId, workspaceId } = await c.req.json();
+  // parentFolderId is the Google Drive folder id ('root' at top level) the file
+  // was uploaded into. It goes into files.google_parent_id so the file appears in
+  // the folder the user is viewing (drives.ts lists files by google_parent_id).
+  // Do NOT put it in workspace_folder_id — that column is FK→workspace_folders and
+  // 'root'/a Google folder id is not a workspace folder, which throws a FK
+  // constraint violation (the previous 500 root cause).
+  const { googleFileId, driveAccountId, parentFolderId, workspaceFolderId, workspaceId } = await c.req.json();
 
   if (!googleFileId || !driveAccountId) {
     throw new AppError(400, 'Missing required fields: googleFileId, driveAccountId');
   }
-
-  const finalFolderId = workspaceFolderId || virtualFolderId;
 
   // Verify drive belongs to user
   const db = c.env.DB;
@@ -470,16 +488,20 @@ filesRouter.post('/upload/finalize', async (c) => {
 
   const id = generateId();
   const fileSize = parseInt(gFile.size || '0', 10);
+  // Only set workspace_folder_id when a genuine workspace folder id is provided
+  // (workspace upload context). The Drive-folder view passes parentFolderId only.
+  const wsFolder = workspaceFolderId || null;
+  const googleParent = parentFolderId || null;
   
   await db.prepare(`
     INSERT INTO files (
-      id, user_id, drive_account_id, workspace_id, workspace_folder_id, 
-      google_file_id, name, mime_type, size, thumbnail_url, web_view_link, web_content_link,
+      id, user_id, drive_account_id, workspace_id, workspace_folder_id,
+      google_file_id, google_parent_id, name, mime_type, size, thumbnail_url, web_view_link, web_content_link,
       google_created_at, google_modified_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).bind(
-    id, userId, driveAccountId, workspaceId || null, finalFolderId || null,
-    gFile.id, gFile.name, gFile.mimeType, fileSize,
+    id, userId, driveAccountId, workspaceId || null, wsFolder,
+    gFile.id, googleParent, gFile.name, gFile.mimeType, fileSize,
     gFile.thumbnailLink || null, gFile.webViewLink || null, gFile.webContentLink || null,
     gFile.createdTime, gFile.modifiedTime
   ).run();

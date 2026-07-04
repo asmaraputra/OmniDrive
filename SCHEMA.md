@@ -73,7 +73,7 @@ Akun Google Drive yang terhubung per user.
 | `root_folder_id` | TEXT | Folder root (shared drive / subfolder) |
 | `total_quota` | INTEGER | Kuota total (bytes) — dari Google API bila tersedia |
 | `used_quota` | INTEGER | Kuota terpakai (bytes) — `storageQuota.usageInDrive` |
-| `quota_override` | INTEGER | Override kapasitas manual (bytes). NULL/0 = tidak ada. Prioritas tertinggi untuk total; dipakai saat Google API omit `storageQuota.limit` (Workspace pooled / service account) |
+| `quota_override` | INTEGER | **Deprecated (tidak ditulis lagi).** Override kapasitas manual (bytes). NULL/0 = tidak ada. Fitur editor manual dihapus; branch di `computeDriveQuota` tetap read-only. |
 | `quota_updated_at` | TEXT | Terakhir update kuota |
 | `created_at` | TEXT | |
 

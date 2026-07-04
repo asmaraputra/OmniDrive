@@ -70,11 +70,6 @@ export const api = {
       body: JSON.stringify({ credentials, folderId }),
     }),
   triggerSync: (id: string) => request<{ success: boolean }>(`/api/drives/${id}/sync`, { method: 'POST' }),
-  updateDriveQuota: (id: string, totalQuotaBytes: number | null) =>
-    request<{ success: boolean }>(`/api/drives/${id}/quota`, {
-      method: 'PATCH',
-      body: JSON.stringify({ totalQuotaBytes }),
-    }),
   getDriveFolderContents: (driveId: string, googleFolderId: string) =>
     request<import('../types').DriveFolderContents>(`/api/drives/${driveId}/folders/${googleFolderId}`),
   syncDriveFolder: (driveId: string, googleFolderId: string) =>
@@ -118,12 +113,12 @@ export const api = {
   getFile: (id: string) => request<import('../types').FileEntry>(`/api/files/${id}`),
   searchFiles: (query: string) =>
     request<{ files: import('../types').FileEntry[]; query: string }>(`/api/files/search?q=${encodeURIComponent(query)}`),
-  initiateUpload: (data: { name: string; mimeType: string; size: number; driveAccountId?: string; workspaceFolderId?: string }) =>
+  initiateUpload: (data: { name: string; mimeType: string; size: number; driveAccountId?: string; parentFolderId?: string }) =>
     request<import('../types').UploadInitResponse>('/api/files/upload/init', {
       method: 'POST',
       body: JSON.stringify(data),
     }),
-  confirmUpload: (data: { googleFileId: string; driveAccountId: string; workspaceFolderId?: string }) =>
+  confirmUpload: (data: { googleFileId: string; driveAccountId: string; parentFolderId?: string }) =>
     request<{ file: import('../types').FileEntry }>('/api/files/upload/finalize', {
       method: 'POST',
       body: JSON.stringify(data),

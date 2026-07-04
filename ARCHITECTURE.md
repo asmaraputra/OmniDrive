@@ -170,7 +170,7 @@ Cron */30 * * * *
 
 Kapasitas tiap drive dihitung di `computeDriveQuota()` (`lib/storage-quota.ts`) dengan prioritas:
 
-1. `drive_accounts.quota_override` (manual, via `PATCH /api/drives/:id/quota`)
+1. `drive_accounts.quota_override` (manual) — **deprecated, tidak ada endpoint/UI yang menulis lagi** (fitur editor kapasitas manual dihapus). Branch tetap dipertahankan read-only agar tidak butuh migrasi drop-kolom.
 2. `storageQuota.limit` dari Google API (bila ada — "if applicable")
 3. `drive_accounts.total_quota` (cached)
 4. `UNLIMITED_DRIVE_QUOTA_BYTES` (1 TiB fallback)
@@ -179,7 +179,7 @@ Kapasitas tiap drive dihitung di `computeDriveQuota()` (`lib/storage-quota.ts`) 
 - Google Workspace pooled storage (akun 5 TB dst.)
 - Service account
 
-Akun-akun tersebut akan jatuh ke fallback 1 TiB kecuali user set `quota_override` manual via UI Settings > Connected Drives (tombol gear per drive di `DriveAccountCard`). `getQuota()` mengekspos `hasLimit` agar route tidak menimpa `total_quota` DB dengan nilai fallback saat Google omit limit.
+Akun-akun tersebut akan jatuh ke fallback 1 TiB. (Sebelumnya user bisa set `quota_override` manual via UI Settings, tapi fitur itu dihapus karena memicu bug upload di akun service-account/shared drive.) `getQuota()` mengekspos `hasLimit` agar route tidak menimpa `total_quota` DB dengan nilai fallback saat Google omit limit.
 
 Pemakaian (`used`) memakai `storageQuota.usageInDrive` (Drive-only), bukan `usage` (akun-wide: Drive+Gmail+Photos).
 

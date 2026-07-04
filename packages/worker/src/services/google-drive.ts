@@ -264,7 +264,7 @@ export class GoogleDriveService {
     const token = await this.getValidToken(driveAccountId);
 
     const response = await fetch(
-      `https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable`,
+      `https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable&supportsAllDrives=true`,
       {
         method: 'POST',
         headers: {
@@ -300,7 +300,7 @@ export class GoogleDriveService {
     const token = await this.getValidToken(driveAccountId);
     const fields = 'id,name,mimeType,size,thumbnailLink,webViewLink,webContentLink,createdTime,modifiedTime,md5Checksum';
 
-    const response = await fetch(`${DRIVE_API}/files/${googleFileId}?fields=${fields}`, {
+    const response = await fetch(`${DRIVE_API}/files/${googleFileId}?fields=${fields}&supportsAllDrives=true`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 
