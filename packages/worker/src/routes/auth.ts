@@ -13,40 +13,7 @@ import { syncDriveAccount } from '../services/sync';
 import { GoogleDriveService } from '../services/google-drive';
 import { mapDriveRow } from '../types';
 
-// ponytail: KV-based session index — D1 table would scale better for high session counts.
-// Stores a JSON array of session IDs per user under user_sessions:<userId>.
-async function registerSession(kv: KVNamespace, userId: string, sessionId: string): Promise<void> {
-  const key = `user_sessions:${userId}`;
-  const existing = await kv.get(key);
-  const sessions: string[] = existing ? JSON.parse(existing) : [];
-  if (!sessions.includes(sessionId)) {
-    sessions.push(sessionId);
-  }
-  await kv.put(key, JSON.stringify(sessions), { expirationTtl: 60 * 60 * 24 * 30 });
-}
-
-async function unregisterSession(kv: KVNamespace, userId: string, sessionId: string): Promise<void> {
-  const key = `user_sessions:${userId}`;
-  const existing = await kv.get(key);
-  if (!existing) return;
-  const sessions: string[] = JSON.parse(existing).filter((s: string) => s !== sessionId);
-  if (sessions.length === 0) {
-    await kv.delete(key);
-  } else {
-    await kv.put(key, JSON.stringify(sessions), { expirationTtl: 60 * 60 * 24 * 30 });
-  }
-}
-
-async function revokeAllSessions(kv: KVNamespace, userId: string): Promise<void> {
-  const key = `user_sessions:${userId}`;
-  const existing = await kv.get(key);
-  if (!existing) return;
-  const sessions: string[] = JSON.parse(existing);
-  for (const sid of sessions) {
-    await kv.delete(`session:${sid}`);
-  }
-  await kv.delete(key);
-}
+const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
 export const authRouter = new Hono<AppContext>({ strict: false });
 
@@ -76,7 +43,7 @@ authRouter.post('/register', async (c) => {
   if (passwordError) throw new AppError(400, passwordError);
 
   const db = c.env.DB;
-  
+
   // Check setup status
   const setupRes = await db.prepare('SELECT COUNT(*) as count FROM users').first<{ count: number }>();
   const isSetup = (setupRes?.count || 0) > 0;
@@ -86,7 +53,7 @@ authRouter.post('/register', async (c) => {
     const inv = await db.prepare('SELECT id, max_uses, used_count FROM invitation_codes WHERE code = ?').bind(invitation_code).first<{ id: string, max_uses: number, used_count: number }>();
     if (!inv) throw new AppError(400, 'Invalid invitation code');
     if (inv.max_uses > 0 && inv.used_count >= inv.max_uses) throw new AppError(400, 'Invitation code has reached its usage limit');
-    
+
     await db.prepare('UPDATE invitation_codes SET used_count = used_count + 1 WHERE id = ?').bind(inv.id).run();
   } else {
     // ponytail: optional BOOTSTRAP_TOKEN — if set, first registration requires it instead of being fully open
@@ -111,21 +78,22 @@ authRouter.post('/register', async (c) => {
   const id = generateId();
   const passwordHash = await hashPassword(password);
   const isSuperAdmin = isSetup ? 0 : 1;
-  
+
   await db.prepare(
     'INSERT INTO users (id, username, password_hash, email, name, is_super_admin) VALUES (?, ?, ?, ?, ?, ?)'
   ).bind(id, username, passwordHash, email || null, name || username, isSuperAdmin).run();
 
-  const sessionData: SessionData = { userId: id, username, email: email || null, name: name || username, avatarUrl: null, role: isSuperAdmin ? 'super_admin' : 'member', createdAt: Date.now() };
+  const now = Date.now();
+  const sessionData: SessionData = { userId: id, username, email: email || null, name: name || username, avatarUrl: null, role: isSuperAdmin ? 'super_admin' : 'member', createdAt: now };
   const sessionId = generateId();
-  
-  await c.env.KV.put(`session:${sessionId}`, JSON.stringify(sessionData), { expirationTtl: 60 * 60 * 24 * 7 });
+
+  await db.prepare(
+    'INSERT INTO sessions (id, user_id, data, expires_at, touched_at) VALUES (?, ?, ?, ?, ?)'
+  ).bind(sessionId, id, JSON.stringify(sessionData), now + SESSION_TTL_MS, now).run();
+
   const isSecure = c.env.WORKER_URL.startsWith('https://');
   const sameSite = sameSiteValue(c.env);
-  setCookie(c, 'omnidrive_sid', sessionId, { path: '/', secure: isSecure, httpOnly: true, sameSite, maxAge: 60 * 60 * 24 * 7 });
-
-  // ponytail: register session in user session index for revocation support
-  await registerSession(c.env.KV, id, sessionId);
+  setCookie(c, 'omnidrive_sid', sessionId, { path: '/', secure: isSecure, httpOnly: true, sameSite, maxAge: SESSION_TTL_MS / 1000 });
 
   return c.json({ success: true, user: sessionData, isSuperAdmin: !!isSuperAdmin });
 });
@@ -139,24 +107,17 @@ authRouter.post('/login', async (c) => {
     throw new AppError(401, 'Invalid credentials');
   }
 
-  const sessionData: SessionData = { userId: user.id, username: user.username, email: user.email, name: user.name, avatarUrl: user.avatar_url, role: user.is_super_admin ? 'super_admin' : 'member', createdAt: Date.now() };
+  const now = Date.now();
+  const sessionData: SessionData = { userId: user.id, username: user.username, email: user.email, name: user.name, avatarUrl: user.avatar_url, role: user.is_super_admin ? 'super_admin' : 'member', createdAt: now };
   const sessionId = generateId();
 
-  try {
-    // ponytail: registerSession skipped on login to halve KV writes (free tier = 1k/day).
-    // revokeAllSessions won't find sessions created after this change; upgrade to paid tier or
-    // move sessions to D1 if full revocation is needed.
-    await c.env.KV.put(`session:${sessionId}`, JSON.stringify(sessionData), { expirationTtl: 60 * 60 * 24 * 7 });
-  } catch (e: any) {
-    if (e?.message?.includes('limit exceeded')) {
-      throw new AppError(503, 'Service temporarily unavailable. Please try again later.');
-    }
-    throw e;
-  }
+  await c.env.DB.prepare(
+    'INSERT INTO sessions (id, user_id, data, expires_at, touched_at) VALUES (?, ?, ?, ?, ?)'
+  ).bind(sessionId, user.id, JSON.stringify(sessionData), now + SESSION_TTL_MS, now).run();
 
   const isSecure = c.env.WORKER_URL.startsWith('https://');
   const sameSite = sameSiteValue(c.env);
-  setCookie(c, 'omnidrive_sid', sessionId, { path: '/', secure: isSecure, httpOnly: true, sameSite, maxAge: 60 * 60 * 24 * 7 });
+  setCookie(c, 'omnidrive_sid', sessionId, { path: '/', secure: isSecure, httpOnly: true, sameSite, maxAge: SESSION_TTL_MS / 1000 });
 
   return c.json({ success: true, user: sessionData });
 });
@@ -274,10 +235,8 @@ authRouter.get('/me', authGuard, (c) => {
 
 authRouter.post('/logout', authGuard, async (c) => {
   const sid = getCookie(c, 'omnidrive_sid');
-  const userId = c.get('userId');
   if (sid) {
-    await c.env.KV.delete(`session:${sid}`);
-    await unregisterSession(c.env.KV, userId, sid);
+    await c.env.DB.prepare('DELETE FROM sessions WHERE id = ?').bind(sid).run();
   }
   const isSecure = c.env.WORKER_URL.startsWith('https://');
   deleteCookie(c, 'omnidrive_sid', { path: '/', secure: isSecure, sameSite: sameSiteValue(c.env) });
@@ -287,7 +246,7 @@ authRouter.post('/logout', authGuard, async (c) => {
 // Revoke all sessions for the current user (e.g. after password change, compromise)
 authRouter.post('/sessions/revoke', authGuard, async (c) => {
   const userId = c.get('userId');
-  await revokeAllSessions(c.env.KV, userId);
+  await c.env.DB.prepare('DELETE FROM sessions WHERE user_id = ?').bind(userId).run();
   const isSecure = c.env.WORKER_URL.startsWith('https://');
   deleteCookie(c, 'omnidrive_sid', { path: '/', secure: isSecure, sameSite: sameSiteValue(c.env) });
   return c.json({ success: true });

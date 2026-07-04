@@ -17,13 +17,22 @@ describe('DELETE /api/drives/:id', () => {
 
   const buildApp = (db: unknown) => {
     const kvDelete = vi.fn().mockResolvedValue(undefined);
-    const kvGet = vi.fn(async (key: string) => {
-      if (key === `session:${SESSION_ID}`) {
-        return JSON.stringify({ userId: USER_ID, createdAt: Date.now() });
-      }
-      return null;
-    });
+    const kvGet = vi.fn().mockResolvedValue(null);
     const kvPut = vi.fn().mockResolvedValue(undefined);
+
+    const sessionRow = {
+      data: JSON.stringify({ userId: USER_ID, role: 'member', createdAt: Date.now() }),
+      expires_at: Date.now() + 86_400_000,
+      touched_at: Date.now(), // recent — skips session extension, avoids UPDATE
+    };
+    const wrappedDb = {
+      prepare: vi.fn((sql: string) => {
+        if (sql.includes('FROM sessions')) {
+          return { bind: vi.fn(() => ({ first: vi.fn().mockResolvedValue(sessionRow), run: vi.fn() })) };
+        }
+        return (db as any).prepare(sql);
+      }),
+    };
 
     const app = new Hono<AppContext>();
     app.onError((err: any, c) => c.json({ error: err.message }, err.status || 500));
@@ -31,7 +40,7 @@ describe('DELETE /api/drives/:id', () => {
     return {
       app,
       env: {
-        DB: db,
+        DB: wrappedDb,
         KV: {
           get: kvGet,
           put: kvPut,

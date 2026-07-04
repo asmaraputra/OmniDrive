@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- **Session storage dipindah dari KV ke D1** (`0009_sessions_table.sql`): KV free tier 1k writes/day habis karena `auth-guard` write KV setiap request authenticated. D1 free tier 100k row writes/day — 100x lebih generous. Tabel baru `sessions` (`id`, `user_id`, `data`, `expires_at`, `touched_at`). Sliding window tetap throttled 1x/jam. Expired session cleanup via cron `*/30`. KV tetap dipakai untuk `oauth_state` dan `tokens` (bukan session). **Existing KV sessions expire natural dalam 7 hari — user perlu login ulang sekali.**
+
 ### Fixed
 
 - **Login 500 (`is_super_admin` column missing):** kolom `is_super_admin` ada di `schema.sql` tapi tidak ditambahkan oleh migrasi incremental manapun (`0001`–`0007`). DB yang diinisialisasi lewat jalur migrasi tidak punya kolom ini → query `SELECT ... is_super_admin FROM users WHERE username = ?` di `/api/auth/login` lempar error D1 → 500. Fix: migrasi baru `0008_add_is_super_admin.sql` yang menambah kolom (`DEFAULT 0`) dan mem-promote user paling awal (`ORDER BY created_at ASC LIMIT 1`) menjadi super admin (sesuai logika `/register`).

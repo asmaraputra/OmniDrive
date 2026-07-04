@@ -61,12 +61,21 @@ describe('POST /api/drives/service-account', () => {
     };
 
     const kvPut = vi.fn().mockResolvedValue(undefined);
-    const kvGet = vi.fn(async (key: string) => {
-      if (key === `session:${SESSION_ID}`) {
-        return JSON.stringify({ userId: USER_ID, createdAt: Date.now() });
-      }
-      return null;
-    });
+    const kvGet = vi.fn().mockResolvedValue(null);
+
+    const sessionRow = {
+      data: JSON.stringify({ userId: USER_ID, role: 'member', createdAt: Date.now() }),
+      expires_at: Date.now() + 86_400_000,
+      touched_at: Date.now() - 7_200_000,
+    };
+    const wrappedDb = {
+      prepare: vi.fn((sql: string) => {
+        if (sql.includes('FROM sessions')) {
+          return { bind: vi.fn(() => ({ first: vi.fn().mockResolvedValue(sessionRow), run: vi.fn() })) };
+        }
+        return db.prepare(sql);
+      }),
+    };
 
     const app = new Hono<AppContext>();
     app.onError((err: any, c) => c.json({ error: err.message }, err.status || 500));
@@ -75,7 +84,7 @@ describe('POST /api/drives/service-account', () => {
     return {
       app,
       env: {
-        DB: db,
+        DB: wrappedDb,
         KV: { get: kvGet, put: kvPut, delete: vi.fn() },
         GOOGLE_CLIENT_ID: 'client-id',
         GOOGLE_CLIENT_SECRET: 'client-secret',

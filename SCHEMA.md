@@ -1,6 +1,6 @@
 # SCHEMA.md — Database Schema (Cloudflare D1)
 
-Database OmniDrive menggunakan **Cloudflare D1** (SQLite). Skema master ada di `packages/worker/src/db/schema.sql`. Migrasi incremental: `0001`–`0008`.
+Database OmniDrive menggunakan **Cloudflare D1** (SQLite). Skema master ada di `packages/worker/src/db/schema.sql`. Migrasi incremental: `0001`–`0009`.
 
 ## Diagram Relasi
 
@@ -346,6 +346,22 @@ Kode undangan registrasi user baru.
 
 ---
 
+### `sessions`
+
+Session login user (migrasi dari KV ke D1 via `0009`).
+
+| Kolom | Tipe | Keterangan |
+|-------|------|------------|
+| `id` | TEXT PK | Session ID (cookie `omnidrive_sid`) |
+| `user_id` | TEXT FK → users | Pemilik session |
+| `data` | TEXT | JSON `SessionData` |
+| `expires_at` | INTEGER | Unix ms — session invalid jika < `now` |
+| `touched_at` | INTEGER | Unix ms — diupdate max 1x/jam (throttled sliding window) |
+
+Cleanup: cron `*/30` di `index.ts` menghapus baris `WHERE expires_at < now`.
+
+---
+
 ### `s3_credentials`
 
 Kredensial API key kompatibel S3 per user.
@@ -408,6 +424,7 @@ Part individual dari multipart upload.
 | `0007_add_quota_override.sql` | Kolom `quota_override` di `drive_accounts` (manual capacity untuk Workspace/service account) |
 | `0008_add_is_super_admin.sql` | Kolom `is_super_admin` di `users` — fix kolom hilang dari migrasi incremental (ada di `schema.sql` tapi tidak di `0001`); promotes user tertua jadi super admin |
 | `0008_add_s3_lifecycle_rules.sql` | Tabel `s3_lifecycle_rules` (aturan expire objek S3 → trash Google Drive) |
+| `0009_sessions_table.sql` | Tabel `sessions` — pindah session storage dari KV ke D1 (KV free tier 1k writes/day → D1 100k writes/day) |
 
 ## Perintah Database
 
