@@ -397,6 +397,16 @@ filesRouter.post('/upload/init', async (c) => {
   const { name, mimeType, size, parentFolderId, workspaceId, driveAccountId } = await c.req.json();
   const db = c.env.DB;
 
+  if (workspaceId) {
+    // IDOR/quota guard: workspaceId comes from the request body, so verify the
+    // caller is an editor of that workspace before touching its quota.
+    const { getWorkspaceRole, hasPermission } = await import('../middleware/rbac');
+    const role = await getWorkspaceRole(db, workspaceId, userId);
+    if (!role || !hasPermission(role, 'editor')) {
+      throw new AppError(403, 'Forbidden');
+    }
+  }
+
   if (workspaceId && size) {
     const policyService = new PolicyService(db);
     const hasQuota = await policyService.checkQuota(workspaceId, size);
@@ -464,6 +474,18 @@ filesRouter.post('/upload/finalize', async (c) => {
 
   // Verify drive belongs to user
   const db = c.env.DB;
+
+  if (workspaceId) {
+    // IDOR/quota guard: workspaceId comes from the request body. Verify the
+    // caller is an editor before attaching the file to the workspace or
+    // mutating its stored byte count.
+    const { getWorkspaceRole, hasPermission } = await import('../middleware/rbac');
+    const role = await getWorkspaceRole(db, workspaceId, userId);
+    if (!role || !hasPermission(role, 'editor')) {
+      throw new AppError(403, 'Forbidden');
+    }
+  }
+
   const drive = await db.prepare('SELECT id FROM drive_accounts WHERE id = ? AND user_id = ?')
     .bind(driveAccountId, userId).first();
     
