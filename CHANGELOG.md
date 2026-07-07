@@ -42,6 +42,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+- Dead code and local artifacts: unused `AdvancedShareModal`, `DriveFolderBrowser`, legacy `DriveService`, unused `errorHandler` middleware, stale API client methods (`getRootContents`, `getAdminAuditLogs`, `syncDriveFolder`), `bcryptjs`/`@radix-ui/react-popover` dependencies, one-off `optimize-logo.mjs`, and scratch files (diff dumps, DB export, agent run dirs).
 - Manual storage capacity override UI and `PATCH /api/drives/:id/quota` endpoint (`quota_override` column kept read-only for compatibility).
 - Dev smoke-test scripts, one-off migration scripts, debug `console.log` calls, and local test artifacts.
 

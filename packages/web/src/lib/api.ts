@@ -72,12 +72,8 @@ export const api = {
   triggerSync: (id: string) => request<{ success: boolean }>(`/api/drives/${id}/sync`, { method: 'POST' }),
   getDriveFolderContents: (driveId: string, googleFolderId: string) =>
     request<import('../types').DriveFolderContents>(`/api/drives/${driveId}/folders/${googleFolderId}`),
-  syncDriveFolder: (driveId: string, googleFolderId: string) =>
-    request<import('../types').DriveFolderContents>(`/api/drives/${driveId}/folders/${googleFolderId}/sync`, { method: 'POST' }),
-
 
   // Folders
-  getRootContents: () => request<import('../types').FolderContents>('/api/folders/'),
   getFolderContents: (id: string, cursor?: string, limit?: number, driveId?: string) => {
     const params = new URLSearchParams();
     if (cursor) params.set('cursor', cursor);
@@ -211,8 +207,6 @@ export const api = {
   // Audit Logs
   getWorkspaceAuditLogs: (workspaceId: string) =>
     request<{ logs: import('../types').AuditLog[] }>(`/api/workspaces/${workspaceId}/audit-logs`),
-  getAdminAuditLogs: () =>
-    request<{ logs: import('../types').AuditLog[] }>('/api/admin/audit-logs'),
 
   // Policies
   getWorkspacePolicies: (workspaceId: string) =>

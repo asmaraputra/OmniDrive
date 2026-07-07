@@ -149,13 +149,12 @@ Urutan menu (dari `Sidebar.tsx`):
 | `DropZone` | Drag-and-drop upload |
 | `UploadModal` | Queue upload + progress |
 | `DriveAccountCard` | Kartu akun Drive di Settings (quota bar, badge `· reconnect needed`/`· unreachable`, tombol Sync + Disconnect) |
-| `DriveFolderBrowser` | Browser folder native Drive |
 
 ### Modals
 
 | Modal | Trigger |
 |-------|---------|
-| `ShareModal` / `AdvancedShareModal` | Share file |
+| `ShareModal` | Share file |
 | `EditShareModal` | Edit shared link |
 | `MoveDriveModal` | Pindah file antar drive (bulk) |
 | `AddToWorkspaceModal` | Tambah file ke workspace |

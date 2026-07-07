@@ -438,7 +438,6 @@ filesRouter.post('/upload/init', async (c) => {
   const gDrive = new GoogleDriveService(c.env.DB, c.env.GOOGLE_CLIENT_ID, c.env.GOOGLE_CLIENT_SECRET, c.env.TOKEN_ENCRYPTION_KEY);
   // parentFolderId (current view) wins; fall back to the drive's configured root folder, then Google 'root'.
   const uploadParent = parentFolderId || targetDrive.rootFolderId || 'root';
-  console.log('upload/init', { driveId: targetDrive.id, type: targetDrive.type, rootFolderId: targetDrive.rootFolderId, override: targetDrive.quotaOverride, freeSpace: targetDrive.freeSpace, size, parentFolderId, uploadParent });
   let uploadUrl: string;
   try {
     uploadUrl = await gDrive.initiateResumableUpload(targetDrive.id, name, mimeType, uploadParent);

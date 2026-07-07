@@ -86,7 +86,6 @@ D1 / KV / Google API
 | Service | File | Tanggung jawab |
 |---------|------|---------------|
 | `GoogleDriveService` | `services/google-drive.ts` | Google Drive API v3 wrapper |
-| `DriveService` | `services/drive.service.ts` | Drive account management |
 | `sync` | `services/sync.ts` | Full + incremental sync via Changes API |
 | `AuthService` | `services/auth.service.ts` | Login, register, session, OAuth |
 | `AutomationEngine` | `services/automation.service.ts` | Rule evaluation & execution |

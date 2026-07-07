@@ -32,5 +32,11 @@ docs/
 # Local IDE / agent artifacts
 mcps/
 terminals/
+.pi-subagents/
+.superpowers/
+prompt.md
+*.patch
+diff.txt
+git_show.txt
 
 
