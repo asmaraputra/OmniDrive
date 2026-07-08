@@ -39,4 +39,6 @@ prompt.md
 diff.txt
 git_show.txt
 
-
+# Local D1/SQLite artifacts
+*.sqlite
+packages/worker/data/
