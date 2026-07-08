@@ -32,7 +32,7 @@ export const Sidebar: React.FC = () => {
   // the aside just clips/reveals the fixed-width content like a curtain.
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
     `flex items-center gap-3 px-4 py-2.5 rounded-full cursor-pointer transition-colors text-sm ${
-      isActive ? 'bg-blue-100 text-gray-900 font-medium' : 'hover:bg-gray-100 text-gray-700'
+      isActive ? 'bg-blue-100 text-stone-900 font-medium' : 'hover:bg-stone-100 text-stone-700'
     }`;
 
   const navContent = (
@@ -82,12 +82,12 @@ export const Sidebar: React.FC = () => {
       {isSidebarOpen && <SidebarStorage />}
 
       {/* Version and Links */}
-      <div className="mt-4 px-3 flex items-center justify-between text-xs text-gray-400">
+      <div className="mt-4 px-3 flex items-center justify-between text-xs text-stone-400">
         <a
           href={pkg.repository.url.replace('.git', '')}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-1.5 hover:text-gray-600 transition-colors"
+          className="flex items-center gap-1.5 hover:text-stone-600 transition-colors"
         >
           <Github size={14} />
           {isSidebarOpen && <span>GitHub</span>}

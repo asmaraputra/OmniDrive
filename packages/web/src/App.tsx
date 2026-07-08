@@ -46,7 +46,7 @@ export const App = () => {
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', gap: '1rem' }}>
         <h2>Connection Error</h2>
         <p>{setupError}</p>
-        <button onClick={checkSetupStatus} style={{ padding: '8px 16px', cursor: 'pointer', borderRadius: '4px', border: '1px solid #ccc', background: '#fff' }}>Retry</button>
+        <button onClick={checkSetupStatus} style={{ padding: '8px 16px', cursor: 'pointer', borderRadius: '4px', border: '1px solid #e6dfd8', background: '#efe9de', color: '#141413' }}>Retry</button>
       </div>
     );
   }

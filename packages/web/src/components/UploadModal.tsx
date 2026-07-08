@@ -55,12 +55,12 @@ export function UploadModal({ open, folderId, driveId, onClose, onSuccess }: Upl
         className="max-w-md p-0 gap-0 rounded-2xl overflow-hidden flex flex-col max-h-full"
         onInteractOutside={(e) => { if (isUploading) e.preventDefault(); }}
       >
-        <div className="flex items-center p-5 border-b border-gray-100 shrink-0">
-          <DialogTitle className="text-lg font-semibold text-gray-800">Upload Files</DialogTitle>
+        <div className="flex items-center p-5 border-b border-stone-100 shrink-0">
+          <DialogTitle className="text-lg font-semibold text-stone-800">Upload Files</DialogTitle>
         </div>
 
         {/* File list or File Picker */}
-        <div className="max-h-[200px] overflow-y-auto px-6 py-2 border-b border-gray-100">
+        <div className="max-h-[200px] overflow-y-auto px-6 py-2 border-b border-stone-100">
           {queue.length === 0 ? (
             <div className="py-8 flex flex-col items-center justify-center">
               <input
@@ -76,7 +76,7 @@ export function UploadModal({ open, folderId, driveId, onClose, onSuccess }: Upl
               />
               <label
                 htmlFor="modal-file-upload"
-                className="cursor-pointer flex flex-col items-center gap-3 text-gray-400 hover:text-blue-500 transition-colors"
+                className="cursor-pointer flex flex-col items-center gap-3 text-stone-400 hover:text-blue-500 transition-colors"
               >
                 <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center text-blue-500">
                   <Upload size={24} />
@@ -86,9 +86,9 @@ export function UploadModal({ open, folderId, driveId, onClose, onSuccess }: Upl
             </div>
           ) : (
             queue.map((item) => (
-              <div key={item.id} className="flex items-center gap-3 py-3 border-b border-gray-50 last:border-0">
-                <span className="flex-1 text-sm text-gray-700 truncate">{item.file.name}</span>
-                <span className="text-xs text-gray-400 whitespace-nowrap">{formatFileSize(item.file.size)}</span>
+              <div key={item.id} className="flex items-center gap-3 py-3 border-b border-stone-50 last:border-0">
+                <span className="flex-1 text-sm text-stone-700 truncate">{item.file.name}</span>
+                <span className="text-xs text-stone-400 whitespace-nowrap">{formatFileSize(item.file.size)}</span>
                 {item.status === 'uploading' && (
                   <span className="text-xs text-blue-600 min-w-[40px] text-right font-medium">{item.progress}%</span>
                 )}
@@ -97,7 +97,7 @@ export function UploadModal({ open, folderId, driveId, onClose, onSuccess }: Upl
                 </div>
                 {item.status === 'pending' && !isUploading && (
                   <button
-                    className="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-md transition-colors"
+                    className="p-1 text-stone-400 hover:text-stone-600 hover:bg-stone-100 rounded-md transition-colors"
                     onClick={() => removeFile(item.id)}
                   >
                     <X size={14} />
@@ -111,34 +111,34 @@ export function UploadModal({ open, folderId, driveId, onClose, onSuccess }: Upl
         {/* Drive selector */}
         {!isUploading && !allDone && (
           <div className="p-6 pb-2">
-            <label className="block text-sm font-medium text-gray-700 mb-3">
+            <label className="block text-sm font-medium text-stone-700 mb-3">
               Target Drive
             </label>
             <div className="flex flex-col gap-2">
-              <label className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer border transition-colors ${!selectedDriveId ? 'bg-blue-50 border-blue-200' : 'border-gray-200 hover:bg-gray-50'}`}>
+              <label className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer border transition-colors ${!selectedDriveId ? 'bg-blue-50 border-blue-200' : 'border-stone-200 hover:bg-stone-50'}`}>
                 <input
                   type="radio"
                   name="drive"
                   value=""
                   checked={!selectedDriveId}
                   onChange={() => setSelectedDriveId('')}
-                  className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                  className="w-4 h-4 text-blue-600 border-stone-300 focus:ring-blue-500"
                 />
-                <span className="text-sm text-gray-800">Auto (most free space)</span>
+                <span className="text-sm text-stone-800">Auto (most free space)</span>
               </label>
               {drives.map((drive, i) => (
-                <label key={drive.id} className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer border transition-colors ${selectedDriveId === drive.id ? 'bg-blue-50 border-blue-200' : 'border-gray-200 hover:bg-gray-50'}`}>
+                <label key={drive.id} className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer border transition-colors ${selectedDriveId === drive.id ? 'bg-blue-50 border-blue-200' : 'border-stone-200 hover:bg-stone-50'}`}>
                   <input
                     type="radio"
                     name="drive"
                     value={drive.id}
                     checked={selectedDriveId === drive.id}
                     onChange={() => setSelectedDriveId(drive.id)}
-                    className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                    className="w-4 h-4 text-blue-600 border-stone-300 focus:ring-blue-500"
                   />
                   <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: getDriveColor(i) }} />
-                  <span className="text-sm text-gray-800 flex-1 truncate">{drive.email}</span>
-                  <span className="text-xs text-gray-500 whitespace-nowrap">{formatFileSize(drive.freeSpace)} free</span>
+                  <span className="text-sm text-stone-800 flex-1 truncate">{drive.email}</span>
+                  <span className="text-xs text-stone-500 whitespace-nowrap">{formatFileSize(drive.freeSpace)} free</span>
                 </label>
               ))}
             </div>
@@ -157,7 +157,7 @@ export function UploadModal({ open, folderId, driveId, onClose, onSuccess }: Upl
           ) : (
             <>
               <button
-                className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
+                className="px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-100 rounded-lg transition-colors disabled:opacity-50"
                 onClick={handleClose}
                 disabled={isUploading}
               >

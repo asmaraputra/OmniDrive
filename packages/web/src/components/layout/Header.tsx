@@ -25,21 +25,21 @@ export const Header: React.FC = () => {
         {/* Mobile: drawer toggle; Desktop: collapse rail */}
         <button
           onClick={toggleMobileSidebar}
-          className="md:hidden p-2 hover:bg-gray-200 rounded-full text-gray-700 transition-colors flex-shrink-0"
+          className="md:hidden p-2 hover:bg-stone-200 rounded-full text-stone-700 transition-colors flex-shrink-0"
           aria-label="Open menu"
         >
           <Menu size={24} />
         </button>
         <button
           onClick={toggleSidebar}
-          className="hidden md:flex p-2 hover:bg-gray-200 rounded-full text-gray-700 transition-colors flex-shrink-0"
+          className="hidden md:flex p-2 hover:bg-stone-200 rounded-full text-stone-700 transition-colors flex-shrink-0"
           aria-label="Toggle sidebar"
         >
           <Menu size={24} />
         </button>
         <div className="flex items-center gap-2 min-w-0">
           <img src="/logo.png?v=2" alt="AzaDrive" className="w-8 h-8 object-contain flex-shrink-0" />
-          <span className="text-xl text-gray-700 font-medium tracking-wide hidden sm:inline">AzaDrive</span>
+          <span className="text-xl text-stone-700 font-medium tracking-wide hidden sm:inline">AzaDrive</span>
         </div>
       </div>
 
@@ -48,7 +48,7 @@ export const Header: React.FC = () => {
         <Omnibar />
       </div>
 
-      <div className="flex items-center gap-2 px-1 sm:px-2 text-gray-600 flex-shrink-0">
+      <div className="flex items-center gap-2 px-1 sm:px-2 text-stone-600 flex-shrink-0">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="w-9 h-9 rounded-full bg-blue-600 text-white flex items-center justify-center font-medium cursor-pointer hover:bg-blue-700 select-none overflow-hidden flex-shrink-0">
@@ -59,14 +59,14 @@ export const Header: React.FC = () => {
               )}
             </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56 bg-white shadow-xl rounded-xl border border-gray-200">
+          <DropdownMenuContent align="end" className="w-56 bg-card shadow-xl rounded-xl border border-stone-200">
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1 py-1">
-                <p className="text-sm font-medium leading-none text-gray-800">{user?.name || 'User'}</p>
-                <p className="text-xs leading-none text-gray-500">{user?.email || 'user@example.com'}</p>
+                <p className="text-sm font-medium leading-none text-stone-800">{user?.name || 'User'}</p>
+                <p className="text-xs leading-none text-stone-500">{user?.email || 'user@example.com'}</p>
               </div>
             </DropdownMenuLabel>
-            <DropdownMenuSeparator className="bg-gray-200" />
+            <DropdownMenuSeparator className="bg-stone-200" />
             <DropdownMenuItem
               className="cursor-pointer text-red-600 focus:text-red-600 focus:bg-red-50"
               onClick={() => logout()}

@@ -29,6 +29,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Migrated session storage from KV to D1; existing KV sessions expire within 7 days (one-time re-login required).
 - Rebranded user-facing strings from OmniDrive to AzaDrive; production frontend URL set to `https://azadrive.my.id` (infrastructure identifiers unchanged).
 - Recalibrated brand palette to cobalt accent (`#2563EB`) and cool slate surface (`#F1F5F9`).
+- Adopted Claude-inspired warm canvas design system (ref: [getdesign.md/claude](https://getdesign.md/claude/design-md)): cream canvas floor `#faf9f5`, grounded cream cards `#efe9de` (darker than floor), warm surface `#f5f0e8`, warm ink text `#141413`. Cobalt `#2563EB` retained as brand CTA/accent (override of Claude's coral `#cc785c`). Cards are grounded panels (darker than floor), not floating white cards.
+- All elevated surfaces (modals, dropdowns, context menus, inputs, InfoPanel, toasts, UI primitives) migrated from `bg-white` to `bg-card` — no pure white `#FFFFFF` remains in the app chrome.
+- All borders migrated from cool `border-gray-*` to warm `border-stone-*` (150 occurrences); all secondary backgrounds/hover states migrated from `bg-gray-*` to `bg-stone-*` (92 occurrences).
+- All text colors migrated from cool `text-gray-*` to warm `text-stone-*` (365 occurrences) for full warm-tone consistency — zero cool gray remains in the UI.
 
 ### Fixed
 

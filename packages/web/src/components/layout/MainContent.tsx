@@ -6,7 +6,7 @@ export const MainContent: React.FC = () => {
   // the panel internally reads isInfoPanelOpen to animate open/closed.
   return (
     <div className="flex flex-1 h-full overflow-hidden bg-surface">
-      <main className="flex-1 bg-white rounded-xl m-2 shadow-sm overflow-y-auto">
+      <main className="flex-1 bg-background rounded-xl m-2 shadow-sm overflow-y-auto">
         <Outlet />
       </main>
 

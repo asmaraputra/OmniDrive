@@ -55,8 +55,8 @@ export function CreateFolderModal({ open, parentId, title, onClose, onSuccess }:
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="max-w-md p-0 gap-0 rounded-2xl overflow-hidden flex flex-col">
-        <div className="flex items-center p-5 border-b border-gray-100 shrink-0">
-          <DialogTitle className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+        <div className="flex items-center p-5 border-b border-stone-100 shrink-0">
+          <DialogTitle className="text-lg font-semibold text-stone-800 flex items-center gap-2">
             <FolderPlus size={20} className="text-blue-500" />
             {title}
           </DialogTitle>
@@ -71,7 +71,7 @@ export function CreateFolderModal({ open, parentId, title, onClose, onSuccess }:
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-gray-700">
+              <label className="text-sm font-medium text-stone-700">
                 {entityLabel} name
               </label>
               <input
@@ -80,14 +80,14 @@ export function CreateFolderModal({ open, parentId, title, onClose, onSuccess }:
                 placeholder={`Enter ${entityLabel.toLowerCase()} name`}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="px-3 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
+                className="px-3 py-2 bg-card border border-stone-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
               />
             </div>
 
-            <div className="flex justify-end gap-3 mt-2 pt-4 border-t border-gray-100">
+            <div className="flex justify-end gap-3 mt-2 pt-4 border-t border-stone-100">
               <button
                 type="button"
-                className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                className="px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-100 rounded-lg transition-colors"
                 onClick={onClose}
               >
                 Cancel

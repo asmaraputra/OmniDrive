@@ -4,7 +4,7 @@ Panduan visual dan pola komponen untuk frontend AzaDrive (`packages/web`).
 
 ## Filosofi Desain
 
-AzaDrive mengadopsi estetika **premium SaaS cobalt** — bersih, bento-driven, dan fungsional. Light mode dengan surface cool slate, accent electric blue, dan dashboard asimetris. Bukan dark mode murni.
+AzaDrive mengadopsi sistem desain **Claude-inspired warm canvas** (ref: [getdesign.md/claude](https://getdesign.md/claude/design-md)) dengan brand override cobalt — bersih, bento-driven, dan fungsional. Light mode dengan cream canvas floor, grounded cream cards, warm ink text, accent cobalt blue, dan dashboard asimetris. Bukan dark mode murni.
 
 | Prinsip | Implementasi |
 |---------|-------------|
@@ -32,13 +32,16 @@ Definisi di `packages/web/tailwind.config.js`:
 
 ```js
 colors: {
-  background: "hsl(0, 0%, 100%)",      // Putih — main canvas
-  foreground: "hsl(222.2, 84%, 4.9%)", // Hampir hitam — teks utama
+  // Claude design system (getdesign.md/claude) — warm cream canvas, grounded cards.
+  // Brand override: cobalt #2563EB replaces Claude's coral #cc785c for CTA/accent.
+  background: "#faf9f5", // Canvas — cream floor, deliberately not pure white
+  foreground: "#141413", // Ink — warm near-black (not cool)
   primary: {
-    DEFAULT: "#2563EB",                 // Cobalt blue — CTA, link aktif (Opsi B)
-    foreground: "hsl(210, 40%, 98%)",
+    DEFAULT: "#2563EB", // Cobalt blue — brand CTA/accent (override of Claude coral)
+    foreground: "#ffffff",
   },
-  surface: "#F1F5F9",                   // Cool slate — sidebar background
+  surface: "#f5f0e8", // Surface-soft — sidebar, shell, section bands
+  card: "#efe9de", // Surface-card — grounded panels, one step darker than canvas
 }
 borderRadius: {
   lg: "0.5rem",
@@ -47,18 +50,29 @@ borderRadius: {
 }
 ```
 
+### Hierarki Warna Claude
+
+| Layer | Token | Hex | Peran |
+|-------|-------|-----|-------|
+| Canvas (floor) | `bg-background` | `#faf9f5` | Page floor — cream, lebih terang dari kartu |
+| Surface (shell) | `bg-surface` | `#f5f0e8` | Sidebar, app shell, section divider |
+| Card (grounded) | `bg-card` | `#efe9de` | Kartu panel — **lebih gelap dari floor** (grounded, bukan melayang) |
+| Ink (teks utama) | `text-foreground` | `#141413` | Warm near-black, bukan cool gray |
+| Primary (accent) | `bg-primary` | `#2563EB` | Cobalt blue — brand override (Claude pakai coral `#cc785c`) |
+
 ### Penggunaan Warna
 
 | Token | Penggunaan |
 |-------|-----------|
-| `bg-background` | Area konten utama |
-| `bg-surface` | Sidebar (`Sidebar.tsx`) |
-| `text-foreground` | Teks body |
-| `bg-primary` / `text-primary` | Tombol utama, link |
-| `bg-blue-100 text-gray-900` | Nav item aktif (sidebar) |
-| `hover:bg-gray-100` | Nav item hover |
-| `text-gray-400` | Teks sekunder (versi, metadata) |
-| `text-gray-700` | Teks navigasi default |
+| `bg-background` | Page floor / canvas (`#faf9f5` cream — lebih terang dari kartu) |
+| `bg-surface` | App shell & sidebar (`#f5f0e8` surface-soft) |
+| `bg-card` | Semua elevated surfaces — bento cards, modal, dropdown, context menu, input, InfoPanel, toast (`#efe9de` grounded panel — lebih gelap dari floor) |
+| `border-stone-*` | Warm gray borders (konsisten warm tone dengan canvas Claude) |
+| `text-foreground` | Teks utama (`#141413` warm ink) |
+| `text-stone-*` | Teks sekunder, muted, navigasi (warm gray — konsisten warm tone, bukan cool `text-gray-*`) |
+| `bg-primary` / `text-primary` | Tombol utama, link (cobalt `#2563EB` brand override) |
+| `bg-blue-100 text-stone-900` | Nav item aktif (sidebar) — cobalt accent pop di warm field |
+| `hover:bg-stone-100` | Nav item hover (sidebar) |
 
 ### Tipografi
 

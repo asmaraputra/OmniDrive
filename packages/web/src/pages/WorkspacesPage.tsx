@@ -208,7 +208,7 @@ export function WorkspacesPage() {
   ]);
 
   return (
-    <div className="flex h-full w-full overflow-hidden bg-white relative">
+    <div className="flex h-full w-full overflow-hidden bg-card relative">
       {/* Mobile drawer for workspace tree */}
       {wsSidebarOpen && (
         <div className="md:hidden fixed inset-0 z-40 bg-black/40" onClick={() => setWsSidebarOpen(false)} aria-hidden />
@@ -247,23 +247,23 @@ export function WorkspacesPage() {
       />
       {retentionTargetId && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full">
+          <div className="bg-card rounded-lg shadow-lg p-6 max-w-md w-full">
             <h3 className="text-lg font-bold mb-4">Set Retention Policy</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Action</label>
-                <select id="retentionAction" className="w-full border-gray-300 rounded p-2 text-sm border">
+                <label className="block text-sm font-medium text-stone-700 mb-1">Action</label>
+                <select id="retentionAction" className="w-full border-stone-300 rounded p-2 text-sm border">
                   <option value="auto_delete">Auto-Delete (Retention limit)</option>
                   <option value="prevent_deletion">Prevent Deletion (Legal Hold)</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Days</label>
-                <input id="retentionDays" type="number" defaultValue={30} className="w-full border-gray-300 rounded p-2 text-sm border" />
+                <label className="block text-sm font-medium text-stone-700 mb-1">Days</label>
+                <input id="retentionDays" type="number" defaultValue={30} className="w-full border-stone-300 rounded p-2 text-sm border" />
               </div>
             </div>
             <div className="mt-6 flex justify-end gap-3">
-              <button className="px-4 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded" onClick={() => setRetentionTargetId(null)}>Cancel</button>
+              <button className="px-4 py-2 text-sm text-stone-600 hover:bg-stone-100 rounded" onClick={() => setRetentionTargetId(null)}>Cancel</button>
               <button className="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700" onClick={async () => {
                 const action = (document.getElementById('retentionAction') as HTMLSelectElement).value;
                 const days = parseInt((document.getElementById('retentionDays') as HTMLInputElement).value, 10);
