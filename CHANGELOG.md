@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Shared `EmptyState` + `ListSkeleton` for consistent empty/loading UI (Trash, Search, Starred, Shared Links, FileGrid).
+- `ItemContextMenu` extracted from `FileGrid`; `AccountPasswordForm` extracted from Settings.
 - Change password for the signed-in user: `POST /api/auth/change-password` (current + new password) and Account form on Settings; other sessions are revoked, current session kept.
 - Pages `_headers`: long-cache immutable `/assets/*`, baseline security headers on static SPA.
 - Drive account badges (`DriveBadge`) in the file browser: colored label with shortened username, optional **Drive** column when multiple accounts are connected, and **Stored on** field in the details panel; full email shown on hover.
@@ -26,6 +28,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- CTA/focus accents aligned to design tokens (`bg-primary`, `focus:ring-primary`) across web UI; legal links keep `blue-700` for AA contrast on cream cards.
+- `ui/button` variants use warm stone + primary tokens; wired on Login and Setup submit.
+- Shared Links cards: lighter hover (no lift), `rounded-xl` radius scale.
+- A11y: toast live region, sidebar collapsed nav labels, FileGrid checkbox labels, keyboard-friendly workspace tree select.
 - Route-level code splitting + vendor chunks (`react` / `router` / `recharts`) so login LCP no longer downloads the full app shell + charts.
 - Login/setup/public shared shells use `<main>` landmarks; setup/shared password labels; account menu `aria-label`; legal muted text raised to stone-600 for AA contrast.
 - Worker API CSP tightened to `default-src 'none'` (JSON/XML only); SPA headers remain on Pages.
@@ -41,6 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Dashboard secondary loads (recent files, category overview) no longer fail silently — surface error toasts.
 - Home **Recent** (and search) no longer lists the same file once per workspace member: `/api/files/recent` and `/api/files/search` now use `EXISTS` for membership instead of `LEFT JOIN workspace_members`, which multiplied rows (e.g. 1 file × 6 members → 6 identical rows).
 - Added root `llms.txt` (PageSpeed Agentic Browsing): SPA fallback was serving `index.html` at `/llms.txt`, which failed the required markdown H1 check. Static file follows [llmstxt.org](https://llmstxt.org/) (`# AzaDrive` + summary + page links).
 - Added root `robots.txt` and `sitemap.xml` (PageSpeed SEO): missing static files caused the SPA `index.html` to be appended after Cloudflare Content-Signal rules, producing 17 robots.txt syntax errors. Public URLs listed in sitemap; auth-gated and API paths disallowed.

@@ -3,6 +3,7 @@ import { getSharedLinks, deleteSharedLink, SharedLink } from '../lib/api';
 import { Link, FileText, Folder, Eye, Download, Trash2, Copy, Check, Clock, Settings } from 'lucide-react';
 import { useToastStore } from '../stores/toastStore';
 import { EditShareModal } from '../components/EditShareModal';
+import { EmptyState, ListSkeleton } from '../components/EmptyState';
 
 export function SharedLinksPage() {
   const [links, setLinks] = useState<SharedLink[]>([]);
@@ -55,7 +56,7 @@ export function SharedLinksPage() {
     <div className="p-4 md:p-8 max-w-7xl mx-auto w-full">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-stone-900 tracking-tight flex items-center gap-3">
-          <Link className="text-blue-600" size={32} />
+          <Link className="text-primary" size={32} aria-hidden />
           Shared Links
         </h1>
         <p className="text-stone-500 mt-2 text-lg">
@@ -64,53 +65,49 @@ export function SharedLinksPage() {
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center py-20">
-          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600" />
-        </div>
+        <ListSkeleton rows={4} />
       ) : links.length === 0 ? (
-        <div className="bg-card rounded-2xl border border-stone-100 shadow-sm p-16 text-center">
-          <div className="mx-auto w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-6">
-            <Link size={32} className="text-blue-400" />
-          </div>
-          <h3 className="text-xl font-semibold text-stone-800 mb-2">No active shared links</h3>
-          <p className="text-stone-500 max-w-sm mx-auto">
-            You haven't shared any files or folders yet. Right-click any file to create a shareable link.
-          </p>
+        <div className="bg-card rounded-xl border border-stone-200">
+          <EmptyState
+            icon={Link}
+            title="No active shared links"
+            description="Right-click any file to create a shareable link."
+          />
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {links.map((link) => (
             <div
               key={link.id}
-              className="group bg-card rounded-2xl border border-stone-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col"
+              className="group bg-card rounded-xl border border-stone-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col"
             >
               <div className="p-5 border-b border-stone-100 flex-1">
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center gap-3 overflow-hidden">
-                    <div className={`p-3 rounded-xl flex-shrink-0 ${link.targetType === 'folder' ? 'bg-indigo-50 text-indigo-600' : 'bg-blue-50 text-blue-600'}`}>
-                      {link.targetType === 'folder' ? <Folder size={24} /> : <FileText size={24} />}
+                    <div className="p-3 rounded-lg flex-shrink-0 bg-primary/10 text-primary">
+                      {link.targetType === 'folder' ? <Folder size={24} aria-hidden /> : <FileText size={24} aria-hidden />}
                     </div>
                     <div className="min-w-0">
                       <h3 className="text-stone-900 font-semibold truncate text-lg" title={link.targetName || link.targetId}>
                         {link.targetName || 'Unknown ' + (link.targetType === 'folder' ? 'Folder' : 'File')}
                       </h3>
                       <div className="flex items-center gap-1.5 text-xs text-stone-400 mt-1">
-                        <Clock size={12} />
+                        <Clock size={12} aria-hidden />
                         <span>Created {formatDate(link.createdAt)}</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4 py-3 px-4 bg-stone-50 rounded-xl mt-4">
+                <div className="flex items-center gap-4 py-3 px-4 bg-stone-50 rounded-lg mt-4">
                   <div className="flex items-center gap-2 text-sm text-stone-600">
-                    <Eye size={16} className="text-stone-400" />
+                    <Eye size={16} className="text-stone-400" aria-hidden />
                     <span className="font-medium">{link.viewCount}</span>
                     <span className="text-stone-400 text-xs uppercase tracking-wider">Views</span>
                   </div>
-                  <div className="w-px h-8 bg-stone-200"></div>
+                  <div className="w-px h-8 bg-stone-200" />
                   <div className="flex items-center gap-2 text-sm text-stone-600">
-                    <Download size={16} className="text-stone-400" />
+                    <Download size={16} className="text-stone-400" aria-hidden />
                     <span className="font-medium">{link.downloadCount}</span>
                     <span className="text-stone-400 text-xs uppercase tracking-wider">DLs</span>
                   </div>
@@ -119,34 +116,37 @@ export function SharedLinksPage() {
 
               <div className="px-5 py-4 bg-stone-50 flex items-center justify-between gap-3">
                 <button
+                  type="button"
                   onClick={() => copyToClipboard(link.id)}
-                  className="flex items-center justify-center gap-2 flex-1 py-2 px-4 rounded-lg bg-card border border-stone-200 text-stone-700 font-medium text-sm hover:bg-stone-50 hover:text-blue-600 hover:border-blue-200 transition-colors"
+                  className="flex items-center justify-center gap-2 flex-1 py-2 px-4 rounded-lg bg-card border border-stone-200 text-stone-700 font-medium text-sm hover:bg-stone-50 hover:text-primary hover:border-primary/30 transition-colors"
                 >
                   {copiedId === link.id ? (
                     <>
-                      <Check size={16} className="text-green-500" />
+                      <Check size={16} className="text-green-500" aria-hidden />
                       <span className="text-green-600">Copied!</span>
                     </>
                   ) : (
                     <>
-                      <Copy size={16} />
+                      <Copy size={16} aria-hidden />
                       <span>Copy Link</span>
                     </>
                   )}
                 </button>
                 <button
+                  type="button"
                   onClick={() => setEditingLink(link)}
-                  className="p-2 rounded-lg text-stone-400 hover:text-blue-600 hover:bg-blue-50 transition-colors"
-                  title="Edit Settings"
+                  className="p-2 rounded-lg text-stone-400 hover:text-primary hover:bg-primary/10 transition-colors"
+                  aria-label="Edit share settings"
                 >
-                  <Settings size={18} />
+                  <Settings size={18} aria-hidden />
                 </button>
                 <button
+                  type="button"
                   onClick={() => revoke(link.id)}
                   className="p-2 rounded-lg text-stone-400 hover:text-red-600 hover:bg-red-50 transition-colors"
-                  title="Stop Sharing"
+                  aria-label="Stop sharing"
                 >
-                  <Trash2 size={18} />
+                  <Trash2 size={18} aria-hidden />
                 </button>
               </div>
             </div>

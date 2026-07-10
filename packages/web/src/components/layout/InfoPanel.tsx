@@ -91,8 +91,8 @@ export const InfoPanel: React.FC = () => {
 
         <div className="mb-6 flex justify-center">
           {type === 'folder' ? (
-            <div className="w-24 h-24 bg-blue-50 rounded-2xl flex items-center justify-center">
-              <Folder size={48} className="text-blue-500" fill="currentColor" />
+            <div className="w-24 h-24 bg-primary/10 rounded-2xl flex items-center justify-center">
+              <Folder size={48} className="text-primary" fill="currentColor" />
             </div>
           ) : (
             <div className="w-24 h-24 bg-stone-50 border border-stone-200 rounded-2xl flex items-center justify-center text-5xl shadow-sm">
@@ -156,7 +156,7 @@ export const InfoPanel: React.FC = () => {
                 <button
                   onClick={handleForceSync}
                   disabled={isSyncing}
-                  className="flex items-center justify-center w-full gap-2 px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                  className="flex items-center justify-center w-full gap-2 px-3 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90 disabled:opacity-50 transition-colors"
                 >
                   {isSyncing ? <Loader2 size={16} className="animate-spin" /> : <RefreshCw size={16} />}
                   {isSyncing ? 'Syncing...' : 'Force Sync'}
@@ -170,7 +170,7 @@ export const InfoPanel: React.FC = () => {
             {item && ('metadata' in item && item.metadata) ? (
               <div className="flex flex-wrap gap-2 mb-3">
                 {Object.entries(typeof (item as any).metadata === 'string' ? JSON.parse((item as any).metadata) : (item as any).metadata).map(([k, v]) => (
-                  <div key={k} className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full flex items-center">
+                  <div key={k} className="bg-blue-100 text-primary text-xs px-2 py-1 rounded-full flex items-center">
                     <span className="font-semibold mr-1">{k}:</span> {v as string}
                   </div>
                 ))}

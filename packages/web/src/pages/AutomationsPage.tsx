@@ -23,7 +23,7 @@ export function AutomationsPage() {
       <div className="bg-card border border-stone-200 rounded-xl overflow-hidden shadow-sm">
         {isLoading ? (
           <div className="p-8 text-center text-stone-400">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto mb-3" />
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto mb-3" />
             Loading rules...
           </div>
         ) : rules.length === 0 ? (
@@ -43,7 +43,7 @@ export function AutomationsPage() {
               </div>
               <button
                 onClick={() => toggleRule(rule.id, !rule.isActive)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium flex-shrink-0 ${rule.isActive ? 'bg-blue-600 text-white' : 'bg-stone-100 text-stone-600'}`}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium flex-shrink-0 ${rule.isActive ? 'bg-primary text-white' : 'bg-stone-100 text-stone-600'}`}
               >
                 {rule.isActive ? 'Active' : 'Inactive'}
               </button>

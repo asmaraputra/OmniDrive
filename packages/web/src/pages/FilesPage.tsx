@@ -128,7 +128,7 @@ export function FilesPage() {
                   placeholder="Filter..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-3 pr-8 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full pl-3 pr-8 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                 />
                 {searchQuery && (
                   <button
@@ -173,7 +173,7 @@ export function FilesPage() {
               <button className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-stone-700 bg-card border border-stone-300 rounded-md hover:bg-stone-50" onClick={handleCreateFolder}>
                 <FolderPlus size={16} /> <span className="hidden sm:inline">New Folder</span>
               </button>
-              <button className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700" onClick={() => setShowModal(true)}>
+              <button className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-white bg-primary rounded-md hover:bg-primary/90" onClick={() => setShowModal(true)}>
                 <Upload size={16} /> <span>Upload</span>
               </button>
             </div>
@@ -181,7 +181,7 @@ export function FilesPage() {
 
         {isLoading || isDrivesLoading ? (
           <div className="flex flex-col items-center justify-center p-16">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4" />
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-4" />
             <p className="text-stone-500">Loading folder contents...</p>
           </div>
         ) : drives.length === 0 ? (
@@ -194,7 +194,7 @@ export function FilesPage() {
             <button
               onClick={handleConnectGoogle}
               disabled={isConnecting}
-              className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium shadow-sm transition-colors disabled:opacity-60"
+              className="px-6 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 font-medium shadow-sm transition-colors disabled:opacity-60"
             >
               {isConnecting ? 'Connecting…' : 'Connect Google Drive Now'}
             </button>

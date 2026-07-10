@@ -3,153 +3,21 @@ import type { FileEntry, DriveFolder, WorkspaceFolder } from '../../types';
 import { formatFileSize, formatRelativeTime } from '../../lib/utils';
 import { DriveBadge } from '../DriveBadge';
 import { FileIcon } from './FileIcon';
-import { Folder, Download, Trash2, Pencil, ExternalLink, Share2, RefreshCw, Eye, Star, Info, ArrowUp, ArrowDown } from 'lucide-react';
+import { EmptyState } from '../EmptyState';
+import { Folder, ArrowUp, ArrowDown, Star, Share2 } from 'lucide-react';
 import { sortFiles, sortFolders, type SortField } from '../../lib/sort-items';
 import { api } from '../../lib/api';
 import {
   ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
   ContextMenuTrigger,
-  ContextMenuSeparator,
 } from '../ui/context-menu';
 import { useUIStore } from '../../stores/useUIStore';
 import { useSelectionStore, type SelectedItem, isSameItem } from '../../stores/useSelectionStore';
+import { ItemContextMenuContent } from './ItemContextMenu';
 
 function isGoogleNative(mimeType: string | null): boolean {
   return !!mimeType && mimeType.startsWith('application/vnd.google-apps.');
 }
-
-const ItemContextMenuContent: React.FC<{
-  type: 'file' | 'folder';
-  id?: string;
-  name?: string;
-  native?: boolean;
-  item?: FileEntry | DriveFolder | WorkspaceFolder;
-  isTrashView?: boolean;
-
-  isStarred?: boolean;
-  onToggleStar?: (id: string, type: 'file' | 'folder', currentStarStatus: boolean) => void;
-  onPreviewFile?: (file: FileEntry) => void;
-  onShare?: (id: string, type: 'file' | 'folder') => void;
-  onRenameFile?: (id: string, name: string) => void;
-  onMoveDrive?: (file: FileEntry) => void;
-  onDeleteFile?: (id: string) => void;
-  onRestore?: (id: string) => void;
-  onPermanentDelete?: (id: string) => void;
-  onAddToWorkspace?: (item: FileEntry) => void;
-  onViewInfo?: (item: FileEntry | DriveFolder | WorkspaceFolder, type: 'file' | 'folder') => void;
-  onSetRetentionPolicy?: (id: string, type: 'file' | 'folder') => void;
-}> = ({
-  type,
-  id,
-  name,
-  native,
-  item,
-  isTrashView,
-
-  isStarred,
-  onToggleStar,
-  onPreviewFile,
-  onShare,
-  onRenameFile,
-  onMoveDrive,
-  onDeleteFile,
-  onRestore,
-  onPermanentDelete,
-  onAddToWorkspace,
-  onViewInfo,
-  onSetRetentionPolicy,
-}) => {
-  const file = type === 'file' ? (item as FileEntry) : undefined;
-
-  return (
-    <ContextMenuContent className="w-48 bg-card border border-stone-200 shadow-xl rounded-xl overflow-hidden py-1">
-      {onViewInfo && item && (
-        <ContextMenuItem className="px-3 py-2 text-sm text-stone-700 cursor-pointer hover:bg-stone-100 outline-none flex items-center" onClick={() => onViewInfo(item, type)}>
-          <Info size={16} className="mr-3 text-stone-500" />
-          View Info
-        </ContextMenuItem>
-      )}
-    {isTrashView ? (
-      <>
-        {onRestore && id && (
-          <ContextMenuItem className="px-3 py-2 text-sm text-stone-700 cursor-pointer hover:bg-stone-100 outline-none flex items-center" onClick={() => onRestore(id)}>
-            <RefreshCw size={16} className="mr-3 text-stone-500" />
-            Restore
-          </ContextMenuItem>
-        )}
-        {onPermanentDelete && id && (
-          <ContextMenuItem className="px-3 py-2 text-sm text-red-600 cursor-pointer hover:bg-red-50 outline-none flex items-center" onClick={() => onPermanentDelete(id)}>
-            <Trash2 size={16} className="mr-3 text-red-500" />
-            Delete Forever
-          </ContextMenuItem>
-        )}
-      </>
-    ) : (
-      <>
-        {type === 'file' && file && onPreviewFile && (
-          <ContextMenuItem className="px-3 py-2 text-sm text-stone-700 cursor-pointer hover:bg-stone-100 outline-none flex items-center" onClick={() => onPreviewFile(file)}>
-            <Eye size={16} className="mr-3 text-stone-500" />
-            Preview
-          </ContextMenuItem>
-        )}
-        {type === 'file' && file && native && file.webViewLink && (
-          <ContextMenuItem onClick={() => window.open(file.webViewLink!, '_blank', 'noopener,noreferrer')}>
-            <ExternalLink className="mr-2 h-4 w-4" /> Open in Google
-          </ContextMenuItem>
-        )}
-        {type === 'file' && file && !native && file.webContentLink && (
-          <ContextMenuItem onClick={() => window.location.href = `${import.meta.env.VITE_API_URL || ''}/api/files/${file.id}/download`}>
-            <Download className="mr-2 h-4 w-4" /> Download
-          </ContextMenuItem>
-        )}
-        {onToggleStar && id && (
-          <ContextMenuItem onClick={() => onToggleStar(id, type, !!isStarred)}>
-            <Star className="mr-2 h-4 w-4" /> {isStarred ? 'Remove from Starred' : 'Add to Starred'}
-          </ContextMenuItem>
-        )}
-        {onShare && id && (
-          <ContextMenuItem onClick={() => onShare(id, type)}>
-            <Share2 className="mr-2 h-4 w-4" /> Share
-          </ContextMenuItem>
-        )}
-        {type === 'file' && file && onAddToWorkspace && (
-          <ContextMenuItem onClick={() => onAddToWorkspace(file)}>
-            <Folder className="mr-2 h-4 w-4" /> Add to Workspace
-          </ContextMenuItem>
-        )}
-        {onSetRetentionPolicy && id && (
-          <ContextMenuItem onClick={() => onSetRetentionPolicy(id, type)}>
-            <Folder className="mr-2 h-4 w-4" /> Set Retention Policy
-          </ContextMenuItem>
-        )}
-        {type === 'file' && onRenameFile && id && name && (
-          <ContextMenuItem onClick={() => {
-            const newName = prompt('Rename file:', name);
-            if (newName && newName !== name) onRenameFile(id, newName);
-          }}>
-            <Pencil className="mr-2 h-4 w-4" /> Rename
-          </ContextMenuItem>
-        )}
-        {type === 'file' && onMoveDrive && file && (
-          <ContextMenuItem onClick={() => onMoveDrive(file)}>
-            <ExternalLink className="mr-2 h-4 w-4" /> Move to another drive
-          </ContextMenuItem>
-        )}
-        {type === 'file' && onDeleteFile && id && (
-          <>
-            <ContextMenuSeparator />
-            <ContextMenuItem className="text-red-600" onClick={() => onDeleteFile(id)}>
-              <Trash2 className="mr-2 h-4 w-4" /> Delete
-            </ContextMenuItem>
-          </>
-        )}
-      </>
-    )}
-    </ContextMenuContent>
-  );
-};
 
 export interface FileGridProps {
   files: FileEntry[];
@@ -185,7 +53,7 @@ const renderMetadataBadges = (metadata?: string | Record<string, string>) => {
     return (
       <div className="flex gap-1 ml-2 items-center">
         {entries.slice(0, 2).map(([k, v]) => (
-          <span key={k} className="bg-blue-100 text-blue-800 text-[10px] px-1.5 py-0.5 rounded-full whitespace-nowrap overflow-hidden text-ellipsis max-w-[80px]" title={`${k}: ${v}`}>
+          <span key={k} className="bg-blue-100 text-primary text-[10px] px-1.5 py-0.5 rounded-full whitespace-nowrap overflow-hidden text-ellipsis max-w-[80px]" title={`${k}: ${v}`}>
             {v as string}
           </span>
         ))}
@@ -302,11 +170,11 @@ export const FileGrid: React.FC<FileGridProps> = ({
 
   if (files.length === 0 && subfolders.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 text-stone-400">
-        <p className="text-6xl mb-4">📂</p>
-        <p className="text-lg font-medium text-stone-500">This folder is empty</p>
-        <p className="text-sm mt-1">Drag &amp; drop files here or click Upload</p>
-      </div>
+      <EmptyState
+        icon={Folder}
+        title="This folder is empty"
+        description="Drag & drop files here or click Upload"
+      />
     );
   }
 
@@ -323,6 +191,7 @@ export const FileGrid: React.FC<FileGridProps> = ({
           <div className="w-[72px] flex items-center pl-3">
             <input
               type="checkbox"
+              aria-label="Select all"
               className={`w-4 h-4 cursor-pointer ${hasSelection ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 transition-opacity'}`}
               checked={selectedItems.length > 0 && selectedItems.length === files.length + subfolders.length}
               onChange={(e) => {
@@ -385,7 +254,7 @@ export const FileGrid: React.FC<FileGridProps> = ({
                   }}
                   className={`grid ${listGridClass} gap-0 items-center px-4 py-2.5 cursor-pointer transition-colors border-b border-stone-50 group ${
                     isSelected
-                      ? 'bg-blue-100 hover:bg-blue-200'
+                      ? 'bg-primary/15 hover:bg-primary/20'
                       : hasError
                       ? 'bg-red-50 hover:bg-red-100'
                       : 'hover:bg-stone-50'
@@ -393,7 +262,8 @@ export const FileGrid: React.FC<FileGridProps> = ({
                 >
                   <div className="w-[72px] flex items-center gap-2 pl-3">
                     <input 
-                      type="checkbox" 
+                      type="checkbox"
+                      aria-label={`Select folder ${folder.name}`}
                       className={`w-4 h-4 cursor-pointer flex-shrink-0 ${hasSelection ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 transition-opacity'}`}
                       checked={isSelected}
                       readOnly
@@ -402,7 +272,7 @@ export const FileGrid: React.FC<FileGridProps> = ({
                         handleItemClick(e, { type: 'folder', item: folder });
                       }}
                     />
-                    <Folder size={20} className="text-blue-500 flex-shrink-0" fill="currentColor" />
+                    <Folder size={20} className="text-primary flex-shrink-0" fill="currentColor" />
                   </div>
                   <div className="flex items-center gap-2 min-w-0 flex-wrap">
                     <span className="text-sm text-stone-800 font-medium truncate">{folder.name}</span>
@@ -469,13 +339,14 @@ export const FileGrid: React.FC<FileGridProps> = ({
                   }}
                   className={`grid ${listGridClass} gap-0 items-center px-4 py-2.5 cursor-pointer transition-colors border-b border-stone-50 group ${
                     isSelected
-                      ? 'bg-blue-100 hover:bg-blue-200'
+                      ? 'bg-primary/15 hover:bg-primary/20'
                       : 'hover:bg-stone-50'
                   }`}
                 >
                   <div className="w-[72px] flex items-center gap-2 pl-3">
                     <input 
-                      type="checkbox" 
+                      type="checkbox"
+                      aria-label={`Select file ${file.name}`}
                       className={`w-4 h-4 cursor-pointer flex-shrink-0 ${hasSelection ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 transition-opacity'}`}
                       checked={isSelected}
                       readOnly
@@ -576,14 +447,15 @@ export const FileGrid: React.FC<FileGridProps> = ({
                 }}
                 className={`p-3 border rounded-xl cursor-pointer flex flex-col gap-2 transition-all group relative ${
                     isSelected
-                    ? 'bg-blue-100 border-blue-300'
+                    ? 'bg-primary/15 border-primary/40'
                     : hasError
                     ? 'border-red-300 bg-red-50 hover:border-red-400'
-                    : 'border-stone-300 bg-card hover:bg-blue-50 hover:border-blue-200'
+                    : 'border-stone-300 bg-card hover:bg-primary/10 hover:border-primary/30'
                 }`}
               >
                 <input
                   type="checkbox"
+                  aria-label={`Select folder ${folder.name}`}
                   className={`absolute top-2 left-2 z-10 w-4 h-4 cursor-pointer ${hasSelection ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 transition-opacity'}`}
                   checked={isSelected}
                   readOnly
@@ -593,7 +465,7 @@ export const FileGrid: React.FC<FileGridProps> = ({
                   }}
                 />
                 <div className="flex items-center gap-3 min-w-0">
-                  <Folder size={20} className="text-blue-500 flex-shrink-0 ml-5" fill="currentColor" />
+                  <Folder size={20} className="text-primary flex-shrink-0 ml-5" fill="currentColor" />
                   <div className="flex-1 truncate text-sm font-medium text-stone-800">
                     {folder.name}
                   </div>
@@ -652,12 +524,13 @@ export const FileGrid: React.FC<FileGridProps> = ({
                 }}
                 className={`p-3 border rounded-xl cursor-pointer flex flex-col justify-between h-40 transition-all group relative ${
                   isSelected
-                    ? 'bg-blue-100 border-blue-300'
-                    : 'bg-card border-stone-300 hover:bg-blue-50 hover:border-blue-200'
+                    ? 'bg-primary/15 border-primary/40'
+                    : 'bg-card border-stone-300 hover:bg-primary/10 hover:border-primary/30'
                 }`}
               >
                 <input 
-                  type="checkbox" 
+                  type="checkbox"
+                  aria-label={`Select file ${file.name}`}
                   className={`absolute top-2 left-2 z-10 w-4 h-4 cursor-pointer ${hasSelection ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 transition-opacity'}`}
                   checked={isSelected}
                   readOnly

@@ -65,7 +65,7 @@ export function PublicSharedPage() {
     if (loading) {
       return (
         <div className="bg-card p-10 rounded-2xl shadow-xl max-w-md w-full border border-stone-100 flex flex-col items-center">
-          <Loader2 className="animate-spin text-blue-500 mb-4" size={48} />
+          <Loader2 className="animate-spin text-primary mb-4" size={48} />
           <p className="text-stone-500 font-medium">Loading...</p>
         </div>
       );
@@ -86,7 +86,7 @@ export function PublicSharedPage() {
         <div className="bg-card p-10 rounded-2xl shadow-xl max-w-md w-full border border-stone-100">
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
-              <Lock size={48} className="text-blue-500" />
+              <Lock size={48} className="text-primary" />
             </div>
             <h2 className="text-2xl font-bold text-stone-800 mb-2">Password Required</h2>
             <p className="text-stone-500">This shared link is protected by a password.</p>
@@ -101,7 +101,7 @@ export function PublicSharedPage() {
                 id="shared-password"
                 type="password"
                 autoComplete="current-password"
-                className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-stone-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-stone-800 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
                 placeholder="Enter password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
@@ -117,7 +117,7 @@ export function PublicSharedPage() {
 
             <button
               type="submit"
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 text-white bg-blue-600 rounded-xl font-medium hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-6"
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 text-white bg-primary rounded-xl font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-6"
               disabled={verifying || !password}
             >
               {verifying && <Loader2 className="animate-spin" size={18} />}
@@ -132,7 +132,7 @@ export function PublicSharedPage() {
       <div className="bg-card p-10 rounded-2xl shadow-xl max-w-md w-full border border-stone-100 text-center">
         {meta?.type === 'folder' ? (
           <div className="mb-8">
-            <div className="mb-4 flex justify-center"><Folder size={72} className="text-blue-500" fill="currentColor" /></div>
+            <div className="mb-4 flex justify-center"><Folder size={72} className="text-primary" fill="currentColor" /></div>
             <h2 className="text-2xl font-bold text-stone-800 mb-2">Shared Folder</h2>
             <p className="text-stone-500">Folder view is not supported yet.</p>
           </div>
@@ -148,7 +148,7 @@ export function PublicSharedPage() {
 
         <button
           onClick={handleDownload}
-          className="w-full flex items-center justify-center gap-2 px-4 py-3 text-white bg-blue-600 rounded-xl font-medium hover:bg-blue-700 transition-colors shadow-sm mt-8"
+          className="w-full flex items-center justify-center gap-2 px-4 py-3 text-white bg-primary rounded-xl font-medium hover:bg-primary/90 transition-colors shadow-sm mt-8"
         >
           <Download size={20} />
           Download

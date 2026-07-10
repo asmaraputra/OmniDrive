@@ -57,7 +57,7 @@ export function CreateFolderModal({ open, parentId, title, onClose, onSuccess }:
       <DialogContent className="max-w-md p-0 gap-0 rounded-2xl overflow-hidden flex flex-col">
         <div className="flex items-center p-5 border-b border-stone-100 shrink-0">
           <DialogTitle className="text-lg font-semibold text-stone-800 flex items-center gap-2">
-            <FolderPlus size={20} className="text-blue-500" />
+            <FolderPlus size={20} className="text-primary" />
             {title}
           </DialogTitle>
         </div>
@@ -80,7 +80,7 @@ export function CreateFolderModal({ open, parentId, title, onClose, onSuccess }:
                 placeholder={`Enter ${entityLabel.toLowerCase()} name`}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="px-3 py-2 bg-card border border-stone-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
+                className="px-3 py-2 bg-card border border-stone-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow"
               />
             </div>
 
@@ -94,7 +94,7 @@ export function CreateFolderModal({ open, parentId, title, onClose, onSuccess }:
               </button>
               <button
                 type="submit"
-                className="flex items-center justify-center min-w-[100px] px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center justify-center min-w-[100px] px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={loading}
               >
                 {loading ? (

@@ -92,7 +92,7 @@ export function ShareModal({ open, targetType, targetId, onClose }: ShareModalPr
       <DialogContent className="max-w-md p-0 gap-0 rounded-2xl overflow-hidden flex flex-col max-h-full">
         <div className="flex items-center p-5 border-b border-stone-100 shrink-0">
           <DialogTitle className="text-lg font-semibold text-stone-800 flex items-center gap-2">
-            <Share2 size={20} className="text-blue-500" />
+            <Share2 size={20} className="text-primary" />
             Share {targetType === 'file' ? 'File' : 'Folder'}
           </DialogTitle>
         </div>
@@ -115,7 +115,7 @@ export function ShareModal({ open, targetType, targetId, onClose }: ShareModalPr
                   placeholder="Leave blank for no password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="px-3 py-2 bg-card border border-stone-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
+                  className="px-3 py-2 bg-card border border-stone-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow"
                 />
               </div>
 
@@ -128,7 +128,7 @@ export function ShareModal({ open, targetType, targetId, onClose }: ShareModalPr
                   value={expiresAt}
                   min={currentDateTime}
                   onChange={(e) => setExpiresAt(e.target.value)}
-                  className="px-3 py-2 bg-card border border-stone-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-shadow"
+                  className="px-3 py-2 bg-card border border-stone-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow"
                 />
               </div>
 
@@ -151,7 +151,7 @@ export function ShareModal({ open, targetType, targetId, onClose }: ShareModalPr
                           type="checkbox"
                           checked={allowDownloads}
                           onChange={(e) => setAllowDownloads(e.target.checked)}
-                          className="w-4 h-4 rounded border-stone-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                          className="w-4 h-4 rounded border-stone-300 text-primary focus:ring-primary cursor-pointer"
                         />
                         <span className="select-none">Allow Downloads</span>
                       </label>
@@ -162,7 +162,7 @@ export function ShareModal({ open, targetType, targetId, onClose }: ShareModalPr
                             type="checkbox"
                             checked={allowUploads}
                             onChange={(e) => setAllowUploads(e.target.checked)}
-                            className="w-4 h-4 rounded border-stone-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                            className="w-4 h-4 rounded border-stone-300 text-primary focus:ring-primary cursor-pointer"
                           />
                           <span className="select-none">Allow Uploads (Public Drop folder)</span>
                         </label>
@@ -173,7 +173,7 @@ export function ShareModal({ open, targetType, targetId, onClose }: ShareModalPr
                           type="checkbox"
                           checked={requireEmail}
                           onChange={(e) => setRequireEmail(e.target.checked)}
-                          className="w-4 h-4 rounded border-stone-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                          className="w-4 h-4 rounded border-stone-300 text-primary focus:ring-primary cursor-pointer"
                         />
                         <span className="select-none">Require Email to View</span>
                       </label>
@@ -186,7 +186,7 @@ export function ShareModal({ open, targetType, targetId, onClose }: ShareModalPr
                           value={maxDownloads}
                           onChange={(e) => setMaxDownloads(e.target.value)}
                           placeholder="e.g. 10 (Leave blank for unlimited)"
-                          className="px-3 py-2 bg-card border border-stone-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="px-3 py-2 bg-card border border-stone-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                         />
                       </div>
 
@@ -197,7 +197,7 @@ export function ShareModal({ open, targetType, targetId, onClose }: ShareModalPr
                           value={webhookUrl}
                           onChange={(e) => setWebhookUrl(e.target.value)}
                           placeholder="e.g. https://your-api.com/webhook"
-                          className="px-3 py-2 bg-card border border-stone-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="px-3 py-2 bg-card border border-stone-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                         />
                       </div>
                     </div>
@@ -215,7 +215,7 @@ export function ShareModal({ open, targetType, targetId, onClose }: ShareModalPr
                 </button>
                 <button
                   type="submit"
-                  className="flex items-center justify-center min-w-[100px] px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex items-center justify-center min-w-[100px] px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={loading}
                 >
                   {loading ? (
@@ -228,7 +228,7 @@ export function ShareModal({ open, targetType, targetId, onClose }: ShareModalPr
             </form>
           ) : (
             <div className="flex flex-col gap-4">
-              <p className="text-sm text-stone-600 bg-blue-50 p-3 rounded-lg border border-blue-100">
+              <p className="text-sm text-stone-600 bg-primary/10 p-3 rounded-lg border border-blue-100">
                 Anyone with this link can access the {targetType}.
               </p>
               <div className="flex gap-2">
@@ -249,7 +249,7 @@ export function ShareModal({ open, targetType, targetId, onClose }: ShareModalPr
               </div>
               <div className="flex justify-end mt-4 pt-4 border-t border-stone-100">
                 <button
-                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+                  className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors"
                   onClick={onClose}
                 >
                   Done

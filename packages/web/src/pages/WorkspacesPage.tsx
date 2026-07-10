@@ -264,7 +264,7 @@ export function WorkspacesPage() {
             </div>
             <div className="mt-6 flex justify-end gap-3">
               <button className="px-4 py-2 text-sm text-stone-600 hover:bg-stone-100 rounded" onClick={() => setRetentionTargetId(null)}>Cancel</button>
-              <button className="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700" onClick={async () => {
+              <button className="px-4 py-2 text-sm bg-primary text-white rounded hover:bg-primary/90" onClick={async () => {
                 const action = (document.getElementById('retentionAction') as HTMLSelectElement).value;
                 const days = parseInt((document.getElementById('retentionDays') as HTMLInputElement).value, 10);
                 if (activeFolderId) {

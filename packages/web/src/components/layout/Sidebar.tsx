@@ -39,38 +39,38 @@ export const Sidebar: React.FC = () => {
     <div className="w-64 h-full flex flex-col p-3 gap-1">
       {/* Navigation */}
       <nav className="flex flex-col gap-0.5">
-        <NavLink to="/" end className={navLinkClass}>
-          <Home size={20} />
+        <NavLink to="/" end className={navLinkClass} aria-label="Home" title="Home">
+          <Home size={20} aria-hidden />
           {isSidebarOpen && <span>Home</span>}
         </NavLink>
-        <NavLink to="/files/root" className={navLinkClass}>
-          <HardDrive size={20} />
+        <NavLink to="/files/root" className={navLinkClass} aria-label="My Drive" title="My Drive">
+          <HardDrive size={20} aria-hidden />
           {isSidebarOpen && <span>My Drive</span>}
         </NavLink>
-        <NavLink to="/starred" className={navLinkClass}>
-          <Star size={20} />
+        <NavLink to="/starred" className={navLinkClass} aria-label="Starred" title="Starred">
+          <Star size={20} aria-hidden />
           {isSidebarOpen && <span>Starred</span>}
         </NavLink>
-        <NavLink to="/shared" className={navLinkClass}>
-          <Users size={20} />
+        <NavLink to="/shared" className={navLinkClass} aria-label="Shared" title="Shared">
+          <Users size={20} aria-hidden />
           {isSidebarOpen && <span>Shared</span>}
         </NavLink>
-        <NavLink to="/workspaces" className={navLinkClass}>
-          <FolderTree size={20} />
+        <NavLink to="/workspaces" className={navLinkClass} aria-label="Workspaces" title="Workspaces">
+          <FolderTree size={20} aria-hidden />
           {isSidebarOpen && <span>Workspaces</span>}
         </NavLink>
-        <NavLink to="/trash" className={navLinkClass}>
-          <Trash2 size={20} />
+        <NavLink to="/trash" className={navLinkClass} aria-label="Trash" title="Trash">
+          <Trash2 size={20} aria-hidden />
           {isSidebarOpen && <span>Trash</span>}
         </NavLink>
         {user?.role === 'super_admin' && (
-          <NavLink to="/admin/users" className={navLinkClass}>
-            <UserCog size={20} />
+          <NavLink to="/admin/users" className={navLinkClass} aria-label="Users" title="Users">
+            <UserCog size={20} aria-hidden />
             {isSidebarOpen && <span>Users</span>}
           </NavLink>
         )}
-        <NavLink to="/settings" className={navLinkClass}>
-          <Settings size={20} />
+        <NavLink to="/settings" className={navLinkClass} aria-label="Settings" title="Settings">
+          <Settings size={20} aria-hidden />
           {isSidebarOpen && <span>Settings</span>}
         </NavLink>
       </nav>
@@ -88,8 +88,10 @@ export const Sidebar: React.FC = () => {
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-1.5 hover:text-stone-600 transition-colors"
+          aria-label="GitHub"
+          title="GitHub"
         >
-          <Github size={14} />
+          <Github size={14} aria-hidden />
           {isSidebarOpen && <span>GitHub</span>}
         </a>
         {isSidebarOpen && <span>v{pkg.version}</span>}

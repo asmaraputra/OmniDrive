@@ -85,12 +85,17 @@ export function DashboardPage() {
     api.getRecentFiles().then((data) => {
       setRecentFiles(data.files.slice(0, 8));
       setRecentFolders(data.folders ? data.folders.slice(0, 8) : []);
-    }).catch(() => {});
-  }, []);
+    }).catch(() => {
+      addToast('error', 'Failed to load recent files');
+    });
+  }, [addToast]);
 
   const refreshCategory = useCallback(() => {
-    api.getFileCategoryOverview().then(setCategory).catch(() => setCategory(null));
-  }, []);
+    api.getFileCategoryOverview().then(setCategory).catch(() => {
+      setCategory(null);
+      addToast('error', 'Failed to load storage categories');
+    });
+  }, [addToast]);
 
   useEffect(() => {
     fetchDrives();
@@ -160,7 +165,7 @@ export function DashboardPage() {
       {/* Empty state — no drives yet. */}
       {!hasDrives && !isLoading && (
         <div className="bg-card border border-stone-200 rounded-2xl p-8 sm:p-12 text-center bento-reveal">
-          <div className="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center mx-auto mb-4">
+          <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
             <Cloud size={26} className="text-primary" />
           </div>
           <h2 className="text-lg font-semibold text-stone-800">No drives connected</h2>

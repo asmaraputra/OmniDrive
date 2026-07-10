@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useDriveStore } from '../stores/driveStore';
 import { DriveAccountCard } from '../components/DriveAccountCard';
+import { AccountPasswordForm } from '../components/settings/AccountPasswordForm';
 import { useToastStore } from '../stores/toastStore';
 import { Plus, Key, X, Trash2, Copy, Check, AlertTriangle, Loader2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../components/ui/dialog';
@@ -28,11 +29,6 @@ export function SettingsPage() {
   const [s3Keys, setS3Keys] = useState<any[]>([]);
   const [workspaces, setWorkspaces] = useState<any[]>([]);
   const [loadingS3, setLoadingS3] = useState(false);
-
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [isChangingPassword, setIsChangingPassword] = useState(false);
 
   const handleConnectDrive = async () => {
     if (isConnecting) return;
@@ -192,92 +188,11 @@ export function SettingsPage() {
     }
   };
 
-  const handleChangePassword = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (newPassword !== confirmPassword) {
-      addToast('error', 'New password and confirmation do not match');
-      return;
-    }
-    setIsChangingPassword(true);
-    try {
-      await api.changePassword(currentPassword, newPassword);
-      setCurrentPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
-      addToast('success', 'Password updated. Other sessions were signed out.');
-    } catch (err) {
-      addToast('error', err instanceof Error ? err.message : 'Failed to change password');
-    } finally {
-      setIsChangingPassword(false);
-    }
-  };
-
   return (
     <div className="p-4 sm:p-6 space-y-6 max-w-3xl">
       <h1 className="text-2xl font-semibold text-stone-800">Settings</h1>
 
-      {/* Section: Account password */}
-      <div>
-        <h2 className="text-sm font-semibold text-stone-500 uppercase tracking-wide mb-3">Account</h2>
-        <form onSubmit={handleChangePassword} className="bg-card border border-stone-200 rounded-2xl p-5 space-y-4 max-w-md">
-          <p className="text-sm text-stone-600">Change your login password. Other devices will be signed out.</p>
-          <div>
-            <label htmlFor="current-password" className="block text-sm font-medium text-stone-700 mb-1.5">
-              Current password
-            </label>
-            <input
-              id="current-password"
-              type="password"
-              autoComplete="current-password"
-              required
-              value={currentPassword}
-              onChange={(e) => setCurrentPassword(e.target.value)}
-              className="w-full border border-stone-300 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-card"
-            />
-          </div>
-          <div>
-            <label htmlFor="new-password" className="block text-sm font-medium text-stone-700 mb-1.5">
-              New password
-            </label>
-            <input
-              id="new-password"
-              type="password"
-              autoComplete="new-password"
-              required
-              minLength={8}
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              className="w-full border border-stone-300 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-card"
-            />
-            <p className="mt-1 text-xs text-stone-500">Min 8 chars, with upper, lower, and a number.</p>
-          </div>
-          <div>
-            <label htmlFor="confirm-password" className="block text-sm font-medium text-stone-700 mb-1.5">
-              Confirm new password
-            </label>
-            <input
-              id="confirm-password"
-              type="password"
-              autoComplete="new-password"
-              required
-              minLength={8}
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full border border-stone-300 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-card"
-            />
-          </div>
-          <div className="flex justify-end pt-1">
-            <button
-              type="submit"
-              disabled={isChangingPassword}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-60"
-            >
-              {isChangingPassword ? <Loader2 size={16} className="animate-spin" /> : <Key size={16} />}
-              Change password
-            </button>
-          </div>
-        </form>
-      </div>
+      <AccountPasswordForm />
 
       {/* Section: Connected Drives */}
       <div>
@@ -307,7 +222,7 @@ export function SettingsPage() {
           <button
             onClick={handleConnectDrive}
             disabled={isConnecting}
-            className="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium text-sm disabled:opacity-60"
+            className="flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-xl hover:bg-primary/90 transition-colors font-medium text-sm disabled:opacity-60"
           >
             {isConnecting ? <Loader2 size={18} className="animate-spin" /> : <Plus size={18} />} Add Google Drive
           </button>
@@ -343,7 +258,7 @@ export function SettingsPage() {
                 onChange={(e) => setSaCredentials(e.target.value)}
                 placeholder="Paste service account JSON key..."
                 rows={6}
-                className="w-full font-mono text-xs border border-stone-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                className="w-full font-mono text-xs border border-stone-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-primary resize-none"
                 required
               />
             </div>
@@ -356,7 +271,7 @@ export function SettingsPage() {
                 value={saFolderId}
                 onChange={(e) => setSaFolderId(e.target.value)}
                 placeholder="Google Drive folder ID shared with SA"
-                className="w-full border border-stone-300 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-stone-300 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                 required
               />
             </div>
@@ -370,7 +285,7 @@ export function SettingsPage() {
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors"
+                className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-xl hover:bg-primary/90 transition-colors"
               >
                 Add Account
               </button>
@@ -389,7 +304,7 @@ export function SettingsPage() {
           </div>
           <button
             onClick={() => setShowCreateModal(true)}
-            className="flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-colors font-medium text-xs shadow-sm"
+            className="flex items-center gap-2 px-3 py-2 bg-primary hover:bg-primary/90 text-white rounded-xl transition-colors font-medium text-xs shadow-sm"
           >
             <Plus size={16} /> Generate New Key
           </button>
@@ -428,7 +343,7 @@ export function SettingsPage() {
                       </td>
                       <td className="px-4 py-3.5 text-sm">
                         {key.workspace_id || key.workspaceId ? (
-                          <span className="px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-50 text-blue-700 border border-blue-150">
+                          <span className="px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-primary/10 text-primary border border-primary/20">
                             Workspace: {key.workspace_name || key.workspaceName || 'Unknown'}
                           </span>
                         ) : (
@@ -477,7 +392,7 @@ export function SettingsPage() {
                 value={newKeyDescription}
                 onChange={(e) => setNewKeyDescription(e.target.value)}
                 placeholder="e.g. Rclone desktop client, backup script"
-                className="w-full border border-stone-300 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-stone-300 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                 required
                 maxLength={100}
               />
@@ -489,7 +404,7 @@ export function SettingsPage() {
               <select
                 value={newKeyScope}
                 onChange={(e) => setNewKeyScope(e.target.value)}
-                className="w-full border border-stone-300 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-card"
+                className="w-full border border-stone-300 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-card"
               >
                 <option value="">Global (All Workspaces)</option>
                 {workspaces.map((w) => (
@@ -510,7 +425,7 @@ export function SettingsPage() {
               </button>
               <button
                 type="submit"
-                className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50"
+                className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-primary rounded-xl hover:bg-primary/90 transition-colors disabled:opacity-50"
                 disabled={isCreatingKey || !newKeyDescription.trim()}
               >
                 {isCreatingKey && <Loader2 className="animate-spin" size={16} />}
@@ -564,7 +479,7 @@ export function SettingsPage() {
                   </label>
                   <button
                     onClick={() => handleCopy(createdCredential.accessKeyId, 'access')}
-                    className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 font-medium"
+                    className="flex items-center gap-1 text-xs text-primary hover:text-primary font-medium"
                   >
                     {copiedAccessKey ? (
                       <>
@@ -591,7 +506,7 @@ export function SettingsPage() {
                   </label>
                   <button
                     onClick={() => handleCopy(createdCredential.secretAccessKey, 'secret')}
-                    className="flex items-center gap-1 text-xs text-blue-600 hover:text-blue-700 font-medium"
+                    className="flex items-center gap-1 text-xs text-primary hover:text-primary font-medium"
                   >
                     {copiedSecretKey ? (
                       <>
@@ -614,7 +529,7 @@ export function SettingsPage() {
               <div className="flex justify-end pt-4 border-t border-stone-100">
                 <button
                   type="button"
-                  className="px-5 py-2 text-sm font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-colors shadow-sm"
+                  className="px-5 py-2 text-sm font-semibold text-white bg-primary rounded-xl hover:bg-primary/90 transition-colors shadow-sm"
                   onClick={() => setCreatedCredential(null)}
                 >
                   I've Copied the Secret Key

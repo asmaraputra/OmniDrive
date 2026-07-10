@@ -26,7 +26,7 @@ export function WorkspaceAuditTab({ workspaceId }: { workspaceId: string }) {
             <tr key={log.id} className="border-b last:border-0 hover:bg-stone-50">
               <td className="px-4 py-2 text-sm text-stone-500">{new Date(log.createdAt || (log as any).created_at).toLocaleString()}</td>
               <td className="px-4 py-2 text-sm">{(log as any).actor_email || log.actorId}</td>
-              <td className="px-4 py-2 font-mono text-xs text-blue-600 bg-blue-50 w-max rounded px-2 py-1 inline-block mt-2 ml-4">{log.actionType || (log as any).action_type}</td>
+              <td className="px-4 py-2 font-mono text-xs text-primary bg-primary/10 w-max rounded px-2 py-1 inline-block mt-2 ml-4">{log.actionType || (log as any).action_type}</td>
               <td className="px-4 py-2 text-sm">{log.resourceName || (log as any).resource_name || log.resourceId || (log as any).resource_id}</td>
             </tr>
           ))}

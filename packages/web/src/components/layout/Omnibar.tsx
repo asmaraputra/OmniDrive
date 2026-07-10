@@ -59,7 +59,7 @@ export const Omnibar: React.FC = () => {
         />
         <button 
           onClick={() => setShowAdvanced(!showAdvanced)}
-          className={`p-1.5 rounded-full hover:bg-stone-100 ${showAdvanced ? 'text-blue-600' : 'text-stone-600'}`}
+          className={`p-1.5 rounded-full hover:bg-stone-100 ${showAdvanced ? 'text-primary' : 'text-stone-600'}`}
         >
           <SlidersHorizontal size={20} />
         </button>
@@ -92,7 +92,7 @@ export const Omnibar: React.FC = () => {
             <div className="py-2">
               {results.map((file) => (
                 <div key={file.id} className="px-4 py-2 hover:bg-stone-50 flex items-center gap-3 cursor-pointer">
-                  {file.workspaceId ? <Folder size={18} className="text-blue-500" /> : <File size={18} className="text-stone-500" />}
+                  {file.workspaceId ? <Folder size={18} className="text-primary" /> : <File size={18} className="text-stone-500" />}
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-stone-800 truncate">{file.name}</p>
                     <p className="text-xs text-stone-500 truncate">

@@ -42,14 +42,14 @@ export function AddToWorkspaceModal({ open, file, onClose, onSuccess }: Props) {
               onClick={() => setSelectedId(folder.id)}
               className={`w-full flex items-center gap-2 px-3 py-2 rounded-md text-left transition-colors ${selectedId === folder.id ? 'bg-blue-100' : 'hover:bg-stone-50'}`}
             >
-              <Folder size={16} className="text-blue-500" />
+              <Folder size={16} className="text-primary" />
               {folder.name}
             </button>
           ))}
         </div>
         <div className="px-6 py-4 border-t flex justify-end gap-3 shrink-0">
           <button onClick={onClose} className="px-4 py-2 font-medium text-stone-700 bg-stone-100 rounded-lg hover:bg-stone-200 transition-colors">Cancel</button>
-          <button onClick={handleAdd} disabled={!selectedId} className="px-4 py-2 font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors">Add</button>
+          <button onClick={handleAdd} disabled={!selectedId} className="px-4 py-2 font-medium text-white bg-primary rounded-lg hover:bg-primary/90 disabled:opacity-50 transition-colors">Add</button>
         </div>
       </DialogContent>
     </Dialog>

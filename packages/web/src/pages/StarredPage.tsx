@@ -1,7 +1,9 @@
 import { useEffect, useState, useCallback } from 'react';
+import { Star } from 'lucide-react';
 import { useDriveStore } from '../stores/driveStore';
 import { useToastStore } from '../stores/toastStore';
 import { FileGrid } from '../components/files/FileGrid';
+import { EmptyState, ListSkeleton } from '../components/EmptyState';
 import { api } from '../lib/api';
 import type { FileEntry, WorkspaceFolder } from '../types';
 import { FilePreviewModal } from '../components/FilePreviewModal';
@@ -73,9 +75,7 @@ export function StarredPage() {
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
-        </div>
+        <ListSkeleton rows={6} />
       ) : files.length > 0 || folders.length > 0 ? (
         <div className="bg-card rounded-xl border border-stone-200 overflow-hidden">
           <FileGrid
@@ -89,9 +89,11 @@ export function StarredPage() {
           />
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center py-20 text-stone-500">
-          <p className="text-lg">No starred items found.</p>
-        </div>
+        <EmptyState
+          icon={Star}
+          title="No starred items"
+          description="Star files or folders to find them here quickly."
+        />
       )}
       <FilePreviewModal
         open={!!previewFile}

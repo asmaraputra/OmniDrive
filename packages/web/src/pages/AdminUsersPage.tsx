@@ -58,23 +58,23 @@ const AddUserModal: React.FC<{ open: boolean, onClose: () => void, onSuccess: ()
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-stone-700 mb-1">Username *</label>
-              <input required value={username} onChange={e => setUsername(e.target.value)} className="w-full px-3 py-2 border border-stone-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none" />
+              <input required value={username} onChange={e => setUsername(e.target.value)} className="w-full px-3 py-2 border border-stone-300 rounded-md focus:ring-2 focus:ring-primary outline-none" />
             </div>
             <div>
               <label className="block text-sm font-medium text-stone-700 mb-1">Password *</label>
-              <input required type="password" value={password} onChange={e => setPassword(e.target.value)} className="w-full px-3 py-2 border border-stone-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none" />
+              <input required type="password" value={password} onChange={e => setPassword(e.target.value)} className="w-full px-3 py-2 border border-stone-300 rounded-md focus:ring-2 focus:ring-primary outline-none" />
             </div>
             <div>
               <label className="block text-sm font-medium text-stone-700 mb-1">Name</label>
-              <input value={name} onChange={e => setName(e.target.value)} className="w-full px-3 py-2 border border-stone-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none" />
+              <input value={name} onChange={e => setName(e.target.value)} className="w-full px-3 py-2 border border-stone-300 rounded-md focus:ring-2 focus:ring-primary outline-none" />
             </div>
             <div>
               <label className="block text-sm font-medium text-stone-700 mb-1">Email</label>
-              <input type="email" value={email} onChange={e => setEmail(e.target.value)} className="w-full px-3 py-2 border border-stone-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none" />
+              <input type="email" value={email} onChange={e => setEmail(e.target.value)} className="w-full px-3 py-2 border border-stone-300 rounded-md focus:ring-2 focus:ring-primary outline-none" />
             </div>
             <div>
               <label className="block text-sm font-medium text-stone-700 mb-1">Role</label>
-              <select value={role} onChange={e => setRole(e.target.value as any)} className="w-full px-3 py-2 border border-stone-300 rounded-md focus:ring-2 focus:ring-blue-500 outline-none">
+              <select value={role} onChange={e => setRole(e.target.value as any)} className="w-full px-3 py-2 border border-stone-300 rounded-md focus:ring-2 focus:ring-primary outline-none">
                 <option value="member">Member</option>
                 <option value="super_admin">Super Admin</option>
               </select>
@@ -82,7 +82,7 @@ const AddUserModal: React.FC<{ open: boolean, onClose: () => void, onSuccess: ()
           </div>
           <div className="mt-6 flex justify-end gap-3">
             <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50 border rounded-md transition-colors">Cancel</button>
-            <button type="submit" disabled={loading} className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md disabled:opacity-50 transition-colors">Create</button>
+            <button type="submit" disabled={loading} className="px-4 py-2 text-sm font-medium text-white bg-primary hover:bg-primary/90 rounded-md disabled:opacity-50 transition-colors">Create</button>
           </div>
         </form>
       </DialogContent>
@@ -188,13 +188,13 @@ export const AdminUsersPage: React.FC = () => {
 
       <div className="flex border-b border-stone-200 mb-6 gap-6">
         <button
-          className={`pb-3 font-medium text-sm transition-colors ${activeTab === 'users' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-stone-500 hover:text-stone-700'}`}
+          className={`pb-3 font-medium text-sm transition-colors ${activeTab === 'users' ? 'border-b-2 border-primary text-primary' : 'text-stone-500 hover:text-stone-700'}`}
           onClick={() => setActiveTab('users')}
         >
           Active Users
         </button>
         <button
-          className={`pb-3 font-medium text-sm transition-colors ${activeTab === 'invitations' ? 'border-b-2 border-blue-600 text-blue-600' : 'text-stone-500 hover:text-stone-700'}`}
+          className={`pb-3 font-medium text-sm transition-colors ${activeTab === 'invitations' ? 'border-b-2 border-primary text-primary' : 'text-stone-500 hover:text-stone-700'}`}
           onClick={() => setActiveTab('invitations')}
         >
           Invitation Codes
@@ -207,7 +207,7 @@ export const AdminUsersPage: React.FC = () => {
             <div className="flex justify-end mb-4">
               <button
                 onClick={() => setIsAddUserModalOpen(true)}
-                className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors"
+                className="flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90 transition-colors"
               >
                 <Plus size={20} />
                 <span>Add User</span>
@@ -230,7 +230,7 @@ export const AdminUsersPage: React.FC = () => {
                     <tr key={userItem.id} className="hover:bg-stone-50">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-medium overflow-hidden">
+                          <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-primary font-medium overflow-hidden">
                             {userItem.avatarUrl ? <img src={userItem.avatarUrl} alt="" className="w-full h-full object-cover" /> : (userItem.name || userItem.email || '?').charAt(0).toUpperCase()}
                           </div>
                           <span className="text-sm font-medium text-stone-900">{userItem.name || (userItem as any).username || 'Unknown'}</span>
@@ -282,7 +282,7 @@ export const AdminUsersPage: React.FC = () => {
                 value={inviteCode}
                 onChange={e => setInviteCode(e.target.value)}
                 placeholder="Code (e.g. TEAM-2026)"
-                className="border border-stone-300 px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 outline-none"
+                className="border border-stone-300 px-3 py-2 rounded focus:ring-2 focus:ring-primary outline-none"
                 required
               />
               <input
@@ -290,11 +290,11 @@ export const AdminUsersPage: React.FC = () => {
                 value={inviteMaxUses}
                 onChange={e => setInviteMaxUses(Number(e.target.value))}
                 placeholder="Max Uses"
-                className="border border-stone-300 w-24 px-3 py-2 rounded focus:ring-2 focus:ring-blue-500 outline-none"
+                className="border border-stone-300 w-24 px-3 py-2 rounded focus:ring-2 focus:ring-primary outline-none"
                 required
                 min="0"
               />
-              <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
+              <button type="submit" className="bg-primary text-white px-4 py-2 rounded hover:bg-primary/90 transition-colors">
                 Create Code
               </button>
             </form>

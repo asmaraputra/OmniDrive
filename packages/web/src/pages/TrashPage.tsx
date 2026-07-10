@@ -1,7 +1,9 @@
 import { useEffect, useState, useCallback } from 'react';
+import { Trash2 } from 'lucide-react';
 import { useDriveStore } from '../stores/driveStore';
 import { useToastStore } from '../stores/toastStore';
 import { FileGrid } from '../components/files/FileGrid';
+import { EmptyState, ListSkeleton } from '../components/EmptyState';
 import { api } from '../lib/api';
 import type { FileEntry } from '../types';
 import { FilePreviewModal } from '../components/FilePreviewModal';
@@ -9,7 +11,7 @@ import { FilePreviewModal } from '../components/FilePreviewModal';
 export function TrashPage() {
   const { drives } = useDriveStore();
   const { addToast } = useToastStore();
-  
+
   const [results, setResults] = useState<FileEntry[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [previewFile, setPreviewFile] = useState<FileEntry | null>(null);
@@ -19,7 +21,7 @@ export function TrashPage() {
     try {
       const data = await api.getTrashFiles();
       setResults(data.files);
-    } catch (error) {
+    } catch {
       addToast('error', 'Failed to load trash');
     } finally {
       setIsLoading(false);
@@ -35,7 +37,7 @@ export function TrashPage() {
       await api.restoreFile(fileId);
       addToast('success', 'File restored successfully');
       fetchTrash();
-    } catch (error) {
+    } catch {
       addToast('error', 'Failed to restore file');
     }
   };
@@ -45,7 +47,7 @@ export function TrashPage() {
       await api.deleteFilePermanent(fileId);
       addToast('success', 'File permanently deleted');
       fetchTrash();
-    } catch (error) {
+    } catch {
       addToast('error', 'Failed to permanently delete file');
     }
   };
@@ -64,9 +66,7 @@ export function TrashPage() {
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
-        </div>
+        <ListSkeleton rows={6} />
       ) : results.length > 0 ? (
         <div className="bg-card rounded-xl border border-stone-200 overflow-hidden">
           <FileGrid
@@ -84,9 +84,11 @@ export function TrashPage() {
           />
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center py-20 text-stone-500">
-          <p className="text-lg">Your trash is empty.</p>
-        </div>
+        <EmptyState
+          icon={Trash2}
+          title="Trash is empty"
+          description="Deleted files will appear here."
+        />
       )}
       <FilePreviewModal
         open={!!previewFile}

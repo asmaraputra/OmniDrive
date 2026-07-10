@@ -58,7 +58,7 @@ export const BulkActionBar: React.FC<BulkActionBarProps> = ({ onActionComplete, 
         <button onClick={clearSelection} disabled={isProcessing} className="p-2 hover:bg-stone-100 text-stone-500 rounded-full transition-colors" aria-label="Clear selection">
           <X size={18} />
         </button>
-        <span className="font-medium text-sm text-blue-600 bg-blue-50 px-2.5 py-0.5 rounded-full">{selectedItems.length} selected</span>
+        <span className="font-medium text-sm text-primary bg-primary/10 px-2.5 py-0.5 rounded-full">{selectedItems.length} selected</span>
       </div>
       <div className="flex flex-wrap items-center gap-1 sm:gap-2 sm:pl-2">
         <button onClick={handleDelete} disabled={isProcessing} className="flex items-center gap-2 px-3 py-2 hover:bg-red-50 text-stone-600 hover:text-red-600 rounded-full transition-colors text-sm font-medium" title="Delete selected items">

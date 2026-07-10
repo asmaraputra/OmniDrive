@@ -1,10 +1,11 @@
 // packages/web/src/pages/LoginPage.tsx
 import { useState } from 'react';
 import { api } from '../lib/api';
+import { Button } from '../components/ui/button';
 
 // Link styles for cream card (#efe9de): primary #2563EB is 4.28:1 (fails AA);
 // blue-700 + permanent underline pass contrast and "links rely on color".
-const linkClass = 'text-blue-700 underline hover:text-blue-800';
+const linkClass = 'text-blue-700 underline hover:text-blue-800'
 
 export function LoginPage() {
   const [isRegister, setIsRegister] = useState(false);
@@ -140,12 +141,9 @@ export function LoginPage() {
               />
             </div>
 
-            <button
-              type="submit"
-              className="w-full py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors mt-2"
-            >
+            <Button type="submit" className="w-full h-11 rounded-lg mt-2">
               {isRegister ? 'Create Account' : 'Sign In'}
-            </button>
+            </Button>
           </form>
 
           <div className="mt-6">

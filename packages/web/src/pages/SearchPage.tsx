@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { Search } from 'lucide-react';
 import { useDriveStore } from '../stores/driveStore';
 import { useSharedStore } from '../stores/sharedStore';
 import { useToastStore } from '../stores/toastStore';
@@ -7,20 +8,21 @@ import { FileGrid } from '../components/files/FileGrid';
 import { ShareModal } from '../components/ShareModal';
 import { MoveDriveModal } from '../components/MoveDriveModal';
 import { FilePreviewModal } from '../components/FilePreviewModal';
+import { EmptyState, ListSkeleton } from '../components/EmptyState';
 import { api } from '../lib/api';
 import type { FileEntry } from '../types';
 
 export function SearchPage() {
   const [searchParams] = useSearchParams();
   const query = searchParams.get('q') || '';
-  
+
   const { drives } = useDriveStore();
   const { isTargetShared } = useSharedStore();
   const { addToast } = useToastStore();
-  
+
   const [results, setResults] = useState<FileEntry[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const [shareTarget, setShareTarget] = useState<{ id: string, type: 'file' | 'folder' } | null>(null);
   const [moveDriveFiles, setMoveDriveFiles] = useState<FileEntry[]>([]);
   const [previewFile, setPreviewFile] = useState<FileEntry | null>(null);
@@ -35,7 +37,7 @@ export function SearchPage() {
       const data = await api.searchFiles(q);
       if (signal?.aborted) return;
       setResults(data.files);
-    } catch (error) {
+    } catch {
       if (signal?.aborted) return;
       addToast('error', 'Failed to perform search');
     } finally {
@@ -67,13 +69,13 @@ export function SearchPage() {
       </div>
 
       {!query ? (
-        <div className="flex flex-col items-center justify-center py-20 text-stone-500">
-          <p className="text-lg">Please enter a search term.</p>
-        </div>
+        <EmptyState
+          icon={Search}
+          title="Search your files"
+          description="Enter a search term in the omnibar above."
+        />
       ) : isLoading ? (
-        <div className="flex justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
-        </div>
+        <ListSkeleton rows={6} />
       ) : results.length > 0 ? (
         <div className="bg-card rounded-xl border border-stone-200 overflow-hidden">
           <FileGrid
@@ -88,9 +90,11 @@ export function SearchPage() {
           />
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center py-20 text-stone-500">
-          <p className="text-lg">No files found matching '{query}'.</p>
-        </div>
+        <EmptyState
+          icon={Search}
+          title="No files found"
+          description={`Nothing matched "${query}".`}
+        />
       )}
 
       <ShareModal
@@ -99,7 +103,6 @@ export function SearchPage() {
         targetId={shareTarget?.id ?? ''}
         onClose={() => setShareTarget(null)}
       />
-
       {moveDriveFiles.length > 0 && (
         <MoveDriveModal
           files={moveDriveFiles}
@@ -108,14 +111,12 @@ export function SearchPage() {
             setMoveDriveFiles([]);
             fetchResults(query);
           }}
-          onError={(msg) => {
-            console.error('Error moving file(s):', msg);
+          onError={() => {
             addToast('error', 'Failed to move file(s)');
             setMoveDriveFiles([]);
           }}
         />
       )}
-
       <FilePreviewModal
         open={!!previewFile}
         file={previewFile ?? undefined}

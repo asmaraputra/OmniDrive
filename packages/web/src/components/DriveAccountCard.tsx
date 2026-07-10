@@ -36,7 +36,7 @@ export function DriveAccountCard({ drive, index, onSync, onDisconnect }: DriveAc
             <div className="text-sm font-semibold text-stone-800">{drive.email}</div>
             <div className="text-xs text-stone-400">
               {drive.type === 'service_account' ? 'Service Account' : 'OAuth'}
-              {drive.isPrimary && <span className="ml-1.5 text-blue-500 font-medium">· Primary</span>}
+              {drive.isPrimary && <span className="ml-1.5 text-primary font-medium">· Primary</span>}
               {drive.health === 'auth_expired' && (
                 <span className="ml-1.5 text-red-600 font-medium" title="Google session expired — disconnect and reconnect this account">· reconnect needed</span>
               )}

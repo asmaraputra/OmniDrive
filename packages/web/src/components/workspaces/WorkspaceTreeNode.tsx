@@ -26,34 +26,46 @@ export function WorkspaceTreeNode({
 
   return (
     <div className="group flex flex-col">
-      <div 
-        className={`flex items-center justify-between px-2 py-1.5 mx-2 rounded-md cursor-pointer transition-colors ${
-          isActive ? 'bg-blue-50 text-blue-900 font-medium' : 'text-stone-700 hover:bg-stone-100'
+      <div
+        className={`flex items-center justify-between px-2 py-1.5 mx-2 rounded-md transition-colors ${
+          isActive ? 'bg-primary/10 text-stone-900 font-medium' : 'text-stone-700 hover:bg-stone-100'
         }`}
         style={{ paddingLeft: `${level * 0.75 + 0.5}rem` }}
       >
-        <div className="flex items-center gap-1.5 overflow-hidden flex-1" onClick={() => onSelect(folder.id)}>
-          <button 
+        <div className="flex items-center gap-1.5 overflow-hidden flex-1 min-w-0">
+          <button
+            type="button"
             data-testid={`tree-node-toggle-${folder.id}`}
-            onClick={(e) => { e.stopPropagation(); onToggle(folder.id); }}
+            onClick={() => onToggle(folder.id)}
             className="p-0.5 rounded hover:bg-stone-200 text-stone-400"
+            aria-label={hasChildren ? (isExpanded ? `Collapse ${folder.name}` : `Expand ${folder.name}`) : undefined}
+            aria-expanded={hasChildren ? isExpanded : undefined}
+            tabIndex={hasChildren ? 0 : -1}
           >
             {hasChildren ? (
-              isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />
+              isExpanded ? <ChevronDown size={14} aria-hidden /> : <ChevronRight size={14} aria-hidden />
             ) : (
-              <div className="w-[14px]" /> // Spacer
+              <span className="w-[14px] inline-block" aria-hidden />
             )}
           </button>
-          <span className="truncate text-sm">{folder.name}</span>
+          <button
+            type="button"
+            className="truncate text-sm text-left flex-1 min-w-0 py-0.5"
+            onClick={() => onSelect(folder.id)}
+          >
+            {folder.name}
+          </button>
         </div>
 
         <DropdownMenu.Root>
           <DropdownMenu.Trigger asChild>
-            <button 
-              onClick={(e) => e.stopPropagation()} 
+            <button
+              type="button"
+              onClick={(e) => e.stopPropagation()}
               className="p-1 rounded hover:bg-stone-200 text-stone-500 opacity-0 group-hover:opacity-100 data-[state=open]:opacity-100 focus-within:opacity-100 transition-opacity"
+              aria-label={`Folder actions for ${folder.name}`}
             >
-              <MoreHorizontal size={14} />
+              <MoreHorizontal size={14} aria-hidden />
             </button>
           </DropdownMenu.Trigger>
           <DropdownMenu.Portal>
