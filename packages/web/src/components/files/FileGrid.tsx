@@ -450,7 +450,7 @@ export const FileGrid: React.FC<FileGridProps> = ({
                     ? 'bg-primary/15 border-primary/40'
                     : hasError
                     ? 'border-red-300 bg-red-50 hover:border-red-400'
-                    : 'border-stone-200 bg-white hover:bg-primary/10 hover:border-primary/30'
+                    : 'border-stone-200 bg-background hover:bg-primary/10 hover:border-primary/30'
                 }`}
               >
                 <input
@@ -525,7 +525,7 @@ export const FileGrid: React.FC<FileGridProps> = ({
                 className={`p-3 border rounded-xl cursor-pointer flex flex-col justify-between h-40 transition-all group relative ${
                   isSelected
                     ? 'bg-primary/15 border-primary/40'
-                    : 'bg-white border-stone-200 hover:bg-primary/10 hover:border-primary/30'
+                    : 'bg-background border-stone-200 hover:bg-primary/10 hover:border-primary/30'
                 }`}
               >
                 <input 
