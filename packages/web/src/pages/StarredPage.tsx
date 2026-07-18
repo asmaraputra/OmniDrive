@@ -24,7 +24,7 @@ export function StarredPage() {
       setFiles(data.files);
       setFolders(data.folders);
     } catch (error) {
-      addToast('error', 'Failed to load starred items');
+      addToast('error', 'Gagal memuat item berbintang');
     } finally {
       setIsLoading(false);
     }
@@ -40,24 +40,24 @@ export function StarredPage() {
       if (type === 'file') {
         if (currentStarStatus) {
           await api.unstarFile(id);
-          addToast('success', 'File unstarred');
+          addToast('success', 'Bintang file dihapus');
           setFiles((prev) => prev.filter((f) => f.id !== id));
         } else {
           await api.starFile(id);
-          addToast('success', 'File starred');
+          addToast('success', 'File dibintangi');
         }
       } else {
         if (currentStarStatus) {
           await api.unstarFolder(id);
-          addToast('success', 'Folder unstarred');
+          addToast('success', 'Bintang folder dihapus');
           setFolders((prev) => prev.filter((f) => f.id !== id));
         } else {
           await api.starFolder(id);
-          addToast('success', 'Folder starred');
+          addToast('success', 'Folder dibintangi');
         }
       }
     } catch (error) {
-      addToast('error', 'Failed to update star status');
+      addToast('error', 'Gagal memperbarui status bintang');
     }
   };
 
@@ -71,7 +71,7 @@ export function StarredPage() {
   return (
     <div className="p-4 sm:p-6 space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-stone-800">Starred</h1>
+        <h1 className="text-2xl font-semibold text-stone-800">Berbintang</h1>
       </div>
 
       {isLoading ? (
@@ -91,8 +91,8 @@ export function StarredPage() {
       ) : (
         <EmptyState
           icon={Star}
-          title="No starred items"
-          description="Star files or folders to find them here quickly."
+          title="Belum ada item berbintang"
+          description="Beri bintang pada file atau folder untuk menemukannya dengan cepat di sini."
         />
       )}
       <FilePreviewModal

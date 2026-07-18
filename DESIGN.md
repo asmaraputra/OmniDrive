@@ -25,6 +25,20 @@ AzaDrive mengadopsi sistem desain **Claude-inspired warm canvas** (ref: [getdesi
 | Icons | Lucide React |
 | Charts | Recharts (storage category overview) |
 | Variants | class-variance-authority + clsx + tailwind-merge |
+| Bahasa UI | Bahasa Indonesia (`<html lang="id">`) — lihat "Bahasa UI" di bawah |
+
+## Bahasa UI
+
+Seluruh UI web berbahasa Indonesia sejak sesi ini. Aturan translasi:
+
+- `index.html` → `<html lang="id">`.
+- Semua string user-facing diterjemahkan: halaman, komponen, modal, toast, placeholder, `aria-label`, konten legal (Privacy Policy, Terms of Service).
+- **Istilah teknis dipertahankan universal** (bukan diterjemahkan): OAuth, S3, API, Drive, Workspace, Service Account, email, URL, Token, Key, PKCE, CSRF, RBAC.
+- **Identifier peran dipertahankan** sebagai sistem/proper noun: Owner, Editor, Viewer, Manager, `super_admin`, `member`.
+- **Tidak ada library i18n** — direct string replacement. Alasan: single-locale, tidak ada runtime switching (YAGNI). Jika nanti butuh multi-bahasa, baru pertimbangkan `react-i18next`/`paraglide`.
+- Tes (`*.test.tsx`) di-update agar assertion (`getByText`, `getByRole`) cocok dengan string Indonesia.
+
+Glosarium singkat: Sign in/out → Masuk/Keluar, Dashboard → Dashboard, My Drive → Drive Saya, Starred → Berbintang, Trash → Sampah, Recent → Terbaru, Connected drives → Drive terhubung, Total storage → Total penyimpanan, By type → Per tipe, Refresh → Segarkan, View all → Lihat semua, Settings → Pengaturan, Users → Pengguna, Search → Cari, Password → Kata sandi.
 
 ## Design Tokens
 
@@ -131,7 +145,8 @@ Urutan menu (dari `Sidebar.tsx`):
 |-------|------|--------|
 | `/setup` | `SetupPage` | First-run admin setup |
 | `/login` | `LoginPage` | Login/register |
-| `/` | `DashboardPage` | Home — bento grid: storage hero (% besar + QuotaBar), donut breakdown per tipe (Recharts), quick-access tiles, connected drives, recent files, empty state bila belum ada drive, admin tile untuk `super_admin` |
+| `/home` | `LandingPage` | Landing publik (OAuth consent) — "Product Showcase": 5/7 hero asimetris (text kiri + CSS dashboard mockup kanan), stats strip ($0/Multi-drive/S3), features alternating rows, final CTA |
+| `/` | `DashboardPage` | Home — bento grid "Editorial Hero": storage hero dengan `RadialBarChart` ring (Recharts) + cobalt gradient wash, quick-access vertical list, donut breakdown per tipe (enlarged), connected drives dengan drive-color accent stripe + Primary pill badge, recent files compact custom rows (file-type icon + drive dot + relative time), empty state bila belum ada drive, admin card untuk `super_admin` |
 | `/files/:folderId?` | `FilesPage` | File browser |
 | `/search` | `SearchPage` | Global search |
 | `/workspaces` | `WorkspacesPage` | Workspace tabs (files, members, audit, settings) |

@@ -36,17 +36,17 @@ export function DriveAccountCard({ drive, index, onSync, onDisconnect }: DriveAc
             <div className="text-sm font-semibold text-stone-800">{drive.email}</div>
             <div className="text-xs text-stone-400">
               {drive.type === 'service_account' ? 'Service Account' : 'OAuth'}
-              {drive.isPrimary && <span className="ml-1.5 text-primary font-medium">· Primary</span>}
+              {drive.isPrimary && <span className="ml-1.5 text-primary font-medium">· Utama</span>}
               {drive.health === 'auth_expired' && (
-                <span className="ml-1.5 text-red-600 font-medium" title="Google session expired — disconnect and reconnect this account">· reconnect needed</span>
+                <span className="ml-1.5 text-red-600 font-medium" title="Sesi Google kedaluwarsa — putuskan dan hubungkan kembali akun ini">· perlu sambungan ulang</span>
               )}
               {drive.health === 'error' && (
-                <span className="ml-1.5 text-amber-600" title="Could not reach Google Drive on last check — usually temporary">· unreachable</span>
+                <span className="ml-1.5 text-amber-600" title="Tidak dapat menjangkau Google Drive pada pemeriksaan terakhir — biasanya sementara">· tidak terjangkau</span>
               )}
             </div>
             {drive.lastSyncedAt && (
               <div className="text-[10px] text-stone-400 mt-0.5">
-                Last synced: {new Date(drive.lastSyncedAt).toLocaleString()}
+                Terakhir disinkron: {new Date(drive.lastSyncedAt).toLocaleString()}
               </div>
             )}
           </div>
@@ -58,31 +58,31 @@ export function DriveAccountCard({ drive, index, onSync, onDisconnect }: DriveAc
             disabled={isSyncing}
           >
             <RefreshCw size={12} className={isSyncing ? 'animate-spin' : ''} />
-            {isSyncing ? 'Syncing...' : 'Sync'}
+            {isSyncing ? 'Menyinkron...' : 'Sinkron'}
           </button>
           <button
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-600 bg-red-50 border border-red-200 rounded-lg hover:bg-red-100 transition-colors"
             onClick={() => {
               const primaryNote = drive.isPrimary
-                ? ' This is your primary drive — another connected drive will become primary if available.'
+                ? ' Ini adalah drive utama Anda — drive terhubung lain akan menjadi utama jika tersedia.'
                 : '';
               const message =
-                `Disconnect ${drive.email}?${primaryNote} ` +
-                'Your files on Google Drive will not be deleted; only AzaDrive access and synced data will be removed.';
+                `Putuskan ${drive.email}?${primaryNote} ` +
+                'File Anda di Google Drive tidak akan dihapus; hanya akses AzaDrive dan data tersinkron yang akan dihapus.';
               if (confirm(message)) {
                 void onDisconnect(drive.id);
               }
             }}
           >
             <Trash2 size={12} />
-            Disconnect
+            Putuskan
           </button>
         </div>
       </div>
 
       <QuotaBar used={drive.usedQuota} total={drive.totalQuota} color={color} showLabel={false} />
       <div className="flex justify-between mt-2 text-xs text-stone-400">
-        <span>{formatFileSize(drive.freeSpace)} free of {formatFileSize(drive.totalQuota)}</span>
+        <span>{formatFileSize(drive.freeSpace)} kosong dari {formatFileSize(drive.totalQuota)}</span>
         <span>{drive.usagePercent}%</span>
       </div>
     </div>

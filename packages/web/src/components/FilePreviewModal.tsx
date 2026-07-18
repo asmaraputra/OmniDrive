@@ -80,7 +80,7 @@ export function FilePreviewModal({ open, file, onClose }: FilePreviewModalProps)
                 {isLoading ? (
                   <div className="flex flex-col items-center justify-center text-stone-400 py-12">
                     <Loader2 className="w-8 h-8 animate-spin mb-2" />
-                    <span className="text-sm">Loading preview…</span>
+                    <span className="text-sm">Memuat pratinjau…</span>
                   </div>
                 ) : previewUrl && !imageError ? (
                   <img
@@ -92,7 +92,7 @@ export function FilePreviewModal({ open, file, onClose }: FilePreviewModalProps)
                 ) : (
                   <div className="flex flex-col items-center justify-center text-stone-400 py-12">
                     <FileIcon mimeType={file.mimeType} className="w-16 h-16 mb-2" />
-                    <span className="text-sm">Preview unavailable</span>
+                    <span className="text-sm">Pratinjau tidak tersedia</span>
                   </div>
                 )}
               </div>
@@ -101,23 +101,23 @@ export function FilePreviewModal({ open, file, onClose }: FilePreviewModalProps)
             {/* File Info */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm bg-stone-50 p-4 rounded-xl border border-stone-100">
               <div>
-                <div className="text-stone-500 text-xs uppercase tracking-wide font-medium mb-1">Size</div>
+                <div className="text-stone-500 text-xs uppercase tracking-wide font-medium mb-1">Ukuran</div>
                 <div className="text-stone-800 font-medium">{formatFileSize(file.size)}</div>
               </div>
               <div>
-                <div className="text-stone-500 text-xs uppercase tracking-wide font-medium mb-1">Type</div>
-                <div className="text-stone-800 font-medium truncate" title={file.mimeType ?? 'Unknown'}>
-                  {file.mimeType ?? 'Unknown'}
+                <div className="text-stone-500 text-xs uppercase tracking-wide font-medium mb-1">Tipe</div>
+                <div className="text-stone-800 font-medium truncate" title={file.mimeType ?? 'Tidak diketahui'}>
+                  {file.mimeType ?? 'Tidak diketahui'}
                 </div>
               </div>
               <div>
-                <div className="text-stone-500 text-xs uppercase tracking-wide font-medium mb-1">Modified</div>
+                <div className="text-stone-500 text-xs uppercase tracking-wide font-medium mb-1">Dimodifikasi</div>
                 <div className="text-stone-800 font-medium truncate">
                   {file.googleModifiedAt ? formatRelativeTime(file.googleModifiedAt) : '—'}
                 </div>
               </div>
               <div>
-                <div className="text-stone-500 text-xs uppercase tracking-wide font-medium mb-1">Created</div>
+                <div className="text-stone-500 text-xs uppercase tracking-wide font-medium mb-1">Dibuat</div>
                 <div className="text-stone-800 font-medium truncate">
                   {file.googleCreatedAt ? formatRelativeTime(file.googleCreatedAt) : '—'}
                 </div>
@@ -137,7 +137,7 @@ export function FilePreviewModal({ open, file, onClose }: FilePreviewModalProps)
                 className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-stone-700 bg-card border border-stone-300 rounded-xl hover:bg-stone-100 transition-colors shadow-sm"
                 style={{ textDecoration: 'none' }}
               >
-                <ExternalLink size={18} /> Open in Drive
+                <ExternalLink size={18} /> Buka di Drive
               </a>
             )}
             {file.webContentLink && !isGoogleDoc && (
@@ -148,7 +148,7 @@ export function FilePreviewModal({ open, file, onClose }: FilePreviewModalProps)
                 className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-white bg-primary rounded-xl hover:bg-primary/90 transition-colors shadow-sm"
                 style={{ textDecoration: 'none' }}
               >
-                <Download size={18} /> Download
+                <Download size={18} /> Unduh
               </a>
             )}
           </div>

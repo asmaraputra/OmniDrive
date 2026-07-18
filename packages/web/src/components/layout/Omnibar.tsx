@@ -49,10 +49,10 @@ export const Omnibar: React.FC = () => {
     <div className="relative w-full" ref={wrapperRef}>
       <div className="bg-surface border border-stone-300/60 hover:bg-card hover:shadow-md hover:border-stone-300 focus-within:bg-card focus-within:shadow-md focus-within:border-stone-300 rounded-full h-12 flex items-center px-4 transition-all">
         <Search size={20} className="text-stone-600 mr-3" />
-        <input 
-          type="text" 
-          placeholder="Search AzaDrive" 
-          className="bg-transparent outline-none w-full text-stone-800 placeholder-gray-600" 
+        <input
+          type="text"
+          placeholder="Cari di AzaDrive"
+          className="bg-transparent outline-none w-full text-stone-800 placeholder-gray-600"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => { if (results.length > 0) setIsOpen(true); }}
@@ -67,16 +67,16 @@ export const Omnibar: React.FC = () => {
 
       {showAdvanced && (
         <div className="absolute top-14 left-0 right-0 bg-card shadow-lg border border-stone-200 rounded-lg p-4 z-50 flex gap-2 animate-in fade-in-0 slide-in-from-top-2 duration-200">
-          <input 
-            type="text" 
-            placeholder="Metadata Key (e.g. Status)" 
+          <input
+            type="text"
+            placeholder="Kunci Metadata (mis. Status)"
             className="border border-stone-300 rounded px-3 py-1.5 text-sm flex-1"
             value={metadataKey}
             onChange={(e) => setMetadataKey(e.target.value)}
           />
-          <input 
-            type="text" 
-            placeholder="Metadata Value (e.g. Approved)" 
+          <input
+            type="text"
+            placeholder="Nilai Metadata (mis. Disetujui)"
             className="border border-stone-300 rounded px-3 py-1.5 text-sm flex-1"
             value={metadataValue}
             onChange={(e) => setMetadataValue(e.target.value)}
@@ -87,7 +87,7 @@ export const Omnibar: React.FC = () => {
       {isOpen && (query || metadataKey) && (
         <div className="absolute top-14 left-0 right-0 bg-card shadow-lg border border-stone-200 rounded-lg max-h-96 overflow-y-auto z-40 animate-in fade-in-0 slide-in-from-top-2 duration-200">
           {isSearching ? (
-            <div className="p-4 text-center text-sm text-stone-500">Searching...</div>
+            <div className="p-4 text-center text-sm text-stone-500">Mencari...</div>
           ) : results.length > 0 ? (
             <div className="py-2">
               {results.map((file) => (
@@ -96,14 +96,14 @@ export const Omnibar: React.FC = () => {
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-stone-800 truncate">{file.name}</p>
                     <p className="text-xs text-stone-500 truncate">
-                      {file.workspaceId ? 'Workspace' : 'Personal'} • {file.metadata ? 'Has Tags' : 'No Tags'}
+                      {file.workspaceId ? 'Workspace' : 'Pribadi'} • {file.metadata ? 'Ada Tag' : 'Tanpa Tag'}
                     </p>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="p-4 text-center text-sm text-stone-500">No results found</div>
+            <div className="p-4 text-center text-sm text-stone-500">Tidak ada hasil ditemukan</div>
           )}
         </div>
       )}

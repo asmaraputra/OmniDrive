@@ -36,10 +36,10 @@ describe('WorkspaceMainView', () => {
     render(<WorkspaceMainView {...mockProps} />);
     expect(screen.getByTestId('files-tab')).toBeDefined();
     
-    fireEvent.click(screen.getByText('Members'));
+    fireEvent.click(screen.getByText('Anggota'));
     expect(screen.getByTestId('members-tab')).toBeDefined();
-    
-    fireEvent.click(screen.getByText('Settings'));
+
+    fireEvent.click(screen.getByText('Pengaturan'));
     expect(screen.getByTestId('settings-tab')).toBeDefined();
   });
 });

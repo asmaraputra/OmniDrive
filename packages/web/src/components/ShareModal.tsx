@@ -64,7 +64,7 @@ export function ShareModal({ open, targetType, targetId, onClose }: ShareModalPr
       setSharedUrl(resp.url);
       useSharedStore.getState().fetchSharedLinks();
     } catch (err: any) {
-      setError(err.message || 'Failed to create shared link');
+      setError(err.message || 'Gagal membuat tautan terbagi');
     } finally {
       setLoading(false);
     }
@@ -81,7 +81,7 @@ export function ShareModal({ open, targetType, targetId, onClose }: ShareModalPr
       timeoutRef.current = window.setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error('Failed to copy', err);
-      setError('Failed to copy to clipboard');
+      setError('Gagal menyalin ke papan klip');
     }
   };
 
@@ -93,7 +93,7 @@ export function ShareModal({ open, targetType, targetId, onClose }: ShareModalPr
         <div className="flex items-center p-5 border-b border-stone-100 shrink-0">
           <DialogTitle className="text-lg font-semibold text-stone-800 flex items-center gap-2">
             <Share2 size={20} className="text-primary" />
-            Share {targetType === 'file' ? 'File' : 'Folder'}
+            Bagikan {targetType === 'file' ? 'File' : 'Folder'}
           </DialogTitle>
         </div>
 
@@ -108,11 +108,11 @@ export function ShareModal({ open, targetType, targetId, onClose }: ShareModalPr
             <form onSubmit={handleShare} className="flex flex-col gap-4">
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-medium text-stone-700 flex items-center gap-1.5">
-                  <Lock size={14} className="text-stone-400" /> Password (optional)
+                  <Lock size={14} className="text-stone-400" /> Kata sandi (opsional)
                 </label>
                 <input
                   type="password"
-                  placeholder="Leave blank for no password"
+                  placeholder="Biarkan kosong tanpa kata sandi"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="px-3 py-2 bg-card border border-stone-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow"
@@ -121,7 +121,7 @@ export function ShareModal({ open, targetType, targetId, onClose }: ShareModalPr
 
               <div className="flex flex-col gap-1.5">
                 <label className="text-sm font-medium text-stone-700 flex items-center gap-1.5">
-                  <Calendar size={14} className="text-stone-400" /> Expiration Date (optional)
+                  <Calendar size={14} className="text-stone-400" /> Tanggal kedaluwarsa (opsional)
                 </label>
                 <input
                   type="datetime-local"
@@ -139,7 +139,7 @@ export function ShareModal({ open, targetType, targetId, onClose }: ShareModalPr
                   className="flex items-center text-sm font-medium text-stone-600 hover:text-stone-800 transition-colors"
                 >
                   <Settings size={14} className="mr-1.5" />
-                  Advanced Settings
+                  Pengaturan Lanjutan
                   {showAdvanced ? <ChevronUp size={14} className="ml-1" /> : <ChevronDown size={14} className="ml-1" />}
                 </button>
 
@@ -153,7 +153,7 @@ export function ShareModal({ open, targetType, targetId, onClose }: ShareModalPr
                           onChange={(e) => setAllowDownloads(e.target.checked)}
                           className="w-4 h-4 rounded border-stone-300 text-primary focus:ring-primary cursor-pointer"
                         />
-                        <span className="select-none">Allow Downloads</span>
+                        <span className="select-none">Izinkan Unduhan</span>
                       </label>
 
                       {targetType === 'folder' && (
@@ -164,7 +164,7 @@ export function ShareModal({ open, targetType, targetId, onClose }: ShareModalPr
                             onChange={(e) => setAllowUploads(e.target.checked)}
                             className="w-4 h-4 rounded border-stone-300 text-primary focus:ring-primary cursor-pointer"
                           />
-                          <span className="select-none">Allow Uploads (Public Drop folder)</span>
+                          <span className="select-none">Izinkan Unggahan (Folder Drop Publik)</span>
                         </label>
                       )}
 
@@ -175,28 +175,28 @@ export function ShareModal({ open, targetType, targetId, onClose }: ShareModalPr
                           onChange={(e) => setRequireEmail(e.target.checked)}
                           className="w-4 h-4 rounded border-stone-300 text-primary focus:ring-primary cursor-pointer"
                         />
-                        <span className="select-none">Require Email to View</span>
+                        <span className="select-none">Wajibkan Email untuk Melihat</span>
                       </label>
 
                       <div className="flex flex-col gap-1.5 mt-2">
-                        <label className="text-xs font-semibold text-stone-600 uppercase tracking-wide">Max Downloads</label>
+                        <label className="text-xs font-semibold text-stone-600 uppercase tracking-wide">Maks Unduhan</label>
                         <input
                           type="number"
                           min="1"
                           value={maxDownloads}
                           onChange={(e) => setMaxDownloads(e.target.value)}
-                          placeholder="e.g. 10 (Leave blank for unlimited)"
+                          placeholder="mis. 10 (Biarkan kosong untuk tak terbatas)"
                           className="px-3 py-2 bg-card border border-stone-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                         />
                       </div>
 
                       <div className="flex flex-col gap-1.5 mt-2">
-                        <label className="text-xs font-semibold text-stone-600 uppercase tracking-wide">Webhook URL</label>
+                        <label className="text-xs font-semibold text-stone-600 uppercase tracking-wide">URL Webhook</label>
                         <input
                           type="url"
                           value={webhookUrl}
                           onChange={(e) => setWebhookUrl(e.target.value)}
-                          placeholder="e.g. https://your-api.com/webhook"
+                          placeholder="mis. https://your-api.com/webhook"
                           className="px-3 py-2 bg-card border border-stone-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                         />
                       </div>
@@ -211,7 +211,7 @@ export function ShareModal({ open, targetType, targetId, onClose }: ShareModalPr
                   className="px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-100 rounded-lg transition-colors"
                   onClick={onClose}
                 >
-                  Cancel
+                  Batal
                 </button>
                 <button
                   type="submit"
@@ -221,7 +221,7 @@ export function ShareModal({ open, targetType, targetId, onClose }: ShareModalPr
                   {loading ? (
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   ) : (
-                    'Create Link'
+                    'Buat Tautan'
                   )}
                 </button>
               </div>
@@ -229,7 +229,7 @@ export function ShareModal({ open, targetType, targetId, onClose }: ShareModalPr
           ) : (
             <div className="flex flex-col gap-4">
               <p className="text-sm text-stone-600 bg-primary/10 p-3 rounded-lg border border-blue-100">
-                Anyone with this link can access the {targetType}.
+                Siapa pun dengan tautan ini dapat mengakses {targetType}.
               </p>
               <div className="flex gap-2">
                 <input
@@ -242,7 +242,7 @@ export function ShareModal({ open, targetType, targetId, onClose }: ShareModalPr
                 <button
                   className="flex items-center justify-center w-10 h-10 text-stone-700 bg-card border border-stone-300 rounded-lg hover:bg-stone-50 transition-colors shrink-0"
                   onClick={copyToClipboard}
-                  title="Copy to clipboard"
+                  title="Salin ke papan klip"
                 >
                   {copied ? <Check size={16} className="text-green-500" /> : <Copy size={16} />}
                 </button>
@@ -252,7 +252,7 @@ export function ShareModal({ open, targetType, targetId, onClose }: ShareModalPr
                   className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors"
                   onClick={onClose}
                 >
-                  Done
+                  Selesai
                 </button>
               </div>
             </div>

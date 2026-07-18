@@ -172,8 +172,8 @@ export const FileGrid: React.FC<FileGridProps> = ({
     return (
       <EmptyState
         icon={Folder}
-        title="This folder is empty"
-        description="Drag & drop files here or click Upload"
+        title="Folder ini kosong"
+        description="Seret & lepas file di sini atau klik Unggah"
       />
     );
   }
@@ -191,7 +191,7 @@ export const FileGrid: React.FC<FileGridProps> = ({
           <div className="w-[72px] flex items-center pl-3">
             <input
               type="checkbox"
-              aria-label="Select all"
+              aria-label="Pilih semua"
               className={`w-4 h-4 cursor-pointer ${hasSelection ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 transition-opacity'}`}
               checked={selectedItems.length > 0 && selectedItems.length === files.length + subfolders.length}
               onChange={(e) => {
@@ -205,13 +205,13 @@ export const FileGrid: React.FC<FileGridProps> = ({
                   clearSelection();
                 }
               }}
-              title="Select All"
+              title="Pilih Semua"
             />
           </div>
-          <span>{renderSortHeader('Name', 'name')}</span>
+          <span>{renderSortHeader('Nama', 'name')}</span>
           {showDriveColumn && <span className="hidden sm:block">Drive</span>}
-          <span className="text-right hidden sm:block">{renderSortHeader('Size', 'size', 'right')}</span>
-          <span className="text-right hidden sm:block">{renderSortHeader('Modified', 'modified', 'right')}</span>
+          <span className="text-right hidden sm:block">{renderSortHeader('Ukuran', 'size', 'right')}</span>
+          <span className="text-right hidden sm:block">{renderSortHeader('Dimodifikasi', 'modified', 'right')}</span>
           <span />
         </div>
 
@@ -263,7 +263,7 @@ export const FileGrid: React.FC<FileGridProps> = ({
                   <div className="w-[72px] flex items-center gap-2 pl-3">
                     <input 
                       type="checkbox"
-                      aria-label={`Select folder ${folder.name}`}
+                      aria-label={`Pilih folder ${folder.name}`}
                       className={`w-4 h-4 cursor-pointer flex-shrink-0 ${hasSelection ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 transition-opacity'}`}
                       checked={isSelected}
                       readOnly
@@ -346,7 +346,7 @@ export const FileGrid: React.FC<FileGridProps> = ({
                   <div className="w-[72px] flex items-center gap-2 pl-3">
                     <input 
                       type="checkbox"
-                      aria-label={`Select file ${file.name}`}
+                      aria-label={`Pilih file ${file.name}`}
                       className={`w-4 h-4 cursor-pointer flex-shrink-0 ${hasSelection ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 transition-opacity'}`}
                       checked={isSelected}
                       readOnly

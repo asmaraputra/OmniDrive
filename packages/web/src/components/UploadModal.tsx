@@ -23,10 +23,10 @@ export function UploadModal({ open, folderId, driveId, onClose, onSuccess }: Upl
   const handleUpload = async () => {
     try {
       await startUpload(selectedDriveId || undefined, folderId);
-      addToast('success', 'Upload completed');
+      addToast('success', 'Unggahan selesai');
       onSuccess();
     } catch {
-      addToast('error', 'Upload failed');
+      addToast('error', 'Unggahan gagal');
     }
   };
 
@@ -56,7 +56,7 @@ export function UploadModal({ open, folderId, driveId, onClose, onSuccess }: Upl
         onInteractOutside={(e) => { if (isUploading) e.preventDefault(); }}
       >
         <div className="flex items-center p-5 border-b border-stone-100 shrink-0">
-          <DialogTitle className="text-lg font-semibold text-stone-800">Upload Files</DialogTitle>
+          <DialogTitle className="text-lg font-semibold text-stone-800">Unggah File</DialogTitle>
         </div>
 
         {/* File list or File Picker */}
@@ -81,7 +81,7 @@ export function UploadModal({ open, folderId, driveId, onClose, onSuccess }: Upl
                 <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary">
                   <Upload size={24} />
                 </div>
-                <span className="text-sm font-medium">Click to select files</span>
+                <span className="text-sm font-medium">Klik untuk memilih file</span>
               </label>
             </div>
           ) : (
@@ -112,7 +112,7 @@ export function UploadModal({ open, folderId, driveId, onClose, onSuccess }: Upl
         {!isUploading && !allDone && (
           <div className="p-6 pb-2">
             <label className="block text-sm font-medium text-stone-700 mb-3">
-              Target Drive
+              Drive Tujuan
             </label>
             <div className="flex flex-col gap-2">
               <label className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer border transition-colors ${!selectedDriveId ? 'bg-primary/10 border-blue-200' : 'border-stone-200 hover:bg-stone-50'}`}>
@@ -124,7 +124,7 @@ export function UploadModal({ open, folderId, driveId, onClose, onSuccess }: Upl
                   onChange={() => setSelectedDriveId('')}
                   className="w-4 h-4 text-primary border-stone-300 focus:ring-primary"
                 />
-                <span className="text-sm text-stone-800">Auto (most free space)</span>
+                <span className="text-sm text-stone-800">Otomatis (ruang kosong terbanyak)</span>
               </label>
               {drives.map((drive, i) => (
                 <label key={drive.id} className={`flex items-center gap-3 p-3 rounded-xl cursor-pointer border transition-colors ${selectedDriveId === drive.id ? 'bg-primary/10 border-blue-200' : 'border-stone-200 hover:bg-stone-50'}`}>
@@ -138,7 +138,7 @@ export function UploadModal({ open, folderId, driveId, onClose, onSuccess }: Upl
                   />
                   <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: getDriveColor(i) }} />
                   <span className="text-sm text-stone-800 flex-1 truncate">{drive.email}</span>
-                  <span className="text-xs text-stone-500 whitespace-nowrap">{formatFileSize(drive.freeSpace)} free</span>
+                  <span className="text-xs text-stone-500 whitespace-nowrap">{formatFileSize(drive.freeSpace)} kosong</span>
                 </label>
               ))}
             </div>
@@ -152,7 +152,7 @@ export function UploadModal({ open, folderId, driveId, onClose, onSuccess }: Upl
               className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors"
               onClick={handleClose}
             >
-              Done
+              Selesai
             </button>
           ) : (
             <>
@@ -161,7 +161,7 @@ export function UploadModal({ open, folderId, driveId, onClose, onSuccess }: Upl
                 onClick={handleClose}
                 disabled={isUploading}
               >
-                Cancel
+                Batal
               </button>
               <button
                 className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -169,9 +169,9 @@ export function UploadModal({ open, folderId, driveId, onClose, onSuccess }: Upl
                 disabled={isUploading || queue.length === 0}
               >
                 {isUploading ? (
-                  <><Loader size={16} className="animate-spin" /> Uploading...</>
+                  <><Loader size={16} className="animate-spin" /> Mengunggah...</>
                 ) : (
-                  <><Upload size={16} /> Upload</>
+                  <><Upload size={16} /> Unggah</>
                 )}
               </button>
             </>

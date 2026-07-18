@@ -18,7 +18,7 @@ export function PublicPageLayout({ title, children }: PublicPageLayoutProps) {
             to="/login"
             className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90"
           >
-            Sign in
+            Masuk
           </Link>
         </div>
       </header>
@@ -32,9 +32,9 @@ export function PublicPageLayout({ title, children }: PublicPageLayoutProps) {
         <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-4 px-4 py-6 text-sm text-stone-600 sm:px-6">
           <p>© {new Date().getFullYear()} AzaDrive</p>
           <nav className="flex flex-wrap gap-4" aria-label="Legal">
-            <Link to="/home" className="underline hover:text-stone-900">Home</Link>
-            <Link to="/privacy" className="underline hover:text-stone-900">Privacy Policy</Link>
-            <Link to="/terms" className="underline hover:text-stone-900">Terms of Service</Link>
+            <Link to="/home" className="underline hover:text-stone-900">Beranda</Link>
+            <Link to="/privacy" className="underline hover:text-stone-900">Kebijakan Privasi</Link>
+            <Link to="/terms" className="underline hover:text-stone-900">Ketentuan Layanan</Link>
           </nav>
         </div>
       </footer>

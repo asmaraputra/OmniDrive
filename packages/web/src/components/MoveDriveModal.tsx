@@ -49,11 +49,11 @@ export function MoveDriveModal({ files, onClose, onSuccess, onError }: MoveDrive
       }
       
       if (failCount === 0 && successCount > 0) {
-        addToast('success', `✅ Moved ${successCount} item(s) to ${drive.email}`);
+        addToast('success', `✅ ${successCount} item dipindahkan ke ${drive.email}`);
       } else if (failCount > 0) {
-        addToast('error', `⚠️ Moved ${successCount} item(s), ${failCount} failed`);
+        addToast('error', `⚠️ ${successCount} item dipindahkan, ${failCount} gagal`);
       } else if (successCount === 0 && failCount === 0) {
-        addToast('info', 'Items are already in the selected drive');
+        addToast('info', 'Item sudah berada di drive yang dipilih');
       }
       
       if (successCount > 0) {
@@ -73,16 +73,16 @@ export function MoveDriveModal({ files, onClose, onSuccess, onError }: MoveDrive
     <Dialog open={files.length > 0} onOpenChange={(open) => !open && !isMoving && onClose()}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Move to Another Drive</DialogTitle>
+          <DialogTitle>Pindah ke Drive Lain</DialogTitle>
           <DialogDescription>
-            Select a destination drive to move {files.length} item(s). This may take a moment depending on the file size.
+            Pilih drive tujuan untuk memindahkan {files.length} item. Ini mungkin membutuhkan beberapa saat tergantung ukuran file.
           </DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-4 py-4">
           {availableDrives.length === 0 ? (
             <p className="text-sm text-center text-muted-foreground py-4">
-              No other drives available. Please connect another Google Drive account.
+              Tidak ada drive lain yang tersedia. Silakan hubungkan akun Google Drive lain.
             </p>
           ) : (
             availableDrives.map(drive => (
@@ -108,7 +108,7 @@ export function MoveDriveModal({ files, onClose, onSuccess, onError }: MoveDrive
                     {drive.email}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    Free space: {formatFileSize(drive.freeSpace)}
+                    Ruang kosong: {formatFileSize(drive.freeSpace)}
                   </p>
                 </div>
               </button>

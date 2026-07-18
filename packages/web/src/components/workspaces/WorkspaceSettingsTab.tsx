@@ -38,7 +38,7 @@ export function WorkspaceSettingsTab({ workspaceId }: { workspaceId: string }) {
   };
 
   const handleDeletePolicy = async (id: string) => {
-    if (!confirm('Delete this policy?')) return;
+    if (!confirm('Hapus kebijakan ini?')) return;
     try {
       await api.deleteWorkspacePolicy(workspaceId, id);
       loadPolicies();
@@ -53,31 +53,31 @@ export function WorkspaceSettingsTab({ workspaceId }: { workspaceId: string }) {
   return (
     <div className="p-8 max-w-4xl mx-auto flex flex-col gap-8">
       <section className="bg-card rounded-lg shadow p-6">
-        <h2 className="text-xl font-semibold mb-4 text-stone-900">Storage & Quota</h2>
+        <h2 className="text-xl font-semibold mb-4 text-stone-900">Penyimpanan & Kuota</h2>
         <div className="mb-6">
           <p className="text-sm text-stone-600 mb-2">
-            Storage limits enforce a hard cap on the workspace size.
+            Batas penyimpanan memberlakukan kap mutlak pada ukuran workspace.
           </p>
           {maxBytes ? (
             <div className="bg-stone-100 rounded p-4 flex justify-between items-center">
-              <span>Quota: <strong>{Math.round(maxBytes / (1024 * 1024 * 1024))} GB</strong></span>
-              <button onClick={() => handleDeletePolicy(quotaPolicy!.id)} className="text-red-600 text-sm hover:underline">Remove Quota</button>
+              <span>Kuota: <strong>{Math.round(maxBytes / (1024 * 1024 * 1024))} GB</strong></span>
+              <button onClick={() => handleDeletePolicy(quotaPolicy!.id)} className="text-red-600 text-sm hover:underline">Hapus Kuota</button>
             </div>
           ) : (
             <div className="flex gap-2">
-              <input 
-                type="number" 
-                placeholder="Limit in GB" 
-                value={quotaInput} 
+              <input
+                type="number"
+                placeholder="Batas dalam GB"
+                value={quotaInput}
                 onChange={(e) => setQuotaInput(e.target.value)}
                 className="border border-stone-300 rounded px-3 py-1.5 text-sm"
               />
-              <button 
-                onClick={handleSetQuota} 
+              <button
+                onClick={handleSetQuota}
                 disabled={loading}
                 className="bg-primary text-white px-4 py-1.5 rounded text-sm hover:bg-primary/90 disabled:opacity-50"
               >
-                Set Quota
+                Atur Kuota
               </button>
             </div>
           )}
@@ -86,16 +86,16 @@ export function WorkspaceSettingsTab({ workspaceId }: { workspaceId: string }) {
 
       <section className="bg-card rounded-lg shadow overflow-hidden">
         <div className="p-6 border-b border-stone-200">
-          <h2 className="text-xl font-semibold text-stone-900">Governance Policies</h2>
-          <p className="text-sm text-stone-600 mt-1">Manage active retention and quota rules for this workspace.</p>
+          <h2 className="text-xl font-semibold text-stone-900">Kebijakan Tata Kelola</h2>
+          <p className="text-sm text-stone-600 mt-1">Kelola aturan retensi dan kuota aktif untuk workspace ini.</p>
         </div>
         <table className="w-full text-left">
           <thead className="bg-stone-50 border-b border-stone-200 text-sm text-stone-500">
             <tr>
-              <th className="px-6 py-3 font-medium">Type</th>
+              <th className="px-6 py-3 font-medium">Tipe</th>
               <th className="px-6 py-3 font-medium">Target</th>
-              <th className="px-6 py-3 font-medium">Configuration</th>
-              <th className="px-6 py-3 font-medium text-right">Actions</th>
+              <th className="px-6 py-3 font-medium">Konfigurasi</th>
+              <th className="px-6 py-3 font-medium text-right">Aksi</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
@@ -106,17 +106,17 @@ export function WorkspaceSettingsTab({ workspaceId }: { workspaceId: string }) {
                   <td className="px-6 py-4 text-sm font-medium text-stone-900">{p.policyType.replace('_', ' ')}</td>
                   <td className="px-6 py-4 text-sm text-stone-500">{p.targetType} {p.targetId ? `(${p.targetId})` : ''}</td>
                   <td className="px-6 py-4 text-sm text-stone-500 font-mono text-xs">
-                    {p.policyType === 'storage_quota' ? `${Math.round(config.max_bytes / (1024*1024*1024))} GB limit` : `${config.action} (${config.days || 'indefinite'} days)`}
+                    {p.policyType === 'storage_quota' ? `${Math.round(config.max_bytes / (1024*1024*1024))} GB batas` : `${config.action} (${config.days || 'tanpa batas'} hari)`}
                   </td>
                   <td className="px-6 py-4 text-sm text-right">
-                    <button onClick={() => handleDeletePolicy(p.id)} className="text-red-600 hover:text-red-800 font-medium">Delete</button>
+                    <button onClick={() => handleDeletePolicy(p.id)} className="text-red-600 hover:text-red-800 font-medium">Hapus</button>
                   </td>
                 </tr>
               );
             })}
             {policies.length === 0 && (
               <tr>
-                <td colSpan={4} className="px-6 py-8 text-center text-stone-500 text-sm">No governance policies active.</td>
+                <td colSpan={4} className="px-6 py-8 text-center text-stone-500 text-sm">Belum ada kebijakan tata kelola aktif.</td>
               </tr>
             )}
           </tbody>

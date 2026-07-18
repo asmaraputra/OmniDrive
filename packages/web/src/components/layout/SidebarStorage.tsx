@@ -86,7 +86,7 @@ export const SidebarStorage: React.FC = () => {
 
       <div className="mb-3">
         <div className="flex justify-between text-xs mb-1">
-          <span className="font-medium text-stone-700 dark:text-stone-300">Storage</span>
+          <span className="font-medium text-stone-700 dark:text-stone-300">Penyimpanan</span>
           <span className="text-stone-500">
             {totalPct.toFixed(1)}%
           </span>
@@ -98,7 +98,7 @@ export const SidebarStorage: React.FC = () => {
           />
         </div>
         <p className="text-[10px] text-stone-500">
-          {formatFileSize(aggregate.totalUsed)} of {formatFileSize(aggregate.totalQuota)} used
+          {formatFileSize(aggregate.totalUsed)} dari {formatFileSize(aggregate.totalQuota)} terpakai
         </p>
       </div>
     </div>

@@ -14,7 +14,7 @@ export function AccountPasswordForm() {
   const handleChangePassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newPassword !== confirmPassword) {
-      addToast('error', 'New passwords do not match');
+      addToast('error', 'Kata sandi baru tidak cocok');
       return;
     }
     setIsChangingPassword(true);
@@ -23,9 +23,9 @@ export function AccountPasswordForm() {
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
-      addToast('success', 'Password updated. Other sessions were signed out.');
+      addToast('success', 'Kata sandi diperbarui. Sesi lain telah dikeluarkan.');
     } catch (err) {
-      addToast('error', err instanceof Error ? err.message : 'Failed to change password');
+      addToast('error', err instanceof Error ? err.message : 'Gagal mengubah kata sandi');
     } finally {
       setIsChangingPassword(false);
     }
@@ -33,12 +33,12 @@ export function AccountPasswordForm() {
 
   return (
     <div>
-      <h2 className="text-sm font-semibold text-stone-500 uppercase tracking-wide mb-3">Account</h2>
+      <h2 className="text-sm font-semibold text-stone-500 uppercase tracking-wide mb-3">Akun</h2>
       <form onSubmit={handleChangePassword} className="bg-card border border-stone-200 rounded-xl p-5 space-y-4 max-w-md">
-        <p className="text-sm text-stone-600">Change your login password. Other devices will be signed out.</p>
+        <p className="text-sm text-stone-600">Ubah kata sandi login Anda. Perangkat lain akan dikeluarkan.</p>
         <div>
           <label htmlFor="current-password" className="block text-sm font-medium text-stone-700 mb-1.5">
-            Current password
+            Kata sandi saat ini
           </label>
           <input
             id="current-password"
@@ -52,7 +52,7 @@ export function AccountPasswordForm() {
         </div>
         <div>
           <label htmlFor="new-password" className="block text-sm font-medium text-stone-700 mb-1.5">
-            New password
+            Kata sandi baru
           </label>
           <input
             id="new-password"
@@ -64,11 +64,11 @@ export function AccountPasswordForm() {
             onChange={(e) => setNewPassword(e.target.value)}
             className="w-full border border-stone-300 rounded-lg p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-card"
           />
-          <p className="mt-1 text-xs text-stone-500">Min 8 chars, with upper, lower, and a number.</p>
+          <p className="mt-1 text-xs text-stone-500">Min 8 karakter, dengan huruf besar, huruf kecil, dan angka.</p>
         </div>
         <div>
           <label htmlFor="confirm-password" className="block text-sm font-medium text-stone-700 mb-1.5">
-            Confirm new password
+            Konfirmasi kata sandi baru
           </label>
           <input
             id="confirm-password"
@@ -88,7 +88,7 @@ export function AccountPasswordForm() {
             className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-60"
           >
             {isChangingPassword ? <Loader2 size={16} className="animate-spin" /> : <Key size={16} />}
-            Change password
+            Ubah kata sandi
           </button>
         </div>
       </form>

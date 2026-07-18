@@ -66,8 +66,8 @@ describe('AdminUsersPage', () => {
 
     render(<AdminUsersPage />);
 
-    expect(screen.getByText('Access Denied')).toBeTruthy();
-    expect(screen.getByText('You do not have permission to view this page.')).toBeTruthy();
+    expect(screen.getByText('Akses Ditolak')).toBeTruthy();
+    expect(screen.getByText('Anda tidak memiliki izin untuk melihat halaman ini.')).toBeTruthy();
   });
 
   it('renders the user management page for admin users', async () => {
@@ -77,8 +77,8 @@ describe('AdminUsersPage', () => {
 
     render(<AdminUsersPage />);
 
-    expect(await screen.findByText('Users')).toBeTruthy();
-    expect(screen.getByRole('button', { name: /add user/i })).toBeTruthy();
+    expect(await screen.findByText('Pengguna')).toBeTruthy();
+    expect(screen.getByRole('button', { name: /tambah pengguna/i })).toBeTruthy();
     expect(api.getAdminUsers).toHaveBeenCalledTimes(1);
   });
 
@@ -90,16 +90,18 @@ describe('AdminUsersPage', () => {
     render(<AdminUsersPage />);
 
     // Open modal
-    const addBtn = await screen.findByRole('button', { name: /add user/i });
+    const addBtn = await screen.findByRole('button', { name: /tambah pengguna/i });
     fireEvent.click(addBtn);
 
-    expect(screen.getByText('Add User', { selector: 'h3' })).toBeTruthy();
+    // Modal title renders — text appears in both DialogTitle and trigger button
+    expect(screen.getAllByText('Tambah Pengguna').length).toBeGreaterThanOrEqual(2);
 
     // Close modal
-    fireEvent.click(screen.getByText('Cancel'));
-    
+    fireEvent.click(screen.getByText('Batal'));
+
     await waitFor(() => {
-      expect(screen.queryByText('Add User', { selector: 'h3' })).toBeNull();
+      // After closing, only the trigger button text remains
+      expect(screen.getAllByText('Tambah Pengguna').length).toBe(1);
     });
   });
 
@@ -109,13 +111,13 @@ describe('AdminUsersPage', () => {
     });
 
     render(<AdminUsersPage />);
-    
+
     expect(api.getAdminUsers).toHaveBeenCalledTimes(1);
 
-    const invTab = await screen.findByText('Invitation Codes');
+    const invTab = await screen.findByText('Kode Undangan');
     fireEvent.click(invTab);
 
     expect(api.getInvitations).toHaveBeenCalledTimes(1);
-    expect(screen.getByText('Create Code')).toBeTruthy();
+    expect(screen.getByText('Buat Kode')).toBeTruthy();
   });
 });

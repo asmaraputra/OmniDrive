@@ -39,39 +39,39 @@ export const Sidebar: React.FC = () => {
     <div className="w-64 h-full flex flex-col p-3 gap-1">
       {/* Navigation */}
       <nav className="flex flex-col gap-0.5">
-        <NavLink to="/" end className={navLinkClass} aria-label="Home" title="Home">
+        <NavLink to="/" end className={navLinkClass} aria-label="Beranda" title="Beranda">
           <Home size={20} aria-hidden />
-          {isSidebarOpen && <span>Home</span>}
+          {isSidebarOpen && <span>Beranda</span>}
         </NavLink>
-        <NavLink to="/files/root" className={navLinkClass} aria-label="My Drive" title="My Drive">
+        <NavLink to="/files/root" className={navLinkClass} aria-label="Drive Saya" title="Drive Saya">
           <HardDrive size={20} aria-hidden />
-          {isSidebarOpen && <span>My Drive</span>}
+          {isSidebarOpen && <span>Drive Saya</span>}
         </NavLink>
-        <NavLink to="/starred" className={navLinkClass} aria-label="Starred" title="Starred">
+        <NavLink to="/starred" className={navLinkClass} aria-label="Berbintang" title="Berbintang">
           <Star size={20} aria-hidden />
-          {isSidebarOpen && <span>Starred</span>}
+          {isSidebarOpen && <span>Berbintang</span>}
         </NavLink>
-        <NavLink to="/shared" className={navLinkClass} aria-label="Shared" title="Shared">
+        <NavLink to="/shared" className={navLinkClass} aria-label="Terbagi" title="Terbagi">
           <Users size={20} aria-hidden />
-          {isSidebarOpen && <span>Shared</span>}
+          {isSidebarOpen && <span>Terbagi</span>}
         </NavLink>
-        <NavLink to="/workspaces" className={navLinkClass} aria-label="Workspaces" title="Workspaces">
+        <NavLink to="/workspaces" className={navLinkClass} aria-label="Workspace" title="Workspace">
           <FolderTree size={20} aria-hidden />
-          {isSidebarOpen && <span>Workspaces</span>}
+          {isSidebarOpen && <span>Workspace</span>}
         </NavLink>
-        <NavLink to="/trash" className={navLinkClass} aria-label="Trash" title="Trash">
+        <NavLink to="/trash" className={navLinkClass} aria-label="Sampah" title="Sampah">
           <Trash2 size={20} aria-hidden />
-          {isSidebarOpen && <span>Trash</span>}
+          {isSidebarOpen && <span>Sampah</span>}
         </NavLink>
         {user?.role === 'super_admin' && (
-          <NavLink to="/admin/users" className={navLinkClass} aria-label="Users" title="Users">
+          <NavLink to="/admin/users" className={navLinkClass} aria-label="Pengguna" title="Pengguna">
             <UserCog size={20} aria-hidden />
-            {isSidebarOpen && <span>Users</span>}
+            {isSidebarOpen && <span>Pengguna</span>}
           </NavLink>
         )}
-        <NavLink to="/settings" className={navLinkClass} aria-label="Settings" title="Settings">
+        <NavLink to="/settings" className={navLinkClass} aria-label="Pengaturan" title="Pengaturan">
           <Settings size={20} aria-hidden />
-          {isSidebarOpen && <span>Settings</span>}
+          {isSidebarOpen && <span>Pengaturan</span>}
         </NavLink>
       </nav>
 
@@ -114,7 +114,7 @@ export const Sidebar: React.FC = () => {
           // Mobile: slide via translate-x; Desktop: inline width collapse (md overrides)
           mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'
         } ${isSidebarOpen ? 'md:w-64' : 'md:w-16'}`}
-        aria-label="Main navigation"
+        aria-label="Navigasi utama"
       >
         {navContent}
       </aside>

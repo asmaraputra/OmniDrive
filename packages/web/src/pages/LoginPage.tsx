@@ -27,7 +27,7 @@ export function LoginPage() {
       }
       window.location.href = '/';
     } catch (err: any) {
-      setErrorMsg(err.message || 'Authentication failed');
+      setErrorMsg(err.message || 'Autentikasi gagal');
     }
   };
 
@@ -48,7 +48,7 @@ export function LoginPage() {
             <h1 className="text-3xl font-bold text-stone-900">AzaDrive</h1>
           </div>
           <p className="text-stone-600 text-sm mb-8">
-            Sign in to your account
+            Masuk ke akun Anda
           </p>
 
           {errorMsg && (
@@ -63,7 +63,7 @@ export function LoginPage() {
           <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-left">
             <div>
               <label htmlFor="login-username" className="block text-sm font-medium text-stone-700 mb-1">
-                Username
+                Nama pengguna
               </label>
               <input
                 id="login-username"
@@ -81,7 +81,7 @@ export function LoginPage() {
               <>
                 <div>
                   <label htmlFor="login-name" className="block text-sm font-medium text-stone-700 mb-1">
-                    Name
+                    Nama
                   </label>
                   <input
                     id="login-name"
@@ -95,7 +95,7 @@ export function LoginPage() {
                 </div>
                 <div>
                   <label htmlFor="login-email" className="block text-sm font-medium text-stone-700 mb-1">
-                    Email (Optional)
+                    Email (Opsional)
                   </label>
                   <input
                     id="login-email"
@@ -109,7 +109,7 @@ export function LoginPage() {
                 </div>
                 <div>
                   <label htmlFor="login-invitation" className="block text-sm font-medium text-stone-700 mb-1">
-                    Invitation Code (Required)
+                    Kode Undangan (Wajib)
                   </label>
                   <input
                     id="login-invitation"
@@ -127,7 +127,7 @@ export function LoginPage() {
 
             <div>
               <label htmlFor="login-password" className="block text-sm font-medium text-stone-700 mb-1">
-                Password
+                Kata sandi
               </label>
               <input
                 id="login-password"
@@ -142,7 +142,7 @@ export function LoginPage() {
             </div>
 
             <Button type="submit" className="w-full h-11 rounded-lg mt-2">
-              {isRegister ? 'Create Account' : 'Sign In'}
+              {isRegister ? 'Buat Akun' : 'Masuk'}
             </Button>
           </form>
 
@@ -152,15 +152,15 @@ export function LoginPage() {
               onClick={() => setIsRegister(!isRegister)}
               className={`text-sm ${linkClass}`}
             >
-              {isRegister ? 'Already have an account? Sign in' : 'Need an account? Register'}
+              {isRegister ? 'Sudah punya akun? Masuk' : 'Butuh akun? Daftar'}
             </button>
           </div>
 
           <p className="mt-8 text-xs text-stone-600">
-            By signing in, you agree to our{' '}
-            <a href="/terms" className={linkClass}>Terms of Service</a>
-            {' '}and{' '}
-            <a href="/privacy" className={linkClass}>Privacy Policy</a>.
+            Dengan masuk, Anda menyetujui{' '}
+            <a href="/terms" className={linkClass}>Ketentuan Layanan</a>
+            {' '}dan{' '}
+            <a href="/privacy" className={linkClass}>Kebijakan Privasi</a> kami.
           </p>
         </div>
       </div>

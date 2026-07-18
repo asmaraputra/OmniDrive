@@ -28,7 +28,7 @@ export function EmptyState({
 /** Content skeleton rows — prefer over spinners for list/grid pages. */
 export function ListSkeleton({ rows = 5 }: { rows?: number }) {
   return (
-    <div className="space-y-2" aria-busy="true" aria-label="Loading">
+    <div className="space-y-2" aria-busy="true" aria-label="Memuat">
       {Array.from({ length: rows }).map((_, i) => (
         <div key={i} className="h-12 bg-stone-200/60 animate-pulse rounded-md" />
       ))}

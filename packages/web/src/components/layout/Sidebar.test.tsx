@@ -11,7 +11,7 @@ describe('Sidebar', () => {
         <Sidebar />
       </MemoryRouter>
     );
-    expect(screen.getByText('Workspaces')).toBeDefined();
+    expect(screen.getByText('Workspace')).toBeDefined();
     expect(screen.queryByText('Virtual Folders')).toBeNull();
   });
 });

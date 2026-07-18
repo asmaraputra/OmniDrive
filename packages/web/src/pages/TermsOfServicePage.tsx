@@ -1,127 +1,128 @@
 import { PublicPageLayout } from '../components/legal/PublicPageLayout';
 
 export function TermsOfServicePage() {
-  const effectiveDate = 'July 4, 2026';
+  const effectiveDate = '4 Juli 2026';
 
   return (
-    <PublicPageLayout title="Terms of Service">
-      <p className="text-sm text-stone-600">Effective date: {effectiveDate}</p>
+    <PublicPageLayout title="Ketentuan Layanan">
+      <p className="text-sm text-stone-600">Tanggal berlaku: {effectiveDate}</p>
 
       <section className="space-y-4">
-        <h2 className="text-xl font-semibold text-stone-900">1. Acceptance of Terms</h2>
+        <h2 className="text-xl font-semibold text-stone-900">1. Penerimaan Ketentuan</h2>
         <p>
-          By accessing or using AzaDrive at{' '}
+          Dengan mengakses atau menggunakan AzaDrive di{' '}
           <a href="https://azadrive.my.id" className="text-primary hover:underline">
             azadrive.my.id
           </a>
-          , you agree to these Terms of Service (&quot;Terms&quot;). If you do not agree, do not use
-          the Service.
+          , Anda menyetujui Ketentuan Layanan ini (&quot;Ketentuan&quot;). Jika Anda tidak setuju,
+          jangan gunakan Layanan.
         </p>
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-xl font-semibold text-stone-900">2. Description of Service</h2>
+        <h2 className="text-xl font-semibold text-stone-900">2. Deskripsi Layanan</h2>
         <p>
-          AzaDrive is a cloud-hosted application that lets you connect multiple Google Drive
-          accounts, manage files through a unified interface, create team workspaces, generate
-          shared links, configure automation rules, and optionally access files via an
-          S3-compatible API.
+          AzaDrive adalah aplikasi yang di-host di cloud yang memungkinkan Anda menghubungkan
+          beberapa akun Google Drive, mengelola file melalui antarmuka terpadu, membuat ruang kerja
+          tim, membuat tautan berbagi, mengonfigurasi aturan otomatisasi, dan secara opsional
+          mengakses file melalui API kompatibel S3.
         </p>
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-xl font-semibold text-stone-900">3. Account Registration</h2>
+        <h2 className="text-xl font-semibold text-stone-900">3. Pendaftaran Akun</h2>
         <p>
-          You must provide accurate registration information and keep your credentials secure.
-          You are responsible for all activity under your account. Registration may require an
-          invitation code at the administrator&apos;s discretion.
+          Anda harus memberikan informasi pendaftaran yang akurat dan menjaga keamanan kredensial
+          Anda. Anda bertanggung jawab atas semua aktivitas di bawah akun Anda. Pendaftaran mungkin
+          memerlukan kode undangan sesuai kebijakan administrator.
         </p>
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-xl font-semibold text-stone-900">4. Google Drive Connection</h2>
+        <h2 className="text-xl font-semibold text-stone-900">4. Koneksi Google Drive</h2>
         <p>
-          Connecting a Google Drive account requires you to authorize AzaDrive via Google OAuth.
-          You grant AzaDrive permission to access your Google Drive data only to the extent of the
-          scopes you approve. You may revoke this access at any time through Google Account
-          settings or by disconnecting the drive in AzaDrive Settings.
+          Menghubungkan akun Google Drive mengharuskan Anda mengotorisasi AzaDrive melalui Google
+          OAuth. Anda memberikan izin kepada AzaDrive untuk mengakses data Google Drive Anda hanya
+          sebatas cakupan yang Anda setujui. Anda dapat mencabut akses ini kapan saja melalui
+          pengaturan Akun Google atau dengan memutuskan koneksi drive di Pengaturan AzaDrive.
         </p>
         <p>
-          You represent that you have the right to connect each Google Drive account you link and
-          that your use complies with{' '}
+          Anda menyatakan bahwa Anda memiliki hak untuk menghubungkan setiap akun Google Drive yang
+          Anda tautkan dan bahwa penggunaan Anda mematuhi{' '}
           <a
             href="https://policies.google.com/terms"
             target="_blank"
             rel="noopener noreferrer"
             className="text-primary hover:underline"
           >
-            Google&apos;s Terms of Service
+            Ketentuan Layanan Google
           </a>
           .
         </p>
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-xl font-semibold text-stone-900">5. Acceptable Use</h2>
-        <p>You agree not to:</p>
+        <h2 className="text-xl font-semibold text-stone-900">5. Penggunaan yang Dapat Diterima</h2>
+        <p>Anda setuju untuk tidak:</p>
         <ul className="list-disc space-y-1 pl-6">
-          <li>Use the Service for unlawful purposes or to store/distribute illegal content</li>
-          <li>Attempt to gain unauthorized access to other users&apos; accounts or data</li>
-          <li>Interfere with or disrupt the Service or its infrastructure</li>
-          <li>Circumvent rate limits, authentication, or access controls</li>
-          <li>Use the Service to send spam or malware</li>
+          <li>Menggunakan Layanan untuk tujuan melanggar hukum atau untuk menyimpan/mendistribusikan konten ilegal</li>
+          <li>Berusaha mendapatkan akses tidak sah ke akun atau data pengguna lain</li>
+          <li>Mengganggu atau merusak Layanan atau infrastrukturnya</li>
+          <li>Melewati pembatasan laju, autentikasi, atau kontrol akses</li>
+          <li>Menggunakan Layanan untuk mengirim spam atau perangkat lunak berbahaya</li>
         </ul>
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-xl font-semibold text-stone-900">6. Your Content</h2>
+        <h2 className="text-xl font-semibold text-stone-900">6. Konten Anda</h2>
         <p>
-          You retain ownership of files stored in your connected Google Drive accounts. AzaDrive
-          stores file metadata and encrypted OAuth tokens to provide the Service but does not claim
-          ownership of your files. You are solely responsible for the content you manage through
-          the Service.
+          Anda mempertahankan kepemilikan file yang disimpan di akun Google Drive yang terhubung.
+          AzaDrive menyimpan metadata file dan token OAuth yang dienkripsi untuk menyediakan Layanan
+          tetapi tidak mengklaim kepemilikan atas file Anda. Anda bertanggung jawab sepenuhnya atas
+          konten yang Anda kelola melalui Layanan.
         </p>
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-xl font-semibold text-stone-900">7. Service Availability</h2>
+        <h2 className="text-xl font-semibold text-stone-900">7. Ketersediaan Layanan</h2>
         <p>
-          AzaDrive is provided on an &quot;as is&quot; and &quot;as available&quot; basis. We do
-          not guarantee uninterrupted or error-free operation. Scheduled maintenance, third-party
-          outages (including Google APIs or Cloudflare), or force majeure may affect availability.
+          AzaDrive disediakan atas dasar &quot;apa adanya&quot; dan &quot;sebagaimana tersedia&quot;.
+          Kami tidak menjamin operasi yang tanpa gangguan atau bebas kesalahan. Pemeliharaan terjadwal,
+          pemadaman pihak ketiga (termasuk Google APIs atau Cloudflare), atau keadaan kahar dapat
+          memengaruhi ketersediaan.
         </p>
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-xl font-semibold text-stone-900">8. Limitation of Liability</h2>
+        <h2 className="text-xl font-semibold text-stone-900">8. Batasan Tanggung Jawab</h2>
         <p>
-          To the maximum extent permitted by law, AzaDrive and its operators shall not be liable
-          for any indirect, incidental, special, consequential, or punitive damages, or any loss
-          of data, profits, or goodwill, arising from your use of the Service.
+          Sejauh diizinkan oleh hukum, AzaDrive dan operatornya tidak bertanggung jawab atas kerusakan
+          tidak langsung, insidental, khusus, konsekuensial, atau hukuman, atau kehilangan data, laba,
+          atau goodwill, yang timbul dari penggunaan Layanan oleh Anda.
         </p>
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-xl font-semibold text-stone-900">9. Termination</h2>
+        <h2 className="text-xl font-semibold text-stone-900">9. Penghentian</h2>
         <p>
-          We may suspend or terminate your access if you violate these Terms or if required for
-          security or legal reasons. You may stop using the Service at any time and request account
-          deletion by contacting support.
+          Kami dapat menangguhkan atau menghentikan akses Anda jika Anda melanggar Ketentuan ini atau
+          jika diperlukan karena alasan keamanan atau hukum. Anda dapat berhenti menggunakan Layanan
+          kapan saja dan meminta penghapusan akun dengan menghubungi dukungan.
         </p>
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-xl font-semibold text-stone-900">10. Changes to Terms</h2>
+        <h2 className="text-xl font-semibold text-stone-900">10. Perubahan Ketentuan</h2>
         <p>
-          We may modify these Terms at any time. Continued use of the Service after changes are
-          posted constitutes acceptance of the revised Terms.
+          Kami dapat mengubah Ketentuan ini kapan saja. Penggunaan Layanan yang berlanjut setelah
+          perubahan diposting merupakan persetujuan terhadap Ketentuan yang direvisi.
         </p>
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-xl font-semibold text-stone-900">11. Contact</h2>
+        <h2 className="text-xl font-semibold text-stone-900">11. Kontak</h2>
         <p>
-          Questions about these Terms:{' '}
+          Pertanyaan tentang Ketentuan ini:{' '}
           <a href="mailto:support@azadrive.my.id" className="text-primary hover:underline">
             support@azadrive.my.id
           </a>

@@ -9,7 +9,7 @@ interface BreadcrumbProps {
 
 export function Breadcrumb({ items, driveId }: BreadcrumbProps) {
   return (
-    <nav className="breadcrumb" aria-label="Folder navigation">
+    <nav className="breadcrumb" aria-label="Navigasi folder">
       {items.map((item, i) => {
         let linkTo = item.id === 'root' ? '/files' : `/files/${item.id}`;
         if (driveId && item.id !== 'root') {

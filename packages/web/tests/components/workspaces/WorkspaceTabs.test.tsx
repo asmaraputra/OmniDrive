@@ -12,12 +12,12 @@ vi.mock('../../../src/components/files/FileGrid', () => ({
 describe('Workspace Tab Components', () => {
   it('renders Members tab placeholder', () => {
     render(<WorkspaceMembersTab />);
-    expect(screen.getByText('Members (Coming Soon)')).toBeDefined();
+    expect(screen.getByText('Anggota (Segera Hadir)')).toBeDefined();
   });
 
   it('renders Settings tab Storage & Quota section', () => {
     render(<WorkspaceSettingsTab workspaceId="test-workspace-id" />);
-    expect(screen.getByText('Storage & Quota')).toBeDefined();
+    expect(screen.getByText('Penyimpanan & Kuota')).toBeDefined();
   });
 
   it('renders Files tab with FileGrid mock', () => {

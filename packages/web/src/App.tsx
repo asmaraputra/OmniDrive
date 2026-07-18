@@ -30,7 +30,7 @@ function PageFallback() {
       role="status"
       aria-live="polite"
     >
-      Loading…
+      Memuat…
     </div>
   );
 }
@@ -49,7 +49,7 @@ export const App = () => {
     setIsSetup(null);
     api.getSetupStatus()
       .then((res) => setIsSetup(res.isSetup))
-      .catch((err) => setSetupError(err.message || 'Failed to connect to server'));
+      .catch((err) => setSetupError(err.message || 'Gagal terhubung ke server'));
   };
 
   useEffect(() => {
@@ -59,7 +59,7 @@ export const App = () => {
   if (setupError) {
     return (
       <main className="min-h-[100dvh] flex flex-col items-center justify-center gap-4 bg-surface px-4">
-        <h1 className="text-lg font-semibold text-stone-900">Connection Error</h1>
+        <h1 className="text-lg font-semibold text-stone-900">Kesalahan Koneksi</h1>
         <p className="text-sm text-stone-600 text-center max-w-sm" role="alert">
           {setupError}
         </p>
@@ -68,7 +68,7 @@ export const App = () => {
           onClick={checkSetupStatus}
           className="px-4 py-2 rounded-lg border border-stone-300 bg-card text-stone-800 text-sm font-medium hover:bg-stone-50"
         >
-          Retry
+          Coba Lagi
         </button>
       </main>
     );

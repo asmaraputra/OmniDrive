@@ -36,7 +36,7 @@ export function ToastContainer() {
             type="button"
             className="p-1 text-stone-400 hover:text-stone-600 hover:bg-stone-100 rounded-lg transition-colors"
             onClick={() => removeToast(toast.id)}
-            aria-label="Dismiss notification"
+            aria-label="Tutup notifikasi"
           >
             <X size={14} aria-hidden />
           </button>

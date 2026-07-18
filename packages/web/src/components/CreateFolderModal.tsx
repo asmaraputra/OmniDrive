@@ -35,18 +35,18 @@ export function CreateFolderModal({ open, parentId, title, onClose, onSuccess }:
     e.preventDefault();
     const trimmed = name.trim();
     if (!trimmed) {
-      setError(`${entityLabel} name is required`);
+      setError(`Nama ${entityLabel} diperlukan`);
       return;
     }
     setLoading(true);
     setError('');
     try {
       await api.createFolder(trimmed, parentId ?? undefined);
-      addToast('success', `${entityLabel} created successfully`);
+      addToast('success', `${entityLabel} berhasil dibuat`);
       onSuccess();
       onClose();
     } catch (err: any) {
-      setError(err.message || `Failed to create ${entityLabel.toLowerCase()}`);
+      setError(err.message || `Gagal membuat ${entityLabel.toLowerCase()}`);
     } finally {
       setLoading(false);
     }
@@ -72,12 +72,12 @@ export function CreateFolderModal({ open, parentId, title, onClose, onSuccess }:
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-stone-700">
-                {entityLabel} name
+                Nama {entityLabel}
               </label>
               <input
                 type="text"
                 autoFocus
-                placeholder={`Enter ${entityLabel.toLowerCase()} name`}
+                placeholder={`Masukkan nama ${entityLabel.toLowerCase()}`}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="px-3 py-2 bg-card border border-stone-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow"
@@ -90,7 +90,7 @@ export function CreateFolderModal({ open, parentId, title, onClose, onSuccess }:
                 className="px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-100 rounded-lg transition-colors"
                 onClick={onClose}
               >
-                Cancel
+                Batal
               </button>
               <button
                 type="submit"
@@ -100,7 +100,7 @@ export function CreateFolderModal({ open, parentId, title, onClose, onSuccess }:
                 {loading ? (
                   <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 ) : (
-                  'Create'
+                  'Buat'
                 )}
               </button>
             </div>

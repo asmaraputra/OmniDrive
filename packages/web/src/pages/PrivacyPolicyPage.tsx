@@ -1,160 +1,161 @@
 import { PublicPageLayout } from '../components/legal/PublicPageLayout';
 
 export function PrivacyPolicyPage() {
-  const effectiveDate = 'July 4, 2026';
+  const effectiveDate = '4 Juli 2026';
 
   return (
-    <PublicPageLayout title="Privacy Policy">
-      <p className="text-sm text-stone-600">Effective date: {effectiveDate}</p>
+    <PublicPageLayout title="Kebijakan Privasi">
+      <p className="text-sm text-stone-600">Tanggal berlaku: {effectiveDate}</p>
 
       <section className="space-y-4">
-        <h2 className="text-xl font-semibold text-stone-900">1. Introduction</h2>
+        <h2 className="text-xl font-semibold text-stone-900">1. Pendahuluan</h2>
         <p>
-          AzaDrive (&quot;we&quot;, &quot;our&quot;, or &quot;the Service&quot;) is a unified
-          multi-Google Drive storage gateway operated at{' '}
+          AzaDrive (&quot;kami&quot;, &quot;milik kami&quot;, atau &quot;Layanan&quot;) adalah gerbang
+          penyimpanan multi-Google Drive terpadu yang dioperasikan di{' '}
           <a href="https://azadrive.my.id" className="text-primary hover:underline">
             azadrive.my.id
           </a>
-          . This Privacy Policy explains how we collect, use, store, and protect information when
-          you use AzaDrive, including data obtained from Google APIs.
+          . Kebijakan Privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, menyimpan, dan
+          melindungi informasi saat Anda menggunakan AzaDrive, termasuk data yang diperoleh dari Google
+          APIs.
         </p>
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-xl font-semibold text-stone-900">2. Information We Collect</h2>
-        <h3 className="font-medium text-stone-900">2.1 Account information</h3>
+        <h2 className="text-xl font-semibold text-stone-900">2. Informasi yang Kami Kumpulkan</h2>
+        <h3 className="font-medium text-stone-900">2.1 Informasi akun</h3>
         <p>
-          When you register, we store your username, display name, optional email address, and a
-          hashed password for authentication.
+          Saat Anda mendaftar, kami menyimpan nama pengguna, nama tampilan, alamat email opsional, dan
+          kata sandi yang di-hash untuk autentikasi.
         </p>
-        <h3 className="font-medium text-stone-900">2.2 Google user data</h3>
+        <h3 className="font-medium text-stone-900">2.2 Data pengguna Google</h3>
         <p>
-          When you connect a Google Drive account via OAuth, we access Google user data as permitted
-          by the scopes you authorize, including:
+          Saat Anda menghubungkan akun Google Drive melalui OAuth, kami mengakses data pengguna Google
+          sesuai izin cakupan yang Anda berikan, termasuk:
         </p>
         <ul className="list-disc space-y-1 pl-6">
-          <li>Your Google account email address and basic profile information</li>
-          <li>Google Drive file metadata (names, sizes, MIME types, folder structure, modification dates)</li>
-          <li>Google Drive file content when you upload, download, move, or share files through the Service</li>
-          <li>Google Drive storage quota information</li>
+          <li>Alamat email akun Google dan informasi profil dasar Anda</li>
+          <li>Metadata file Google Drive (nama, ukuran, tipe MIME, struktur folder, tanggal modifikasi)</li>
+          <li>Konten file Google Drive saat Anda mengunggah, mengunduh, memindahkan, atau berbagi file melalui Layanan</li>
+          <li>Informasi kuota penyimpanan Google Drive</li>
         </ul>
         <p>
-          We store OAuth refresh and access tokens encrypted at rest (AES-256-GCM) to maintain your
-          connected drives. We do not store your Google account password.
+          Kami menyimpan token refresh dan akses OAuth yang dienkripsi saat disimpan (AES-256-GCM) untuk
+          memelihara drive yang terhubung. Kami tidak menyimpan kata sandi akun Google Anda.
         </p>
-        <h3 className="font-medium text-stone-900">2.3 Usage data</h3>
+        <h3 className="font-medium text-stone-900">2.3 Data penggunaan</h3>
         <p>
-          We may log technical information such as IP addresses, request timestamps, and error logs
-          for security, rate limiting, and service reliability.
+          Kami dapat mencatat informasi teknis seperti alamat IP, cap waktu permintaan, dan log kesalahan
+          untuk keamanan, pembatasan laju, dan keandalan layanan.
         </p>
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-xl font-semibold text-stone-900">3. How We Use Your Information</h2>
-        <p>We use collected information solely to:</p>
+        <h2 className="text-xl font-semibold text-stone-900">3. Cara Kami Menggunakan Informasi Anda</h2>
+        <p>Kami menggunakan informasi yang dikumpulkan hanya untuk:</p>
         <ul className="list-disc space-y-1 pl-6">
-          <li>Authenticate you and maintain your session</li>
-          <li>Connect and sync your Google Drive accounts as you request</li>
-          <li>Display, search, upload, download, move, and share files across your connected drives</li>
-          <li>Enforce workspace permissions, quotas, and automation rules you configure</li>
-          <li>Provide shared links and S3-compatible API access you explicitly enable</li>
-          <li>Protect the Service against abuse, fraud, and unauthorized access</li>
+          <li>Mengautentikasi Anda dan memelihara sesi Anda</li>
+          <li>Menghubungkan dan menyinkronkan akun Google Drive Anda sesuai permintaan</li>
+          <li>Menampilkan, mencari, mengunggah, mengunduh, memindahkan, dan berbagi file di seluruh drive yang terhubung</li>
+          <li>Menerapkan izin ruang kerja, kuota, dan aturan otomatisasi yang Anda konfigurasi</li>
+          <li>Menyediakan tautan berbagi dan akses API kompatibel S3 yang Anda aktifkan secara eksplisit</li>
+          <li>Melindungi Layanan dari penyalahgunaan, penipuan, dan akses tidak sah</li>
         </ul>
       </section>
 
       <section className="space-y-4">
         <h2 className="text-xl font-semibold text-stone-900">
-          4. Google API Services User Data Policy
+          4. Kebijakan Data Pengguna Layanan Google API
         </h2>
         <p>
-          AzaDrive&apos;s use and transfer of information received from Google APIs adheres to the{' '}
+          Penggunaan dan transfer informasi yang diterima AzaDrive dari Google APIs mematuhi{' '}
           <a
             href="https://developers.google.com/terms/api-services-user-data-policy"
             target="_blank"
             rel="noopener noreferrer"
             className="text-primary hover:underline"
           >
-            Google API Services User Data Policy
+            Kebijakan Data Pengguna Layanan Google API
           </a>
-          , including the Limited Use requirements. Specifically:
+          , termasuk persyaratan Limited Use. Secara khusus:
         </p>
         <ul className="list-disc space-y-1 pl-6">
           <li>
-            We only use Google user data to provide and improve user-facing features of AzaDrive
-            that you explicitly use.
+            Kami hanya menggunakan data pengguna Google untuk menyediakan dan meningkatkan fitur AzaDrive
+            yang berhadapan dengan pengguna yang Anda gunakan secara eksplisit.
           </li>
-          <li>We do not sell Google user data.</li>
+          <li>Kami tidak menjual data pengguna Google.</li>
           <li>
-            We do not use Google user data for advertising, creditworthiness assessment, or lending
-            purposes.
-          </li>
-          <li>
-            We do not allow humans to read Google user data unless you give affirmative consent for
-            a specific case, it is necessary for security purposes, or required by law.
+            Kami tidak menggunakan data pengguna Google untuk periklanan, penilaian kelayakan kredit, atau
+            tujuan pinjaman.
           </li>
           <li>
-            We do not transfer Google user data to third parties except as necessary to provide the
-            Service (e.g., Cloudflare infrastructure hosting), to comply with law, or as part of a
-            merger/acquisition with notice to users.
+            Kami tidak mengizinkan manusia membaca data pengguna Google kecuali Anda memberikan persetujuan
+            tegas untuk kasus tertentu, hal itu diperlukan untuk tujuan keamanan, atau diwajibkan oleh hukum.
+          </li>
+          <li>
+            Kami tidak mentransfer data pengguna Google kepada pihak ketiga kecuali jika diperlukan untuk
+            menyediakan Layanan (mis., infrastruktur hosting Cloudflare), untuk mematuhi hukum, atau sebagai
+            bagian dari merger/akuisisi dengan pemberitahuan kepada pengguna.
           </li>
         </ul>
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-xl font-semibold text-stone-900">5. Data Storage and Security</h2>
+        <h2 className="text-xl font-semibold text-stone-900">5. Penyimpanan dan Keamanan Data</h2>
         <p>
-          Data is stored on Cloudflare&apos;s edge infrastructure (D1 database and KV store).
-          OAuth tokens are encrypted before storage. We use HTTPS for all communications, CSRF
-          protection on mutating API requests, rate limiting, and PKCE for the OAuth flow.
+          Data disimpan di infrastruktur edge Cloudflare (database D1 dan KV store). Token OAuth
+          dienkripsi sebelum disimpan. Kami menggunakan HTTPS untuk semua komunikasi, perlindungan
+          CSRF pada permintaan API yang mengubah data, pembatasan laju, dan PKCE untuk alur OAuth.
         </p>
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-xl font-semibold text-stone-900">6. Data Retention and Deletion</h2>
+        <h2 className="text-xl font-semibold text-stone-900">6. Penyimpanan dan Penghapusan Data</h2>
         <p>
-          We retain your account data and synced file metadata while your account is active.
-          When you disconnect a Google Drive account, we delete the associated OAuth tokens.
-          You may request account deletion by contacting us; we will remove your account data and
-          connected drive tokens within a reasonable timeframe.
+          Kami menyimpan data akun dan metadata file yang disinkronkan selama akun Anda aktif. Saat
+          Anda memutuskan koneksi akun Google Drive, kami menghapus token OAuth yang terkait. Anda
+          dapat meminta penghapusan akun dengan menghubungi kami; kami akan menghapus data akun dan
+          token drive yang terhubung dalam kerangka waktu yang wajar.
         </p>
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-xl font-semibold text-stone-900">7. Your Rights</h2>
+        <h2 className="text-xl font-semibold text-stone-900">7. Hak Anda</h2>
         <p>
-          You can revoke AzaDrive&apos;s access to your Google account at any time via{' '}
+          Anda dapat mencabut akses AzaDrive ke akun Google Anda kapan saja melalui{' '}
           <a
             href="https://myaccount.google.com/permissions"
             target="_blank"
             rel="noopener noreferrer"
             className="text-primary hover:underline"
           >
-            Google Account permissions
+            Izin Akun Google
           </a>
-          . You can also disconnect individual drives from AzaDrive Settings.
+          . Anda juga dapat memutuskan koneksi drive individual dari Pengaturan AzaDrive.
         </p>
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-xl font-semibold text-stone-900">8. Children&apos;s Privacy</h2>
+        <h2 className="text-xl font-semibold text-stone-900">8. Privasi Anak-anak</h2>
         <p>
-          AzaDrive is not directed at children under 13. We do not knowingly collect personal
-          information from children.
+          AzaDrive tidak ditujukan untuk anak di bawah 13 tahun. Kami tidak dengan sengaja mengumpulkan
+          informasi pribadi dari anak-anak.
         </p>
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-xl font-semibold text-stone-900">9. Changes to This Policy</h2>
+        <h2 className="text-xl font-semibold text-stone-900">9. Perubahan terhadap Kebijakan Ini</h2>
         <p>
-          We may update this Privacy Policy from time to time. We will post the revised policy on
-          this page with an updated effective date.
+          Kami dapat memperbarui Kebijakan Privasi ini dari waktu ke waktu. Kami akan memposting
+          kebijakan yang direvisi pada halaman ini dengan tanggal berlaku yang diperbarui.
         </p>
       </section>
 
       <section className="space-y-4">
-        <h2 className="text-xl font-semibold text-stone-900">10. Contact</h2>
+        <h2 className="text-xl font-semibold text-stone-900">10. Kontak</h2>
         <p>
-          For privacy-related questions or data deletion requests, contact us at{' '}
+          Untuk pertanyaan terkait privasi atau permintaan penghapusan data, hubungi kami di{' '}
           <a href="mailto:support@azadrive.my.id" className="text-primary hover:underline">
             support@azadrive.my.id
           </a>

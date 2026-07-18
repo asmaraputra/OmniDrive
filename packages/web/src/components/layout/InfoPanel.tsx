@@ -30,9 +30,9 @@ export const InfoPanel: React.FC = () => {
       const { api } = await import('../../lib/api');
       const driveId = (singleSelection.item as any).driveAccountId || '';
       await api.forceSyncFolder(singleSelection.item.id!, driveId);
-      addToast('success', 'Sync queued. Data will update shortly.');
+      addToast('success', 'Sinkronisasi diantrekan. Data akan diperbarui segera.');
     } catch (err: any) {
-      addToast('error', err.message || 'Failed to queue sync.');
+      addToast('error', err.message || 'Gagal mengantrekan sinkronisasi.');
     } finally {
       setIsSyncing(false);
     }
@@ -43,14 +43,14 @@ export const InfoPanel: React.FC = () => {
       return (
         <>
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold text-stone-800">Details</h2>
+            <h2 className="text-lg font-semibold text-stone-800">Detail</h2>
             <button onClick={toggleInfoPanel} className="p-1.5 hover:bg-stone-100 rounded-full text-stone-500">
               <X size={18} />
             </button>
           </div>
           <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
             <File size={48} className="text-stone-300 mb-4" />
-            <p className="text-sm text-stone-500">Select a file or folder to see its details here.</p>
+            <p className="text-sm text-stone-500">Pilih file atau folder untuk melihat detailnya di sini.</p>
           </div>
         </>
       );
@@ -60,15 +60,15 @@ export const InfoPanel: React.FC = () => {
       return (
         <>
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-lg font-semibold text-stone-800">Details</h2>
+            <h2 className="text-lg font-semibold text-stone-800">Detail</h2>
             <button onClick={toggleInfoPanel} className="p-1.5 hover:bg-stone-100 rounded-full text-stone-500">
               <X size={18} />
             </button>
           </div>
           <div className="flex-1 flex flex-col items-center justify-center text-center px-4">
             <File size={48} className="text-stone-300 mb-4" />
-            <p className="text-sm text-stone-800 font-medium">{selectedItems.length} items selected</p>
-            <p className="text-xs text-stone-500 mt-2">Select a single item to view its properties.</p>
+            <p className="text-sm text-stone-800 font-medium">{selectedItems.length} item dipilih</p>
+            <p className="text-xs text-stone-500 mt-2">Pilih satu item untuk melihat propertinya.</p>
           </div>
         </>
       );
@@ -83,7 +83,7 @@ export const InfoPanel: React.FC = () => {
     return (
       <>
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-lg font-semibold text-stone-800">Details</h2>
+          <h2 className="text-lg font-semibold text-stone-800">Detail</h2>
           <button onClick={toggleInfoPanel} className="p-1.5 hover:bg-stone-100 rounded-full text-stone-500 transition-colors">
             <X size={18} />
           </button>
@@ -107,28 +107,28 @@ export const InfoPanel: React.FC = () => {
 
         <div className="space-y-4">
           <div className="border-t border-stone-100 pt-4">
-            <h4 className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-3">Properties</h4>
+            <h4 className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-3">Properti</h4>
             <dl className="space-y-3 text-sm">
               {driveAccount && (
                 <div className="flex flex-col">
-                  <dt className="text-stone-500 mb-1 text-xs">Stored on</dt>
+                  <dt className="text-stone-500 mb-1 text-xs">Disimpan di</dt>
                   <dd>
                     <DriveBadge email={driveAccount.email} colorIndex={driveIndex} size="md" />
                   </dd>
                 </div>
               )}
               <div className="flex flex-col">
-                <dt className="text-stone-500 mb-0.5 text-xs">Type</dt>
-                <dd className="text-stone-800">{type === 'folder' ? 'Google Drive Folder' : item?.mimeType || 'Unknown file type'}</dd>
+                <dt className="text-stone-500 mb-0.5 text-xs">Tipe</dt>
+                <dd className="text-stone-800">{type === 'folder' ? 'Folder Google Drive' : item?.mimeType || 'Tipe file tidak diketahui'}</dd>
               </div>
               {type === 'file' && (
                 <div className="flex flex-col">
-                  <dt className="text-stone-500 mb-0.5 text-xs">Size</dt>
+                  <dt className="text-stone-500 mb-0.5 text-xs">Ukuran</dt>
                   <dd className="text-stone-800">{formatFileSize(item?.size ?? 0)}</dd>
                 </div>
               )}
               <div className="flex flex-col">
-                <dt className="text-stone-500 mb-0.5 text-xs">Modified</dt>
+                <dt className="text-stone-500 mb-0.5 text-xs">Dimodifikasi</dt>
                 <dd className="text-stone-800">
                   {type === 'file'
                     ? formatRelativeTime(item?.googleModifiedAt ?? item?.createdAt ?? '')
@@ -137,15 +137,15 @@ export const InfoPanel: React.FC = () => {
               </div>
               {type === 'file' && item?.googleCreatedAt && (
                 <div className="flex flex-col">
-                  <dt className="text-stone-500 mb-0.5 text-xs">Created</dt>
+                  <dt className="text-stone-500 mb-0.5 text-xs">Dibuat</dt>
                   <dd className="text-stone-800">{formatRelativeTime(item?.googleCreatedAt ?? '')}</dd>
                 </div>
               )}
               {type === 'folder' && item && 'lastSyncedAt' in item && (
                 <div className="flex flex-col">
-                  <dt className="text-stone-500 mb-0.5 text-xs">Last Synced</dt>
+                  <dt className="text-stone-500 mb-0.5 text-xs">Terakhir Disinkron</dt>
                   <dd className="text-stone-800">
-                    {(item as any).lastSyncedAt ? formatRelativeTime((item as any).lastSyncedAt) : 'Never'}
+                    {(item as any).lastSyncedAt ? formatRelativeTime((item as any).lastSyncedAt) : 'Tidak pernah'}
                   </dd>
                 </div>
               )}
@@ -159,14 +159,14 @@ export const InfoPanel: React.FC = () => {
                   className="flex items-center justify-center w-full gap-2 px-3 py-2 text-sm font-medium text-white bg-primary rounded-lg hover:bg-primary/90 disabled:opacity-50 transition-colors"
                 >
                   {isSyncing ? <Loader2 size={16} className="animate-spin" /> : <RefreshCw size={16} />}
-                  {isSyncing ? 'Syncing...' : 'Force Sync'}
+                  {isSyncing ? 'Menyinkron...' : 'Sinkron Paksa'}
                 </button>
               </div>
             )}
           </div>
 
           <div className="border-t border-stone-100 pt-4">
-            <h4 className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-3">Tags & Metadata</h4>
+            <h4 className="text-xs font-semibold text-stone-500 uppercase tracking-wide mb-3">Tag & Metadata</h4>
             {item && ('metadata' in item && item.metadata) ? (
               <div className="flex flex-wrap gap-2 mb-3">
                 {Object.entries(typeof (item as any).metadata === 'string' ? JSON.parse((item as any).metadata) : (item as any).metadata).map(([k, v]) => (
@@ -176,7 +176,7 @@ export const InfoPanel: React.FC = () => {
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-stone-400 mb-3">No tags applied.</p>
+              <p className="text-xs text-stone-400 mb-3">Belum ada tag diterapkan.</p>
             )}
             <form
               onSubmit={async (e) => {
@@ -204,9 +204,9 @@ export const InfoPanel: React.FC = () => {
               }}
               className="flex gap-2"
             >
-              <input name="metaKey" placeholder="Key" className="w-1/3 border rounded px-2 py-1 text-xs" />
-              <input name="metaValue" placeholder="Value" className="flex-1 border rounded px-2 py-1 text-xs" />
-              <button type="submit" className="bg-stone-800 text-white px-2 py-1 rounded text-xs">Add</button>
+              <input name="metaKey" placeholder="Kunci" className="w-1/3 border rounded px-2 py-1 text-xs" />
+              <input name="metaValue" placeholder="Nilai" className="flex-1 border rounded px-2 py-1 text-xs" />
+              <button type="submit" className="bg-stone-800 text-white px-2 py-1 rounded text-xs">Tambah</button>
             </form>
           </div>
         </div>

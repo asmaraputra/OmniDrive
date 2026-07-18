@@ -26,7 +26,7 @@ export const Header: React.FC = () => {
         <button
           onClick={toggleMobileSidebar}
           className="md:hidden p-2 hover:bg-stone-200 rounded-full text-stone-700 transition-colors flex-shrink-0"
-          aria-label="Open menu"
+          aria-label="Buka menu"
         >
           <Menu size={24} />
         </button>
@@ -53,21 +53,21 @@ export const Header: React.FC = () => {
           <DropdownMenuTrigger asChild>
             <button
               type="button"
-              aria-label="Account menu"
+              aria-label="Menu akun"
               className="w-9 h-9 rounded-full bg-primary text-white flex items-center justify-center font-medium cursor-pointer hover:bg-primary/90 select-none overflow-hidden flex-shrink-0"
             >
               {user?.avatarUrl ? (
                 <img src={user.avatarUrl} alt="" className="w-full h-full object-cover" />
               ) : (
-                <span aria-hidden="true">{getInitials(user?.name || 'User')}</span>
+                <span aria-hidden="true">{getInitials(user?.name || 'Pengguna')}</span>
               )}
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56 bg-card shadow-xl rounded-xl border border-stone-200">
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1 py-1">
-                <p className="text-sm font-medium leading-none text-stone-800">{user?.name || 'User'}</p>
-                <p className="text-xs leading-none text-stone-500">{user?.email || 'user@example.com'}</p>
+                <p className="text-sm font-medium leading-none text-stone-800">{user?.name || 'Pengguna'}</p>
+                <p className="text-xs leading-none text-stone-500">{user?.email || 'pengguna@contoh.com'}</p>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator className="bg-stone-200" />
@@ -76,7 +76,7 @@ export const Header: React.FC = () => {
               onClick={() => logout()}
             >
               <LogOut className="mr-2 h-4 w-4" />
-              <span>Log out</span>
+              <span>Keluar</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

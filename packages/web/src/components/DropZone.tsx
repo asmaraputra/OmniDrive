@@ -30,7 +30,7 @@ export function DropZone({ children }: { children: React.ReactNode }) {
           <div style={{ textAlign: 'center' }}>
             <Upload size={48} color="var(--accent-primary)" />
             <p style={{ marginTop: 'var(--space-md)', fontSize: 'var(--font-size-lg)', fontWeight: 600 }}>
-              Drop files to upload
+              Seret file untuk diunggah
             </p>
           </div>
         </div>

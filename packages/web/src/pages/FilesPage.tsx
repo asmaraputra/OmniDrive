@@ -54,7 +54,7 @@ export function FilesPage() {
       window.location.href = url;
     } catch (e) {
       setIsConnecting(false);
-      addToast('error', e instanceof Error ? e.message : 'Failed to start Google OAuth');
+      addToast('error', e instanceof Error ? e.message : 'Gagal memulai Google OAuth');
     }
   };
 
@@ -68,13 +68,13 @@ export function FilesPage() {
   const { subfolders, files, breadcrumb, isLoading, errorDrives, refresh } = useMergedDrive(folderId, driveIdParam);
 
   const handleDeleteFile = async (id: string) => {
-    if (confirm('Delete this file permanently from Google Drive?')) {
+    if (confirm('Hapus file ini permanen dari Google Drive?')) {
       try {
         await api.deleteFile(id);
-        addToast('success', 'File deleted');
+        addToast('success', 'File dihapus');
         refresh();
       } catch {
-        addToast('error', 'Failed to delete file');
+        addToast('error', 'Gagal menghapus file');
       }
     }
   };
@@ -82,10 +82,10 @@ export function FilesPage() {
   const handleRenameFile = async (id: string, name: string) => {
     try {
       await api.renameFile(id, name);
-      addToast('success', 'File renamed');
+      addToast('success', 'File diubah namanya');
       refresh();
     } catch {
-      addToast('error', 'Failed to rename file');
+      addToast('error', 'Gagal mengubah nama file');
     }
   };
 
@@ -135,7 +135,7 @@ export function FilesPage() {
                     type="button"
                     className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 p-1"
                     onClick={() => setSearchQuery('')}
-                    aria-label="Clear filter"
+                    aria-label="Bersihkan filter"
                   >
                     <X size={14} />
                   </button>
@@ -146,16 +146,16 @@ export function FilesPage() {
                 <button
                   onClick={() => setViewMode('list')}
                   className={`p-2 ${viewMode === 'list' ? 'bg-blue-100 text-stone-900' : 'text-stone-600 hover:bg-stone-50'}`}
-                  title="List layout"
-                  aria-label="List layout"
+                  title="Tata letak daftar"
+                  aria-label="Tata letak daftar"
                 >
                   <List size={18} />
                 </button>
                 <button
                   onClick={() => setViewMode('grid')}
                   className={`p-2 ${viewMode === 'grid' ? 'bg-blue-100 text-stone-900' : 'text-stone-600 hover:bg-stone-50'}`}
-                  title="Grid layout"
-                  aria-label="Grid layout"
+                  title="Tata letak grid"
+                  aria-label="Tata letak grid"
                 >
                   <LayoutGrid size={18} />
                 </button>
@@ -164,17 +164,17 @@ export function FilesPage() {
               <button
                 onClick={toggleInfoPanel}
                 className={`p-2 rounded-full mr-1 ${isInfoPanelOpen ? 'bg-blue-100 text-stone-900' : 'text-stone-600 hover:bg-stone-100'}`}
-                title="View details"
-                aria-label="View details"
+                title="Lihat detail"
+                aria-label="Lihat detail"
               >
                 <Info size={20} />
               </button>
 
               <button className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-stone-700 bg-card border border-stone-300 rounded-md hover:bg-stone-50" onClick={handleCreateFolder}>
-                <FolderPlus size={16} /> <span className="hidden sm:inline">New Folder</span>
+                <FolderPlus size={16} /> <span className="hidden sm:inline">Folder Baru</span>
               </button>
               <button className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-white bg-primary rounded-md hover:bg-primary/90" onClick={() => setShowModal(true)}>
-                <Upload size={16} /> <span>Upload</span>
+                <Upload size={16} /> <span>Unggah</span>
               </button>
             </div>
           </div>
@@ -182,21 +182,21 @@ export function FilesPage() {
         {isLoading || isDrivesLoading ? (
           <div className="flex flex-col items-center justify-center p-16">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-4" />
-            <p className="text-stone-500">Loading folder contents...</p>
+            <p className="text-stone-500">Memuat isi folder...</p>
           </div>
         ) : drives.length === 0 ? (
           <div className="text-center p-12 text-stone-500 border rounded-lg bg-card m-4 flex flex-col items-center shadow-sm">
             <div className="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center mb-4">
                <Info size={24} className="text-stone-400" />
             </div>
-            <h3 className="text-lg font-medium text-stone-900 mb-2">No Google Drive Connected</h3>
-            <p className="mb-6 max-w-sm text-center">You need to connect at least one Google Drive account to start using AzaDrive.</p>
+            <h3 className="text-lg font-medium text-stone-900 mb-2">Belum ada Google Drive terhubung</h3>
+            <p className="mb-6 max-w-sm text-center">Anda perlu menghubungkan setidaknya satu akun Google Drive untuk mulai menggunakan AzaDrive.</p>
             <button
               onClick={handleConnectGoogle}
               disabled={isConnecting}
               className="px-6 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 font-medium shadow-sm transition-colors disabled:opacity-60"
             >
-              {isConnecting ? 'Connecting…' : 'Connect Google Drive Now'}
+              {isConnecting ? 'Menghubungkan…' : 'Hubungkan Google Drive Sekarang'}
             </button>
           </div>
         ) : (
@@ -223,7 +223,7 @@ export function FilesPage() {
         <CreateFolderModal
           open={showCreateFolder}
           parentId={folderId === 'root' ? null : folderId}
-          title="New Folder"
+          title="Folder Baru"
           onClose={() => setShowCreateFolder(false)}
           onSuccess={refresh}
         />
@@ -245,7 +245,7 @@ export function FilesPage() {
           }}
           onError={(err) => {
             console.error(err);
-            addToast('error', 'Failed to move file(s)');
+            addToast('error', 'Gagal memindahkan file');
             setMoveDriveFiles([]);
           }}
         />
@@ -255,7 +255,7 @@ export function FilesPage() {
           onClose={() => setWorkspaceTarget(null)}
           onSuccess={() => {
             setWorkspaceTarget(null);
-            addToast('success', 'Added to workspace');
+            addToast('success', 'Ditambahkan ke workspace');
             refresh();
           }}
         />

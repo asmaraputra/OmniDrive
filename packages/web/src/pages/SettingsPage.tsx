@@ -38,7 +38,7 @@ export function SettingsPage() {
       window.location.href = url;
     } catch (e) {
       setIsConnecting(false);
-      addToast('error', e instanceof Error ? e.message : 'Failed to start Google OAuth');
+      addToast('error', e instanceof Error ? e.message : 'Gagal memulai Google OAuth');
     }
   };
 
@@ -71,7 +71,7 @@ export function SettingsPage() {
       );
       setWorkspaces(filtered);
     } catch (err) {
-      addToast('error', 'Failed to load S3 key data');
+      addToast('error', 'Gagal memuat data kunci S3');
     } finally {
       setLoadingS3(false);
     }
@@ -106,25 +106,25 @@ export function SettingsPage() {
 
       // Refresh list
       loadData();
-      addToast('success', 'S3 API key created successfully');
+      addToast('success', 'Kunci API S3 berhasil dibuat');
     } catch (err) {
-      addToast('error', 'Failed to create S3 API key');
+      addToast('error', 'Gagal membuat kunci API S3');
     } finally {
       setIsCreatingKey(false);
     }
   };
 
   const handleRevokeKey = async (id: string) => {
-    if (!confirm('Are you sure you want to revoke this S3 API key? This action is permanent and any application using this key will lose access.')) {
+    if (!confirm('Anda yakin ingin mencabut kunci API S3 ini? Tindakan ini permanen dan aplikasi apa pun yang menggunakan kunci ini akan kehilangan akses.')) {
       return;
     }
     try {
       await api.deleteS3Credential(id);
-      addToast('success', 'S3 key revoked successfully');
+      addToast('success', 'Kunci S3 berhasil dicabut');
       // Refresh list
       loadData();
     } catch {
-      addToast('error', 'Failed to revoke S3 key');
+      addToast('error', 'Gagal mencabut kunci S3');
     }
   };
 
@@ -157,20 +157,20 @@ export function SettingsPage() {
   const handleSync = async (id: string) => {
     try {
       await triggerSync(id);
-      addToast('success', 'Sync completed');
+      addToast('success', 'Sinkron selesai');
       fetchDrives();
     } catch {
-      addToast('error', 'Sync failed');
+      addToast('error', 'Sinkron gagal');
     }
   };
 
   const handleDisconnect = async (id: string) => {
     try {
       await removeDrive(id);
-      addToast('success', 'Drive disconnected');
+      addToast('success', 'Drive terputus');
       fetchDrives();
     } catch {
-      addToast('error', 'Failed to disconnect drive');
+      addToast('error', 'Gagal memutuskan drive');
     }
   };
 
@@ -178,25 +178,25 @@ export function SettingsPage() {
     e.preventDefault();
     try {
       await api.addServiceAccount(saCredentials, saFolderId);
-      addToast('success', 'Service account added');
+      addToast('success', 'Service account ditambahkan');
       setSaCredentials('');
       setSaFolderId('');
       setShowSaForm(false);
       fetchDrives();
     } catch {
-      addToast('error', 'Failed to add service account');
+      addToast('error', 'Gagal menambahkan service account');
     }
   };
 
   return (
     <div className="p-4 sm:p-6 space-y-6 max-w-3xl">
-      <h1 className="text-2xl font-semibold text-stone-800">Settings</h1>
+      <h1 className="text-2xl font-semibold text-stone-800">Pengaturan</h1>
 
       <AccountPasswordForm />
 
       {/* Section: Connected Drives */}
       <div>
-        <h2 className="text-sm font-semibold text-stone-500 uppercase tracking-wide mb-3">Connected Drives</h2>
+        <h2 className="text-sm font-semibold text-stone-500 uppercase tracking-wide mb-3">Drive Terhubung</h2>
         <div className="space-y-3">
           {drives.map((drive, i) => (
             <DriveAccountCard
@@ -209,7 +209,7 @@ export function SettingsPage() {
           ))}
           {drives.length === 0 && (
             <div className="text-center py-8 text-stone-400 border border-dashed border-stone-200 rounded-xl">
-              No drives connected yet
+              Belum ada drive terhubung
             </div>
           )}
         </div>
@@ -217,20 +217,20 @@ export function SettingsPage() {
 
       {/* Section: Add Drive */}
       <div>
-        <h2 className="text-sm font-semibold text-stone-500 uppercase tracking-wide mb-3">Add Drive</h2>
+        <h2 className="text-sm font-semibold text-stone-500 uppercase tracking-wide mb-3">Tambah Drive</h2>
         <div className="flex gap-3 flex-wrap">
           <button
             onClick={handleConnectDrive}
             disabled={isConnecting}
             className="flex items-center gap-2 px-4 py-2.5 bg-primary text-white rounded-xl hover:bg-primary/90 transition-colors font-medium text-sm disabled:opacity-60"
           >
-            {isConnecting ? <Loader2 size={18} className="animate-spin" /> : <Plus size={18} />} Add Google Drive
+            {isConnecting ? <Loader2 size={18} className="animate-spin" /> : <Plus size={18} />} Tambah Google Drive
           </button>
           <button
             className="flex items-center gap-2 px-4 py-2.5 bg-card text-stone-700 rounded-xl border border-stone-300 hover:bg-stone-50 transition-colors font-medium text-sm"
             onClick={() => setShowSaForm(!showSaForm)}
           >
-            <Key size={18} /> Add Service Account
+            <Key size={18} /> Tambah Service Account
           </button>
         </div>
       </div>
@@ -240,7 +240,7 @@ export function SettingsPage() {
         <div className="overflow-hidden">
           <div className="bg-card border border-stone-200 rounded-2xl p-5">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base font-semibold text-stone-800">Add Service Account</h3>
+            <h3 className="text-base font-semibold text-stone-800">Tambah Service Account</h3>
             <button
               onClick={() => setShowSaForm(false)}
               className="p-1.5 hover:bg-stone-100 rounded-full text-stone-500 transition-colors"
@@ -256,7 +256,7 @@ export function SettingsPage() {
               <textarea
                 value={saCredentials}
                 onChange={(e) => setSaCredentials(e.target.value)}
-                placeholder="Paste service account JSON key..."
+                placeholder="Tempel kunci JSON service account..."
                 rows={6}
                 className="w-full font-mono text-xs border border-stone-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-primary resize-none"
                 required
@@ -264,13 +264,13 @@ export function SettingsPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-stone-700 mb-1.5">
-                Shared Folder ID
+                Folder ID yang Dibagikan
               </label>
               <input
                 type="text"
                 value={saFolderId}
                 onChange={(e) => setSaFolderId(e.target.value)}
-                placeholder="Google Drive folder ID shared with SA"
+                placeholder="Folder ID Google Drive yang dibagikan dengan SA"
                 className="w-full border border-stone-300 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                 required
               />
@@ -281,13 +281,13 @@ export function SettingsPage() {
                 className="px-4 py-2 text-sm font-medium text-stone-700 bg-card border border-stone-300 rounded-xl hover:bg-stone-50 transition-colors"
                 onClick={() => setShowSaForm(false)}
               >
-                Cancel
+                Batal
               </button>
               <button
                 type="submit"
                 className="px-4 py-2 text-sm font-medium text-white bg-primary rounded-xl hover:bg-primary/90 transition-colors"
               >
-                Add Account
+                Tambah Akun
               </button>
             </div>
           </form>
@@ -299,25 +299,25 @@ export function SettingsPage() {
       <div className="border-t border-stone-200 pt-6">
         <div className="flex justify-between items-center mb-4">
           <div>
-            <h2 className="text-sm font-semibold text-stone-500 uppercase tracking-wide">S3 API Keys</h2>
-            <p className="text-xs text-stone-400 mt-1">Manage workspace-scoped and global S3-compatible credentials for accessing object storage.</p>
+            <h2 className="text-sm font-semibold text-stone-500 uppercase tracking-wide">Kunci API S3</h2>
+            <p className="text-xs text-stone-400 mt-1">Kelola kredensial S3-kompatibel dengan cakupan workspace dan global untuk mengakses object storage.</p>
           </div>
           <button
             onClick={() => setShowCreateModal(true)}
             className="flex items-center gap-2 px-3 py-2 bg-primary hover:bg-primary/90 text-white rounded-xl transition-colors font-medium text-xs shadow-sm"
           >
-            <Plus size={16} /> Generate New Key
+            <Plus size={16} /> Buat Kunci Baru
           </button>
         </div>
 
         {loadingS3 ? (
           <div className="flex items-center justify-center py-8 text-stone-400">
             <Loader2 className="animate-spin mr-2" size={18} />
-            Loading S3 credentials...
+            Memuat kredensial S3...
           </div>
         ) : s3Keys.length === 0 ? (
           <div className="text-center py-8 text-stone-400 border border-dashed border-stone-200 rounded-xl">
-            No S3 API keys generated yet.
+            Belum ada kunci API S3 yang dibuat.
           </div>
         ) : (
           <div className="bg-card border border-stone-200 rounded-xl overflow-hidden shadow-sm">
@@ -325,18 +325,18 @@ export function SettingsPage() {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-stone-50 border-b border-stone-200">
-                    <th className="px-4 py-3 text-xs font-semibold text-stone-500 uppercase tracking-wider">Description</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-stone-500 uppercase tracking-wider">Deskripsi</th>
                     <th className="px-4 py-3 text-xs font-semibold text-stone-500 uppercase tracking-wider">Access Key ID</th>
-                    <th className="px-4 py-3 text-xs font-semibold text-stone-500 uppercase tracking-wider">Scope</th>
-                    <th className="px-4 py-3 text-xs font-semibold text-stone-500 uppercase tracking-wider">Created At</th>
-                    <th className="px-4 py-3 text-xs font-semibold text-stone-500 uppercase tracking-wider text-right">Actions</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-stone-500 uppercase tracking-wider">Cakupan</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-stone-500 uppercase tracking-wider">Dibuat Pada</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-stone-500 uppercase tracking-wider text-right">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-150">
                   {s3Keys.map((key) => (
                     <tr key={key.id} className="hover:bg-stone-50/50 transition-colors">
                       <td className="px-4 py-3.5 text-sm text-stone-800 font-medium">
-                        {key.description || <span className="text-stone-400 italic">No description</span>}
+                        {key.description || <span className="text-stone-400 italic">Tanpa deskripsi</span>}
                       </td>
                       <td className="px-4 py-3.5 text-xs font-mono text-stone-600 bg-stone-50/50 rounded select-all font-semibold">
                         {key.access_key_id || key.accessKeyId}
@@ -344,7 +344,7 @@ export function SettingsPage() {
                       <td className="px-4 py-3.5 text-sm">
                         {key.workspace_id || key.workspaceId ? (
                           <span className="px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-primary/10 text-primary border border-primary/20">
-                            Workspace: {key.workspace_name || key.workspaceName || 'Unknown'}
+                            Workspace: {key.workspace_name || key.workspaceName || 'Tidak diketahui'}
                           </span>
                         ) : (
                           <span className="px-2 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-50 text-green-700 border border-green-150">
@@ -359,7 +359,7 @@ export function SettingsPage() {
                         <button
                           onClick={() => handleRevokeKey(key.id)}
                           className="p-1 text-stone-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors"
-                          title="Revoke Key"
+                          title="Cabut Kunci"
                         >
                           <Trash2 size={16} />
                         </button>
@@ -377,21 +377,21 @@ export function SettingsPage() {
       <Dialog open={showCreateModal} onOpenChange={(open) => !open && !isCreatingKey && setShowCreateModal(false)}>
         <DialogContent className="sm:max-w-[425px] rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="text-lg font-semibold text-stone-800">Generate S3 API Key</DialogTitle>
+            <DialogTitle className="text-lg font-semibold text-stone-800">Buat Kunci API S3</DialogTitle>
             <DialogDescription className="text-xs text-stone-400">
-              Create credentials to access AzaDrive storage with S3 compatible applications.
+              Buat kredensial untuk mengakses storage AzaDrive dengan aplikasi yang kompatibel dengan S3.
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleCreateKey} className="space-y-4 pt-2">
             <div>
               <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1.5">
-                Description
+                Deskripsi
               </label>
               <input
                 type="text"
                 value={newKeyDescription}
                 onChange={(e) => setNewKeyDescription(e.target.value)}
-                placeholder="e.g. Rclone desktop client, backup script"
+                placeholder="mis. klien desktop Rclone, skrip backup"
                 className="w-full border border-stone-300 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                 required
                 maxLength={100}
@@ -399,14 +399,14 @@ export function SettingsPage() {
             </div>
             <div>
               <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1.5">
-                Scope
+                Cakupan
               </label>
               <select
                 value={newKeyScope}
                 onChange={(e) => setNewKeyScope(e.target.value)}
                 className="w-full border border-stone-300 rounded-xl p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-card"
               >
-                <option value="">Global (All Workspaces)</option>
+                <option value="">Global (Semua Workspace)</option>
                 {workspaces.map((w) => (
                   <option key={w.id} value={w.id}>
                     Workspace: {w.name}
@@ -421,7 +421,7 @@ export function SettingsPage() {
                 onClick={() => setShowCreateModal(false)}
                 disabled={isCreatingKey}
               >
-                Cancel
+                Batal
               </button>
               <button
                 type="submit"
@@ -429,7 +429,7 @@ export function SettingsPage() {
                 disabled={isCreatingKey || !newKeyDescription.trim()}
               >
                 {isCreatingKey && <Loader2 className="animate-spin" size={16} />}
-                Generate Key
+                Buat Kunci
               </button>
             </div>
           </form>
@@ -446,10 +446,10 @@ export function SettingsPage() {
           <DialogHeader>
             <DialogTitle className="text-lg font-semibold text-stone-800 flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-green-500 inline-block animate-ping" />
-              S3 Key Created Successfully
+              S3 Key Berhasil Dibuat
             </DialogTitle>
             <DialogDescription className="text-xs text-stone-400">
-              Save these credentials. For security, the secret key will never be shown again.
+              Simpan kredensial ini. Demi keamanan, secret key tidak akan pernah ditampilkan lagi.
             </DialogDescription>
           </DialogHeader>
 
@@ -458,17 +458,17 @@ export function SettingsPage() {
               <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 flex gap-3">
                 <AlertTriangle className="text-amber-600 flex-shrink-0 mt-0.5" size={18} />
                 <div className="text-xs text-amber-800">
-                  <span className="font-semibold block mb-0.5">Security Warning:</span>
-                  Please copy the Secret Access Key below now. You will not be able to retrieve or view it again once this modal is closed.
+                  <span className="font-semibold block mb-0.5">Peringatan Keamanan:</span>
+                  Silakan salin Secret Access Key di bawah ini sekarang. Anda tidak akan dapat mengambil atau melihatnya lagi setelah modal ini ditutup.
                 </div>
               </div>
 
               <div>
                 <label className="block text-xs font-semibold text-stone-500 uppercase tracking-wider mb-1.5">
-                  Description
+                  Deskripsi
                 </label>
                 <div className="text-sm font-medium text-stone-800 bg-stone-50 border border-stone-150 rounded-xl px-3 py-2">
-                  {createdCredential.description || <span className="text-stone-400 italic">No description</span>}
+                  {createdCredential.description || <span className="text-stone-400 italic">Tanpa deskripsi</span>}
                 </div>
               </div>
 
@@ -484,12 +484,12 @@ export function SettingsPage() {
                     {copiedAccessKey ? (
                       <>
                         <Check size={14} />
-                        Copied!
+                        Tersalin!
                       </>
                     ) : (
                       <>
                         <Copy size={14} />
-                        Copy
+                        Salin
                       </>
                     )}
                   </button>
@@ -511,12 +511,12 @@ export function SettingsPage() {
                     {copiedSecretKey ? (
                       <>
                         <Check size={14} />
-                        Copied!
+                        Tersalin!
                       </>
                     ) : (
                       <>
                         <Copy size={14} />
-                        Copy
+                        Salin
                       </>
                     )}
                   </button>
@@ -532,7 +532,7 @@ export function SettingsPage() {
                   className="px-5 py-2 text-sm font-semibold text-white bg-primary rounded-xl hover:bg-primary/90 transition-colors shadow-sm"
                   onClick={() => setCreatedCredential(null)}
                 >
-                  I've Copied the Secret Key
+                  Saya sudah menyalin Secret Key
                 </button>
               </div>
             </div>

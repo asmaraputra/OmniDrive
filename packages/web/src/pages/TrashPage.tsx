@@ -22,7 +22,7 @@ export function TrashPage() {
       const data = await api.getTrashFiles();
       setResults(data.files);
     } catch {
-      addToast('error', 'Failed to load trash');
+      addToast('error', 'Gagal memuat sampah');
     } finally {
       setIsLoading(false);
     }
@@ -35,20 +35,20 @@ export function TrashPage() {
   const handleRestore = async (fileId: string) => {
     try {
       await api.restoreFile(fileId);
-      addToast('success', 'File restored successfully');
+      addToast('success', 'File berhasil dipulihkan');
       fetchTrash();
     } catch {
-      addToast('error', 'Failed to restore file');
+      addToast('error', 'Gagal memulihkan file');
     }
   };
 
   const handlePermanentDelete = async (fileId: string) => {
     try {
       await api.deleteFilePermanent(fileId);
-      addToast('success', 'File permanently deleted');
+      addToast('success', 'File dihapus permanen');
       fetchTrash();
     } catch {
-      addToast('error', 'Failed to permanently delete file');
+      addToast('error', 'Gagal menghapus file permanen');
     }
   };
 
@@ -62,7 +62,7 @@ export function TrashPage() {
   return (
     <div className="p-4 sm:p-6 space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold text-stone-800">Trash</h1>
+        <h1 className="text-2xl font-semibold text-stone-800">Sampah</h1>
       </div>
 
       {isLoading ? (
@@ -86,8 +86,8 @@ export function TrashPage() {
       ) : (
         <EmptyState
           icon={Trash2}
-          title="Trash is empty"
-          description="Deleted files will appear here."
+          title="Sampah kosong"
+          description="File yang dihapus akan muncul di sini."
         />
       )}
       <FilePreviewModal

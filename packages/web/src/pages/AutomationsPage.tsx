@@ -11,7 +11,7 @@ export function AutomationsPage() {
   return (
     <div className="p-4 sm:p-8 max-w-3xl mx-auto w-full">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-stone-900">Automation Rules</h1>
+        <h1 className="text-2xl font-bold text-stone-900">Aturan Otomasi</h1>
       </div>
 
       {error && (
@@ -24,11 +24,11 @@ export function AutomationsPage() {
         {isLoading ? (
           <div className="p-8 text-center text-stone-400">
             <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary mx-auto mb-3" />
-            Loading rules...
+            Memuat aturan...
           </div>
         ) : rules.length === 0 ? (
           <div className="p-8 text-center text-stone-400">
-            No automation rules yet.
+            Belum ada aturan otomasi.
           </div>
         ) : (
           rules.map(rule => (
@@ -38,14 +38,14 @@ export function AutomationsPage() {
                   {rule.name}
                 </h3>
                 <p className="text-xs text-stone-500">
-                  Trigger: <span className="capitalize">{rule.triggerType}</span>
+                  Pemicu: <span className="capitalize">{rule.triggerType}</span>
                 </p>
               </div>
               <button
                 onClick={() => toggleRule(rule.id, !rule.isActive)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium flex-shrink-0 ${rule.isActive ? 'bg-primary text-white' : 'bg-stone-100 text-stone-600'}`}
               >
-                {rule.isActive ? 'Active' : 'Inactive'}
+                {rule.isActive ? 'Aktif' : 'Tidak aktif'}
               </button>
             </div>
           ))

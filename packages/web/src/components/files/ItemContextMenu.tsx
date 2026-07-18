@@ -54,7 +54,7 @@ export function ItemContextMenuContent({
       {onViewInfo && item && (
         <ContextMenuItem className="px-3 py-2 text-sm text-stone-700 cursor-pointer hover:bg-stone-100 outline-none flex items-center" onClick={() => onViewInfo(item, type)}>
           <Info size={16} className="mr-3 text-stone-500" />
-          View Info
+          Lihat Info
         </ContextMenuItem>
       )}
       {isTrashView ? (
@@ -62,13 +62,13 @@ export function ItemContextMenuContent({
           {onRestore && id && (
             <ContextMenuItem className="px-3 py-2 text-sm text-stone-700 cursor-pointer hover:bg-stone-100 outline-none flex items-center" onClick={() => onRestore(id)}>
               <RefreshCw size={16} className="mr-3 text-stone-500" />
-              Restore
+              Pulihkan
             </ContextMenuItem>
           )}
           {onPermanentDelete && id && (
             <ContextMenuItem className="px-3 py-2 text-sm text-red-600 cursor-pointer hover:bg-red-50 outline-none flex items-center" onClick={() => onPermanentDelete(id)}>
               <Trash2 size={16} className="mr-3 text-red-500" />
-              Delete Forever
+              Hapus Permanen
             </ContextMenuItem>
           )}
         </>
@@ -77,57 +77,57 @@ export function ItemContextMenuContent({
           {type === 'file' && file && onPreviewFile && (
             <ContextMenuItem className="px-3 py-2 text-sm text-stone-700 cursor-pointer hover:bg-stone-100 outline-none flex items-center" onClick={() => onPreviewFile(file)}>
               <Eye size={16} className="mr-3 text-stone-500" />
-              Preview
+              Pratinjau
             </ContextMenuItem>
           )}
           {type === 'file' && file && native && file.webViewLink && (
             <ContextMenuItem onClick={() => window.open(file.webViewLink!, '_blank', 'noopener,noreferrer')}>
-              <ExternalLink className="mr-2 h-4 w-4" /> Open in Google
+              <ExternalLink className="mr-2 h-4 w-4" /> Buka di Google
             </ContextMenuItem>
           )}
           {type === 'file' && file && !native && file.webContentLink && (
             <ContextMenuItem onClick={() => { window.location.href = `${import.meta.env.VITE_API_URL || ''}/api/files/${file.id}/download`; }}>
-              <Download className="mr-2 h-4 w-4" /> Download
+              <Download className="mr-2 h-4 w-4" /> Unduh
             </ContextMenuItem>
           )}
           {onToggleStar && id && (
             <ContextMenuItem onClick={() => onToggleStar(id, type, !!isStarred)}>
-              <Star className="mr-2 h-4 w-4" /> {isStarred ? 'Remove from Starred' : 'Add to Starred'}
+              <Star className="mr-2 h-4 w-4" /> {isStarred ? 'Hapus dari Berbintang' : 'Tambah ke Berbintang'}
             </ContextMenuItem>
           )}
           {onShare && id && (
             <ContextMenuItem onClick={() => onShare(id, type)}>
-              <Share2 className="mr-2 h-4 w-4" /> Share
+              <Share2 className="mr-2 h-4 w-4" /> Bagikan
             </ContextMenuItem>
           )}
           {type === 'file' && file && onAddToWorkspace && (
             <ContextMenuItem onClick={() => onAddToWorkspace(file)}>
-              <Folder className="mr-2 h-4 w-4" /> Add to Workspace
+              <Folder className="mr-2 h-4 w-4" /> Tambah ke Workspace
             </ContextMenuItem>
           )}
           {onSetRetentionPolicy && id && (
             <ContextMenuItem onClick={() => onSetRetentionPolicy(id, type)}>
-              <Folder className="mr-2 h-4 w-4" /> Set Retention Policy
+              <Folder className="mr-2 h-4 w-4" /> Atur Kebijakan Retensi
             </ContextMenuItem>
           )}
           {type === 'file' && onRenameFile && id && name && (
             <ContextMenuItem onClick={() => {
-              const newName = prompt('Rename file:', name);
+              const newName = prompt('Ubah nama file:', name);
               if (newName && newName !== name) onRenameFile(id, newName);
             }}>
-              <Pencil className="mr-2 h-4 w-4" /> Rename
+              <Pencil className="mr-2 h-4 w-4" /> Ubah Nama
             </ContextMenuItem>
           )}
           {type === 'file' && onMoveDrive && file && (
             <ContextMenuItem onClick={() => onMoveDrive(file)}>
-              <ExternalLink className="mr-2 h-4 w-4" /> Move to another drive
+              <ExternalLink className="mr-2 h-4 w-4" /> Pindah ke drive lain
             </ContextMenuItem>
           )}
           {type === 'file' && onDeleteFile && id && (
             <>
               <ContextMenuSeparator />
               <ContextMenuItem className="text-red-600" onClick={() => onDeleteFile(id)}>
-                <Trash2 className="mr-2 h-4 w-4" /> Delete
+                <Trash2 className="mr-2 h-4 w-4" /> Hapus
               </ContextMenuItem>
             </>
           )}

@@ -57,27 +57,32 @@ export function WorkspaceMainView({
           <h1 className="text-2xl sm:text-3xl font-semibold text-stone-900 truncate">{activeFolder.name}</h1>
           <div className="flex gap-2 flex-shrink-0">
             <button onClick={onCreateFolder} className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-stone-700 bg-card border border-stone-300 rounded-md hover:bg-stone-50">
-              <FolderPlus size={16} /> New Folder
+              <FolderPlus size={16} /> Folder Baru
             </button>
             <button onClick={onSync} disabled={isSyncing} className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-stone-700 bg-card border border-stone-300 rounded-md hover:bg-stone-50">
-              <RefreshCw size={16} className={isSyncing ? 'animate-spin' : ''} /> Sync
+              <RefreshCw size={16} className={isSyncing ? 'animate-spin' : ''} /> Sinkron
             </button>
           </div>
         </div>
 
         {/* Tabs */}
         <div className="flex gap-6 mt-4">
-          {(['files', 'members', 'settings', 'audit'] as const).map(tab => (
-            <button 
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`pb-2 text-sm font-medium capitalize border-b-2 transition-colors ${
-                activeTab === tab 
-                  ? 'border-stone-900 text-stone-900' 
+          {([
+            { id: 'files', label: 'File' },
+            { id: 'members', label: 'Anggota' },
+            { id: 'settings', label: 'Pengaturan' },
+            { id: 'audit', label: 'Audit' },
+          ] as const).map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`pb-2 text-sm font-medium border-b-2 transition-colors ${
+                activeTab === tab.id
+                  ? 'border-stone-900 text-stone-900'
                   : 'border-transparent text-stone-500 hover:text-stone-700 hover:border-stone-300'
               }`}
             >
-              {tab.charAt(0).toUpperCase() + tab.slice(1)}
+              {tab.label}
             </button>
           ))}
         </div>

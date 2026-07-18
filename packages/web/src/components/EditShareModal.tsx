@@ -61,10 +61,10 @@ export function EditShareModal({ open, link, onClose }: EditShareModalProps) {
       });
 
       useSharedStore.getState().fetchSharedLinks();
-      addToast('success', 'Shared link settings updated successfully');
+      addToast('success', 'Berhasil memperbarui pengaturan tautan terbagi');
       onClose();
     } catch (err: any) {
-      setError(err.message || 'Failed to update shared link');
+      setError(err.message || 'Gagal memperbarui tautan terbagi');
     } finally {
       setLoading(false);
     }
@@ -78,7 +78,7 @@ export function EditShareModal({ open, link, onClose }: EditShareModalProps) {
         <div className="flex items-center p-5 border-b border-stone-100 shrink-0">
           <DialogTitle className="text-lg font-semibold text-stone-800 flex items-center gap-2">
             <Settings size={20} className="text-primary" />
-            Edit Settings
+            Ubah Pengaturan
           </DialogTitle>
         </div>
 
@@ -92,11 +92,11 @@ export function EditShareModal({ open, link, onClose }: EditShareModalProps) {
           <form onSubmit={handleUpdate} className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-stone-700 flex items-center gap-1.5">
-                <Lock size={14} className="text-stone-400" /> New Password (optional)
+                <Lock size={14} className="text-stone-400" /> Kata Sandi Baru (opsional)
               </label>
               <input
                 type="password"
-                placeholder="Leave blank to keep current password"
+                placeholder="Biarkan kosong untuk mempertahankan kata sandi saat ini"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 className="px-3 py-2 bg-card border border-stone-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-shadow"
@@ -105,7 +105,7 @@ export function EditShareModal({ open, link, onClose }: EditShareModalProps) {
 
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-stone-700 flex items-center gap-1.5">
-                <Calendar size={14} className="text-stone-400" /> Expiration Date (optional)
+                <Calendar size={14} className="text-stone-400" /> Tanggal kedaluwarsa (opsional)
               </label>
               <input
                 type="datetime-local"
@@ -123,7 +123,7 @@ export function EditShareModal({ open, link, onClose }: EditShareModalProps) {
                 className="flex items-center text-sm font-medium text-stone-600 hover:text-stone-800 transition-colors"
               >
                 <Settings size={14} className="mr-1.5" />
-                Advanced Settings
+                Pengaturan Lanjutan
                 {showAdvanced ? <ChevronUp size={14} className="ml-1" /> : <ChevronDown size={14} className="ml-1" />}
               </button>
 
@@ -137,7 +137,7 @@ export function EditShareModal({ open, link, onClose }: EditShareModalProps) {
                         onChange={(e) => setAllowDownloads(e.target.checked)}
                         className="w-4 h-4 rounded border-stone-300 text-primary focus:ring-primary cursor-pointer"
                       />
-                      <span className="select-none">Allow Downloads</span>
+                      <span className="select-none">Izinkan Unduhan</span>
                     </label>
 
                     {link?.targetType === 'folder' && (
@@ -148,7 +148,7 @@ export function EditShareModal({ open, link, onClose }: EditShareModalProps) {
                           onChange={(e) => setAllowUploads(e.target.checked)}
                           className="w-4 h-4 rounded border-stone-300 text-primary focus:ring-primary cursor-pointer"
                         />
-                        <span className="select-none">Allow Uploads (Public Drop folder)</span>
+                        <span className="select-none">Izinkan Unggahan (Folder Drop Publik)</span>
                       </label>
                     )}
 
@@ -159,28 +159,28 @@ export function EditShareModal({ open, link, onClose }: EditShareModalProps) {
                         onChange={(e) => setRequireEmail(e.target.checked)}
                         className="w-4 h-4 rounded border-stone-300 text-primary focus:ring-primary cursor-pointer"
                       />
-                      <span className="select-none">Require Email to View</span>
+                      <span className="select-none">Wajibkan Email untuk Melihat</span>
                     </label>
 
                     <div className="flex flex-col gap-1.5 mt-2">
-                      <label className="text-xs font-semibold text-stone-600 uppercase tracking-wide">Max Downloads</label>
+                      <label className="text-xs font-semibold text-stone-600 uppercase tracking-wide">Maks Unduhan</label>
                       <input
                         type="number"
                         min="1"
                         value={maxDownloads}
                         onChange={(e) => setMaxDownloads(e.target.value)}
-                        placeholder="e.g. 10 (Leave blank for unlimited)"
+                        placeholder="mis. 10 (Biarkan kosong untuk tak terbatas)"
                         className="px-3 py-2 bg-card border border-stone-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                       />
                     </div>
 
                     <div className="flex flex-col gap-1.5 mt-2">
-                      <label className="text-xs font-semibold text-stone-600 uppercase tracking-wide">Webhook URL</label>
+                      <label className="text-xs font-semibold text-stone-600 uppercase tracking-wide">URL Webhook</label>
                       <input
                         type="url"
                         value={webhookUrl}
                         onChange={(e) => setWebhookUrl(e.target.value)}
-                        placeholder="e.g. https://your-api.com/webhook"
+                        placeholder="mis. https://your-api.com/webhook"
                         className="px-3 py-2 bg-card border border-stone-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                       />
                     </div>
@@ -195,7 +195,7 @@ export function EditShareModal({ open, link, onClose }: EditShareModalProps) {
                 className="px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-100 rounded-lg transition-colors"
                 onClick={onClose}
               >
-                Cancel
+                Batal
               </button>
               <button
                 type="submit"
@@ -205,7 +205,7 @@ export function EditShareModal({ open, link, onClose }: EditShareModalProps) {
                 {loading ? (
                   <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                 ) : (
-                  'Save Settings'
+                  'Simpan Pengaturan'
                 )}
               </button>
             </div>

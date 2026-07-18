@@ -14,7 +14,7 @@ export function SetupPage() {
       await api.register({ username, password });
       window.location.href = '/';
     } catch (err: any) {
-      setErrorMsg(err.message || 'Setup failed');
+      setErrorMsg(err.message || 'Setup gagal');
     }
   };
 
@@ -22,8 +22,8 @@ export function SetupPage() {
     <main className="min-h-[100dvh] flex items-center justify-center bg-surface px-4">
       <div className="w-full max-w-sm">
         <div className="bg-card border border-stone-200 rounded-2xl shadow-sm p-10 text-center">
-          <h1 className="text-3xl font-bold text-stone-900 mb-2">Welcome to AzaDrive</h1>
-          <p className="text-stone-600 text-sm mb-6">Create the first Super Admin account to get started.</p>
+          <h1 className="text-3xl font-bold text-stone-900 mb-2">Selamat datang di AzaDrive</h1>
+          <p className="text-stone-600 text-sm mb-6">Buat akun Super Admin pertama untuk memulai.</p>
           {errorMsg && (
             <div role="alert" className="mb-4 text-red-700 text-sm">
               {errorMsg}
@@ -32,7 +32,7 @@ export function SetupPage() {
           <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-left">
             <div>
               <label htmlFor="setup-username" className="block text-sm font-medium text-stone-700 mb-1">
-                Admin Username
+                Nama pengguna Admin
               </label>
               <input
                 id="setup-username"
@@ -47,7 +47,7 @@ export function SetupPage() {
             </div>
             <div>
               <label htmlFor="setup-password" className="block text-sm font-medium text-stone-700 mb-1">
-                Admin Password
+                Kata sandi Admin
               </label>
               <input
                 id="setup-password"
@@ -61,7 +61,7 @@ export function SetupPage() {
               />
             </div>
             <Button type="submit" className="w-full h-11 rounded-lg mt-4">
-              Complete Setup
+              Selesaikan Setup
             </Button>
           </form>
         </div>

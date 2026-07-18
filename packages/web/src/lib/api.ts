@@ -8,7 +8,7 @@ export function getFilePreviewUrl(fileId: string): string {
 export async function fetchFilePreviewBlob(fileId: string): Promise<Blob> {
   const response = await fetch(getFilePreviewUrl(fileId), { credentials: 'include' });
   if (!response.ok) {
-    throw new ApiError(response.status, 'Failed to load preview');
+    throw new ApiError(response.status, 'Gagal memuat pratinjau');
   }
   return response.blob();
 }
@@ -331,7 +331,7 @@ export const verifySharedPassword = async (id: string, password: string) => {
     body: JSON.stringify({ password }),
   }).catch((error) => {
     if (error instanceof ApiError && error.status === 401) {
-      throw new Error('Invalid password');
+      throw new Error('Kata sandi salah');
     }
     throw error;
   });

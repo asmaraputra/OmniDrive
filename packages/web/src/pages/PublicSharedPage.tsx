@@ -18,7 +18,7 @@ export function PublicSharedPage() {
   const loadMeta = useCallback(async (skipLoadingState = false) => {
     if (!id) {
       setLoading(false);
-      setError('Invalid link ID');
+      setError('ID tautan tidak valid');
       return;
     }
     try {
@@ -28,7 +28,7 @@ export function PublicSharedPage() {
       setMeta(data);
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
-      setError(message || 'Failed to load shared link');
+      setError(message || 'Gagal memuat tautan terbagi');
     } finally {
       if (!skipLoadingState) setLoading(false);
     }
@@ -49,7 +49,7 @@ export function PublicSharedPage() {
       await loadMeta(true);
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
-      setPasswordError(message || 'Incorrect password');
+      setPasswordError(message || 'Kata sandi salah');
     } finally {
       setVerifying(false);
     }
@@ -66,7 +66,7 @@ export function PublicSharedPage() {
       return (
         <div className="bg-card p-10 rounded-2xl shadow-xl max-w-md w-full border border-stone-100 flex flex-col items-center">
           <Loader2 className="animate-spin text-primary mb-4" size={48} />
-          <p className="text-stone-500 font-medium">Loading...</p>
+          <p className="text-stone-500 font-medium">Memuat...</p>
         </div>
       );
     }
@@ -75,7 +75,7 @@ export function PublicSharedPage() {
       return (
         <div className="bg-card p-10 rounded-2xl shadow-xl max-w-md w-full border border-red-200 flex flex-col items-center">
           <AlertCircle size={48} className="text-red-500 mb-4" />
-          <h2 className="text-2xl font-bold text-stone-800 mb-2">Error</h2>
+          <h2 className="text-2xl font-bold text-stone-800 mb-2">Galat</h2>
           <p className="text-stone-500">{error}</p>
         </div>
       );
@@ -88,21 +88,21 @@ export function PublicSharedPage() {
             <div className="flex justify-center mb-4">
               <Lock size={48} className="text-primary" />
             </div>
-            <h2 className="text-2xl font-bold text-stone-800 mb-2">Password Required</h2>
-            <p className="text-stone-500">This shared link is protected by a password.</p>
+            <h2 className="text-2xl font-bold text-stone-800 mb-2">Kata Sandi Diperlukan</h2>
+            <p className="text-stone-500">Tautan terbagi ini dilindungi oleh kata sandi.</p>
           </div>
 
           <form onSubmit={handlePasswordSubmit}>
             <div className="mb-4">
               <label htmlFor="shared-password" className="sr-only">
-                Password
+                Kata Sandi
               </label>
               <input
                 id="shared-password"
                 type="password"
                 autoComplete="current-password"
                 className="w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl text-stone-800 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-all"
-                placeholder="Enter password"
+                placeholder="Masukkan kata sandi"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoFocus
@@ -121,7 +121,7 @@ export function PublicSharedPage() {
               disabled={verifying || !password}
             >
               {verifying && <Loader2 className="animate-spin" size={18} />}
-              Unlock
+              Buka Kunci
             </button>
           </form>
         </div>
@@ -133,13 +133,13 @@ export function PublicSharedPage() {
         {meta?.type === 'folder' ? (
           <div className="mb-8">
             <div className="mb-4 flex justify-center"><Folder size={72} className="text-primary" fill="currentColor" /></div>
-            <h2 className="text-2xl font-bold text-stone-800 mb-2">Shared Folder</h2>
-            <p className="text-stone-500">Folder view is not supported yet.</p>
+            <h2 className="text-2xl font-bold text-stone-800 mb-2">Folder Terbagi</h2>
+            <p className="text-stone-500">Tampilan folder belum didukung.</p>
           </div>
         ) : (
           <div className="mb-8">
             <div className="text-7xl mb-4 leading-none flex justify-center"><FileIcon mimeType={meta?.target?.mimeType || null} /></div>
-            <h2 className="text-2xl font-bold text-stone-800 mb-2 break-words">{meta?.target?.name || 'Unknown File'}</h2>
+            <h2 className="text-2xl font-bold text-stone-800 mb-2 break-words">{meta?.target?.name || 'File Tidak Diketahui'}</h2>
             {typeof meta?.target?.size === 'number' && (
               <p className="text-stone-500">{formatFileSize(meta.target.size)}</p>
             )}
@@ -151,7 +151,7 @@ export function PublicSharedPage() {
           className="w-full flex items-center justify-center gap-2 px-4 py-3 text-white bg-primary rounded-xl font-medium hover:bg-primary/90 transition-colors shadow-sm mt-8"
         >
           <Download size={20} />
-          Download
+          Unduh
         </button>
       </div>
     );

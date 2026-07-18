@@ -39,7 +39,7 @@ export function SearchPage() {
       setResults(data.files);
     } catch {
       if (signal?.aborted) return;
-      addToast('error', 'Failed to perform search');
+      addToast('error', 'Gagal melakukan pencarian');
     } finally {
       if (!signal?.aborted) {
         setIsLoading(false);
@@ -64,15 +64,15 @@ export function SearchPage() {
     <div className="p-4 sm:p-6 space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold text-stone-800">
-          {query ? `Search results for "${query}"` : 'Search'}
+          {query ? `Hasil pencarian untuk "${query}"` : 'Cari'}
         </h1>
       </div>
 
       {!query ? (
         <EmptyState
           icon={Search}
-          title="Search your files"
-          description="Enter a search term in the omnibar above."
+          title="Cari file Anda"
+          description="Masukkan kata kunci pencarian di omnibar di atas."
         />
       ) : isLoading ? (
         <ListSkeleton rows={6} />
@@ -92,8 +92,8 @@ export function SearchPage() {
       ) : (
         <EmptyState
           icon={Search}
-          title="No files found"
-          description={`Nothing matched "${query}".`}
+          title="Tidak ada file ditemukan"
+          description={`Tidak ada yang cocok dengan "${query}".`}
         />
       )}
 
@@ -112,7 +112,7 @@ export function SearchPage() {
             fetchResults(query);
           }}
           onError={() => {
-            addToast('error', 'Failed to move file(s)');
+            addToast('error', 'Gagal memindahkan file');
             setMoveDriveFiles([]);
           }}
         />

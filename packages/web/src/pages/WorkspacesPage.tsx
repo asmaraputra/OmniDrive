@@ -31,7 +31,7 @@ export function WorkspacesPage() {
       const res = await api.getWorkspaceTree();
       setFolders(res.folders);
     } catch {
-      addToast('error', 'Failed to load workspaces');
+      addToast('error', 'Gagal memuat workspace');
     }
   }, [addToast]);
 
@@ -53,7 +53,7 @@ export function WorkspacesPage() {
       setHasMore(res.pagination?.hasMore || false);
     } catch {
       if (isStale?.()) return;
-      addToast('error', 'Failed to load folder contents');
+      addToast('error', 'Gagal memuat isi folder');
     } finally {
       if (!isStale?.()) {
         setIsLoadingMore(false);
@@ -78,26 +78,26 @@ export function WorkspacesPage() {
   }, [activeFolderId, clearSelection, fetchContents]);
 
   const openCreateModal = (parentId?: string | null) => {
-    const title = parentId ? 'New Folder' : 'New Workspace';
+    const title = parentId ? 'Folder Baru' : 'Workspace Baru';
     setCreateModal({ parentId: parentId ?? null, title });
   };
 
   const handleRename = async (id: string) => {
     const folder = folders.find(f => f.id === id);
     if (!folder) return;
-    const name = prompt('Rename workspace:', folder.name);
+    const name = prompt('Ubah nama workspace:', folder.name);
     if (name?.trim() && name.trim() !== folder.name) {
       try {
         await api.updateFolder(id, { name: name.trim() });
         fetchTree();
       } catch {
-        addToast('error', 'Failed to rename workspace');
+        addToast('error', 'Gagal mengubah nama workspace');
       }
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('Are you sure you want to delete this workspace?')) {
+    if (confirm('Anda yakin ingin menghapus workspace ini?')) {
       try {
         await api.deleteFolder(id);
         if (activeFolderId === id) {
@@ -105,7 +105,7 @@ export function WorkspacesPage() {
         }
         fetchTree();
       } catch {
-        addToast('error', 'Failed to delete workspace');
+        addToast('error', 'Gagal menghapus workspace');
       }
     }
   };
@@ -115,10 +115,10 @@ export function WorkspacesPage() {
     setIsSyncing(true);
     try {
       await api.syncWorkspace(activeFolderId);
-      addToast('success', 'Sync started.');
+      addToast('success', 'Sinkronisasi dimulai.');
       setTimeout(() => fetchContents(activeFolderId), 2000);
     } catch {
-      addToast('error', 'Failed to start sync');
+      addToast('error', 'Gagal memulai sinkronisasi');
     } finally {
       setIsSyncing(false);
     }
@@ -153,10 +153,10 @@ export function WorkspacesPage() {
   const onDeleteFile = useCallback(async (id: string) => {
     try {
       await api.moveFile(id, null);
-      addToast('success', 'Removed');
+      addToast('success', 'Dihapus');
       setFiles(prev => prev.filter(f => f.id !== id));
     } catch {
-      addToast('error', 'Failed');
+      addToast('error', 'Gagal');
     }
   }, [addToast]);
 
@@ -236,7 +236,7 @@ export function WorkspacesPage() {
       <CreateFolderModal
         open={!!createModal}
         parentId={createModal?.parentId ?? null}
-        title={createModal?.title ?? 'New Folder'}
+        title={createModal?.title ?? 'Folder Baru'}
         onClose={() => setCreateModal(null)}
         onSuccess={fetchTree}
       />
@@ -248,22 +248,22 @@ export function WorkspacesPage() {
       {retentionTargetId && (
         <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4">
           <div className="bg-card rounded-lg shadow-lg p-6 max-w-md w-full">
-            <h3 className="text-lg font-bold mb-4">Set Retention Policy</h3>
+            <h3 className="text-lg font-bold mb-4">Atur Kebijakan Retensi</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-stone-700 mb-1">Action</label>
+                <label className="block text-sm font-medium text-stone-700 mb-1">Aksi</label>
                 <select id="retentionAction" className="w-full border-stone-300 rounded p-2 text-sm border">
-                  <option value="auto_delete">Auto-Delete (Retention limit)</option>
-                  <option value="prevent_deletion">Prevent Deletion (Legal Hold)</option>
+                  <option value="auto_delete">Hapus Otomatis (Batas retensi)</option>
+                  <option value="prevent_deletion">Cegah Penghapusan (Penahanan Hukum)</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-stone-700 mb-1">Days</label>
+                <label className="block text-sm font-medium text-stone-700 mb-1">Hari</label>
                 <input id="retentionDays" type="number" defaultValue={30} className="w-full border-stone-300 rounded p-2 text-sm border" />
               </div>
             </div>
             <div className="mt-6 flex justify-end gap-3">
-              <button className="px-4 py-2 text-sm text-stone-600 hover:bg-stone-100 rounded" onClick={() => setRetentionTargetId(null)}>Cancel</button>
+              <button className="px-4 py-2 text-sm text-stone-600 hover:bg-stone-100 rounded" onClick={() => setRetentionTargetId(null)}>Batal</button>
               <button className="px-4 py-2 text-sm bg-primary text-white rounded hover:bg-primary/90" onClick={async () => {
                 const action = (document.getElementById('retentionAction') as HTMLSelectElement).value;
                 const days = parseInt((document.getElementById('retentionDays') as HTMLInputElement).value, 10);
@@ -275,13 +275,13 @@ export function WorkspacesPage() {
                       policyType: 'data_retention',
                       config: { action, days }
                     });
-                    addToast('success', 'Policy applied successfully');
+                    addToast('success', 'Kebijakan berhasil diterapkan');
                     setRetentionTargetId(null);
                   } catch {
-                    addToast('error', 'Failed to apply policy');
+                    addToast('error', 'Gagal menerapkan kebijakan');
                   }
                 }
-              }}>Save Policy</button>
+              }}>Simpan Kebijakan</button>
             </div>
           </div>
         </div>
