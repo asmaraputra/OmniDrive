@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- `lazyWithRetry` utility: auto-reloads the page once when a lazy-loaded chunk fails to fetch (stale cache after deploy), preventing the "Failed to fetch dynamically imported module" error.
+
 ### Added
 
 - Shared `EmptyState` + `ListSkeleton` for consistent empty/loading UI (Trash, Search, Starred, Shared Links, FileGrid).
